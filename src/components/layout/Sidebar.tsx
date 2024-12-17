@@ -27,6 +27,11 @@ const sideBarMenuItems = [
     type: SidebarMenuItemType.MenuItem,
   },
   {
+    name: 'Rules',
+    href: '/dashboard/rules',
+    type: SidebarMenuItemType.MenuItem,
+  },
+  {
     name: 'Tags',
     href: '/dashboard/tags',
     type: SidebarMenuItemType.MenuItem,
@@ -34,11 +39,6 @@ const sideBarMenuItems = [
   {
     name: 'Roles',
     href: '/dashboard/roles',
-    type: SidebarMenuItemType.MenuItem,
-  },
-  {
-    name: 'Rules',
-    href: '/dashboard/rules',
     type: SidebarMenuItemType.MenuItem,
   },
   {

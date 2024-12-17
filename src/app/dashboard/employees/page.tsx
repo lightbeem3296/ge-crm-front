@@ -119,6 +119,7 @@ export default function EmployeesPage() {
             headerName: "Tags",
             field: "tags",
             width: 300,
+            pinned: "right",
         },
     ]);
 
@@ -190,9 +191,9 @@ export default function EmployeesPage() {
     }
 
     return (
-        <div>
+        <div className="overflow-auto">
             <div className="text-lg font-medium px-2 py-4">Employees</div>
-            <div className="h-[640px]">
+            <div className="h-[640px] min-w-[600px]">
                 <AgGridReact
                     rowModelType="infinite" // server-side pagination
                     columnDefs={colDefs}
