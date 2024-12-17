@@ -2,56 +2,49 @@ import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
 } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
-const subCategories = [
-  { name: 'Totes', href: '#' },
-  { name: 'Backpacks', href: '#' },
-  { name: 'Travel Bags', href: '#' },
-  { name: 'Hip Bags', href: '#' },
-  { name: 'Laptop Sleeves', href: '#' },
-]
-const filters = [
+
+enum SidebarMenuItemType {
+  Title = 1,
+  MenuItem,
+  Separator,
+}
+
+const sideBarMenuItems = [
   {
-    id: 'color',
-    name: 'Color',
-    options: [
-      { value: 'white', label: 'White', checked: false },
-      { value: 'beige', label: 'Beige', checked: false },
-      { value: 'blue', label: 'Blue', checked: true },
-      { value: 'brown', label: 'Brown', checked: false },
-      { value: 'green', label: 'Green', checked: false },
-      { value: 'purple', label: 'Purple', checked: false },
-    ],
+    name: 'Data',
+    href: '#',
+    type: SidebarMenuItemType.Title,
   },
   {
-    id: 'category',
-    name: 'Category',
-    options: [
-      { value: 'new-arrivals', label: 'New Arrivals', checked: false },
-      { value: 'sale', label: 'Sale', checked: false },
-      { value: 'travel', label: 'Travel', checked: true },
-      { value: 'organization', label: 'Organization', checked: false },
-      { value: 'accessories', label: 'Accessories', checked: false },
-    ],
+    name: 'Employees',
+    href: '/dashboard/employees',
+    type: SidebarMenuItemType.MenuItem,
   },
   {
-    id: 'size',
-    name: 'Size',
-    options: [
-      { value: '2l', label: '2L', checked: false },
-      { value: '6l', label: '6L', checked: false },
-      { value: '12l', label: '12L', checked: false },
-      { value: '18l', label: '18L', checked: false },
-      { value: '20l', label: '20L', checked: false },
-      { value: '40l', label: '40L', checked: true },
-    ],
+    name: 'Tags',
+    href: '/dashboard/tags',
+    type: SidebarMenuItemType.MenuItem,
+  },
+  {
+    name: 'Roles',
+    href: '/dashboard/roles',
+    type: SidebarMenuItemType.MenuItem,
+  },
+  {
+    name: 'Rules',
+    href: '/dashboard/rules',
+    type: SidebarMenuItemType.MenuItem,
+  },
+  {
+    name: 'Payroll',
+    href: '#',
+    type: SidebarMenuItemType.Title,
   },
 ]
 
@@ -62,72 +55,35 @@ interface SidebarProps {
 
 
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
+  const pathname = usePathname();
   return (
-    <div className="w-48 hidden lg:block">
-      <ul role="list" className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
-        {subCategories.map((category) => (
-          <li key={category.name}>
-            <a href={category.href}>{category.name}</a>
-          </li>
+    <div className="w-72 hidden lg:block bg-neutral-900 px-8 m-4 rounded-xl">
+      <div className='pt-10 pb-4 border-b border-gray-600'>
+        <p className='text-md text-gray-200 font-medium uppercase'>Admin Panel</p>
+        <p className='text-sm text-gray-400'>Employee & Payroll</p>
+      </div>
+      <ul className="text-sm mt-4">
+        {sideBarMenuItems.map((menuItem) => (
+          menuItem.type === SidebarMenuItemType.MenuItem ? (
+            <Link
+              key={menuItem.name}
+              href={menuItem.href}
+            >
+              <li className={`px-4 py-2 rounded-md border border-transparent hover:text-blue-600 hover:border-gray-800 ${pathname == menuItem.href
+                ? "font-semibold text-blue-600 bg-gray-900 border-gray-800"
+                : "font-normal text-gray-300"
+                }`}>
+                {menuItem.name}
+              </li>
+            </Link>
+          ) : menuItem.type === SidebarMenuItemType.Title ? (
+            <li key={menuItem.name} className="text-gray-500 uppercase font-medium py-2">
+              {menuItem.name}
+            </li>
+          ) : null
         ))}
       </ul>
 
-      {filters.map((section) => (
-        <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
-          <h3 className="-my-3 flow-root">
-            <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-              <span className="font-medium text-gray-900">{section.name}</span>
-              <span className="ml-6 flex items-center">
-                <PlusIcon aria-hidden="true" className="size-5 group-data-[open]:hidden" />
-                <MinusIcon aria-hidden="true" className="size-5 group-[&:not([data-open])]:hidden" />
-              </span>
-            </DisclosureButton>
-          </h3>
-          <DisclosurePanel className="pt-6">
-            <div className="space-y-4">
-              {section.options.map((option, optionIdx) => (
-                <div key={option.value} className="flex gap-3">
-                  <div className="flex h-5 shrink-0 items-center">
-                    <div className="group grid size-4 grid-cols-1">
-                      <input
-                        defaultValue={option.value}
-                        defaultChecked={option.checked}
-                        id={`filter-${section.id}-${optionIdx}`}
-                        name={`${section.id}[]`}
-                        type="checkbox"
-                        className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                      />
-                      <svg
-                        fill="none"
-                        viewBox="0 0 14 14"
-                        className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
-                      >
-                        <path
-                          d="M3 8L6 11L11 3.5"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="opacity-0 group-has-[:checked]:opacity-100"
-                        />
-                        <path
-                          d="M3 7H11"
-                          strokeWidth={2}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <label htmlFor={`filter-${section.id}-${optionIdx}`} className="text-sm text-gray-600">
-                    {option.label}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </DisclosurePanel>
-        </Disclosure>
-      ))}
       <Dialog open={mobileFiltersOpen} onClose={setMobileFiltersOpen} className="relative z-40 lg:hidden">
         <DialogBackdrop
           transition
@@ -150,81 +106,20 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
               </button>
             </div>
 
-            {/* Filters */}
             <form className="mt-4 border-t border-gray-200">
-              <h3 className="sr-only">Categories</h3>
               <ul role="list" className="px-2 py-3 font-medium text-gray-900">
-                {subCategories.map((category) => (
-                  <li key={category.name}>
-                    <a href={category.href} className="block px-2 py-3">
-                      {category.name}
-                    </a>
+                {sideBarMenuItems.map((menuItem) => (
+                  <li key={menuItem.name}>
+                    <Link href={menuItem.href} className="block px-2 py-3">
+                      {menuItem.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
-
-              {filters.map((section) => (
-                <Disclosure key={section.id} as="div" className="border-t border-gray-200 px-4 py-6">
-                  <h3 className="-mx-2 -my-3 flow-root">
-                    <DisclosureButton className="group flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                      <span className="font-medium text-gray-900">{section.name}</span>
-                      <span className="ml-6 flex items-center">
-                        <PlusIcon aria-hidden="true" className="size-5 group-data-[open]:hidden" />
-                        <MinusIcon aria-hidden="true" className="size-5 group-[&:not([data-open])]:hidden" />
-                      </span>
-                    </DisclosureButton>
-                  </h3>
-                  <DisclosurePanel className="pt-6">
-                    <div className="space-y-6">
-                      {section.options.map((option, optionIdx) => (
-                        <div key={option.value} className="flex gap-3">
-                          <div className="flex h-5 shrink-0 items-center">
-                            <div className="group grid size-4 grid-cols-1">
-                              <input
-                                defaultValue={option.value}
-                                id={`filter-mobile-${section.id}-${optionIdx}`}
-                                name={`${section.id}[]`}
-                                type="checkbox"
-                                className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                              />
-                              <svg
-                                fill="none"
-                                viewBox="0 0 14 14"
-                                className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
-                              >
-                                <path
-                                  d="M3 8L6 11L11 3.5"
-                                  strokeWidth={2}
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="opacity-0 group-has-[:checked]:opacity-100"
-                                />
-                                <path
-                                  d="M3 7H11"
-                                  strokeWidth={2}
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                          <label
-                            htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                            className="min-w-0 flex-1 text-gray-500"
-                          >
-                            {option.label}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </DisclosurePanel>
-                </Disclosure>
-              ))}
             </form>
           </DialogPanel>
         </div>
       </Dialog>
-    </div>
+    </div >
   )
 }
