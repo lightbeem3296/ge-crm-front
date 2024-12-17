@@ -57,7 +57,7 @@ interface SidebarProps {
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
   const pathname = usePathname();
   return (
-    <div className="w-72 hidden lg:block bg-neutral-900 px-8 my-2 ml-2 mr-0 rounded-[1rem] z-10">
+    <div className="w-64 h-full hidden lg:block bg-neutral-900 px-4 z-10 fixed">
       <div className='pt-10 pb-4 border-b border-gray-600'>
         <p className='text-md text-gray-200 font-medium uppercase'>Admin Panel</p>
         <p className='text-sm text-gray-400'>Employee & Payroll</p>

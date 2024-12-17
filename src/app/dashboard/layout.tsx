@@ -11,11 +11,10 @@ export default function Example({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="bg-white flex min-h-screen">
-      <div className='bg-blue-600 w-full h-40 absolute z-0'></div>
       <Sidebar mobileFiltersOpen={mobileFiltersOpen} setMobileFiltersOpen={setMobileFiltersOpen} />
-      <main className="flex-1 p-4 w-full z-10">
+      <main className="flex-1 w-full z-10 lg:ml-64">
         <Header setMobileFiltersOpen={setMobileFiltersOpen} />
-        <div className='p-4'>
+        <div className='p-4 bg-gray-100 rounded-md mt-4'>
           {children}
         </div>
         <Footer />

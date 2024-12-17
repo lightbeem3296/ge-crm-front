@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export default function Header({ setMobileFiltersOpen }: HeaderProps) {
   return (
-    <div className="flex items-center justify-between border-b border-gray-200 p-4 bg-gray-100 rounded-md">
+    <div className="flex items-center justify-between border-b border-gray-200 p-4 bg-gray-100/80 sticky top-0 backdrop-blur-md">
       <h1 className="text-md font-bold tracking-tight text-gray-600">New Arrivals</h1>
       <div className="flex items-center">
         <button type="button" className="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7">
