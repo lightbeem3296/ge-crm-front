@@ -69,9 +69,10 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
               key={menuItem.name}
               href={menuItem.href}
             >
-              <li className={`px-4 py-2 rounded-md border border-transparent hover:text-blue-600 hover:border-gray-800 ${pathname == menuItem.href
-                ? "font-semibold text-blue-600 bg-gray-900 border-gray-700"
-                : "font-normal text-gray-300"
+              <li className={`px-4 py-2 rounded-md border hover:text-blue-600 hover:border-gray-800 duration-300 ${
+                pathname === menuItem.href
+                ? "font-semibold text-blue-600 bg-gray-900 border-gray-800"
+                : "font-normal text-gray-300 border-transparent"
                 }`}>
                 {menuItem.name}
               </li>
