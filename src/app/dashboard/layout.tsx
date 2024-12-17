@@ -14,7 +14,7 @@ export default function Example({ children }: { children: React.ReactNode }) {
       <Sidebar mobileFiltersOpen={mobileFiltersOpen} setMobileFiltersOpen={setMobileFiltersOpen} />
       <main className="flex-1 w-full z-10 lg:ml-64">
         <Header setMobileFiltersOpen={setMobileFiltersOpen} />
-        <div className='px-4 bg-gray-100 rounded-md mt-4'>
+        <div className='px-4 rounded-md mt-4'>
           {children}
         </div>
         <Footer />
