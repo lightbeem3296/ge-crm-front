@@ -11,6 +11,8 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "ag-grid-react": "^33.0.2",
+    "axios": "^1.7.9",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
