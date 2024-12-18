@@ -22,23 +22,23 @@ const sideBarMenuItems = [
     type: SidebarMenuItemType.Title,
   },
   {
-    name: 'Employees',
-    href: '/dashboard/employees',
+    name: 'Employee',
+    href: '/dashboard/employee',
     type: SidebarMenuItemType.MenuItem,
   },
   {
-    name: 'Rules',
-    href: '/dashboard/rules',
+    name: 'Rule',
+    href: '/dashboard/rule',
     type: SidebarMenuItemType.MenuItem,
   },
   {
-    name: 'Tags',
-    href: '/dashboard/tags',
+    name: 'Tag',
+    href: '/dashboard/tag',
     type: SidebarMenuItemType.MenuItem,
   },
   {
-    name: 'Roles',
-    href: '/dashboard/roles',
+    name: 'Role',
+    href: '/dashboard/role',
     type: SidebarMenuItemType.MenuItem,
   },
   {

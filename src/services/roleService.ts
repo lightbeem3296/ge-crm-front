@@ -13,17 +13,16 @@ interface RoleServerResponse {
   items: RoleRowData[];
 }
 
-
-export async function listRoles(skip: number = 0, limit: number = 0) {
-  let all_roles: { [key: string]: {role_name: string, description: string}} = {};
+export async function listAllRoles(skip: number = 0, limit: number = 0) {
+  let all_roles: { [key: string]: { role_name: string, description: string } } = {};
   const response = await axios.get<RoleServerResponse>(
-      'http://localhost:8000/api/role',
-      {
-          params: {
-              skip: skip,
-              limit: limit,
-          },
-      }
+    'http://localhost:8000/api/role',
+    {
+      params: {
+        skip: skip,
+        limit: limit,
+      },
+    }
   );
   response.data.items.forEach(item => {
     all_roles[item._id] = {

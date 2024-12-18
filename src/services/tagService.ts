@@ -14,7 +14,7 @@ interface TagServerResponse {
 }
 
 
-export async function listTags(skip: number = 0, limit: number = 0) {
+export async function listAllTags(skip: number = 0, limit: number = 0) {
   let all_tags: { [key: string]: { tag_name: string, description: string, } } = {};
   const response = await axios.get<TagServerResponse>(
     'http://localhost:8000/api/tag',
