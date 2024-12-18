@@ -7,13 +7,12 @@ interface HeaderProps {
   setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Header({ setMobileFiltersOpen }: HeaderProps) {
+export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 p-4 bg-gray-100/80 sticky top-0 backdrop-blur-md z-10">
-      <h1 className="text-md font-bold tracking-tight text-gray-600">New Arrivals</h1>
+      <h1 className="text-md font-bold tracking-tight text-gray-600">Navigation Bar</h1>
       <div className="flex items-center">
         <button type="button" className="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7">
-          <span className="sr-only">View grid</span>
           <Squares2X2Icon aria-hidden="true" className="size-5" />
         </button>
         <button

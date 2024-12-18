@@ -1,5 +1,5 @@
 export default function RulesPage() {
     return (
-        <div>Rules Page</div>
+        <div className="h-[1000px]">Rules Page</div>
     );
 }
