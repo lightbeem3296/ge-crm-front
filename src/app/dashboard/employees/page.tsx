@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from "react";
-import type { ColDef, ColGroupDef, GridApi, GridReadyEvent, IGetRowsParams, ValueGetterParams } from "ag-grid-community";
+import React, { useCallback, useState } from "react";
+import type { ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
-import { AgGridReact } from "ag-grid-react";
+import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
 import axios from "axios";
 import { listTags as listAllTags } from "@/services/tagService";
 import { listRoles as listAllRoles } from "@/services/roleService";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -56,7 +59,15 @@ interface ServerResponse {
 export default function EmployeesPage() {
   const [rowData, setRowData] = useState<IRowData[]>();
 
-  const [colDefs, setColDefs] = useState<(ColDef<IRowData> | ColGroupDef)[]>([
+  const onUpdate = (obj_id: string) => { alert("update: " + obj_id); }
+  const onDelete = (obj_id: string) => { alert("delete: " + obj_id); }
+
+  interface CustomButtonParams extends CustomCellRendererProps {
+    onUpdate: (obj_id: string) => void;
+    onDelete: (obj_id: string) => void;
+  }
+
+  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
     {
       headerName: "Name",
       field: "username",
@@ -127,7 +138,36 @@ export default function EmployeesPage() {
       headerName: "Tags",
       field: "tags",
       width: 300,
+    },
+    {
+      headerName: "Actions",
+      field: "actions",
+      width: 120,
       pinned: "right",
+      filter: false,
+      editable: false,
+      cellRenderer: (params: CustomButtonParams) => (
+        <div className="h-full flex items-center">
+          <button
+            type="button"
+            className="px-3 py-1 w-fit hover:bg-blue-600/10 border border-transparent hover:border-blue-600/20 rounded-md text-sm duration-300"
+            onClick={() => params.onUpdate(params.data._id)}
+          >
+            <FontAwesomeIcon icon={faSave} className="text-blue-600" />
+          </button>
+          <button
+            type="button"
+            className="px-3 py-1 w-fit hover:bg-red-600/10 border border-transparent hover:border-red-600/20 rounded-md text-sm duration-300"
+            onClick={() => params.onDelete(params.data._id)}
+          >
+            <FontAwesomeIcon icon={faTrash} className="text-red-600" />
+          </button>
+        </div>
+      ),
+      cellRendererParams: {
+        onUpdate: onUpdate,
+        onDelete: onDelete,
+      },
     },
   ]);
 
