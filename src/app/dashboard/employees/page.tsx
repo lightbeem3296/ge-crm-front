@@ -56,15 +56,34 @@ interface ServerResponse {
   items: RowData[];
 }
 
+interface CustomButtonParams extends CustomCellRendererProps {
+  onUpdate: (obj_id: string) => void;
+  onDelete: (obj_id: string) => void;
+}
+
 export default function EmployeesPage() {
   const [rowData, setRowData] = useState<IRowData[]>();
 
-  const onUpdate = (obj_id: string) => { alert("update: " + obj_id); }
-  const onDelete = (obj_id: string) => { alert("delete: " + obj_id); }
+  const onUpdate = async (obj_id: string) => {
+    alert("update: " + obj_id);
+  }
 
-  interface CustomButtonParams extends CustomCellRendererProps {
-    onUpdate: (obj_id: string) => void;
-    onDelete: (obj_id: string) => void;
+  const onDelete = async (obj_id: string) => {
+    try {
+      const isConfirmed = confirm("Are you sure you want to delete?");
+      if (!isConfirmed) return;
+
+      await axios.delete(`http://localhost:8000/api/employee/${obj_id}`);
+      await fetchRowData();
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data || error.message);
+        alert("Failed to delete employee: " + error.response?.data || error.message);
+      } else {
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred. Please try again.");
+      }
+    }
   }
 
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
