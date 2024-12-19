@@ -13,7 +13,7 @@ export function NewButton({ onClick, children }: ButtonProps) {
       className="btn btn-primary btn-sm text-white"
       onClick={onClick}
     >
-      <FontAwesomeIcon icon={faPlus} />{children}
+      <FontAwesomeIcon icon={faPlus} width={12} />{children}
     </button>
   );
 }

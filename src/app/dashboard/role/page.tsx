@@ -24,7 +24,7 @@ interface ServerResponse {
 }
 
 interface CustomButtonParams extends CustomCellRendererProps {
-  onUpdate: (obj_id: string, obj: IRowData) => void;
+  onSave: (obj_id: string, obj: IRowData) => void;
   onDelete: (obj_id: string) => void;
 }
 
@@ -32,9 +32,53 @@ export default function RolePage() {
   const gridRef = useRef<AgGridReact>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [rowData, setRowData] = useState<IRowData[]>();
-  
-  const onUpdate = async (obj_id: string, obj: IRowData) => {
-    await axiosHelper.put<IRowData>(`/role/${obj_id}`, obj, "Are you sure want to update?");
+  const [newRowFormData, setNewRowFormData] = useState<IRowData>({
+    _id: "",
+    role_name: "",
+    description: "",
+  });
+
+  // UI Functions
+  const onClickNewRow = async () => {
+    setNewRowFormData({ _id: "", role_name: "", description: "" });
+    dialogRef.current?.showModal();
+  }
+
+  const onChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    console.log(newRowFormData, name, value);
+    setNewRowFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // CRUD Functions
+  const onCreate = async () => {
+    if (newRowFormData.role_name === "") {
+      alert("Role name is empty");
+      return;
+    }
+    if (newRowFormData.description === "") {
+      alert("Description is empty");
+      return;
+    }
+    await axiosHelper.post<IRowData, any>(`/role`, newRowFormData);
+    await fetchRowData();
+    dialogRef.current?.close();
+  }
+
+  const fetchRowData = async () => {
+    try {
+      const roles = await axiosHelper.get<ServerResponse>("/role");
+      setRowData(roles?.items);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  const onSave = async (obj_id: string, obj: IRowData) => {
+    await axiosHelper.put<IRowData>(`/role/${obj_id}`, obj, "Are you sure want to save?");
     obj.modified = false;
     gridRef.current?.api.redrawRows();
   }
@@ -50,6 +94,7 @@ export default function RolePage() {
     setRowData(newRowData);
   }
 
+  // Table functions
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
     {
       headerName: "Role Name",
@@ -71,12 +116,12 @@ export default function RolePage() {
       editable: false,
       cellRenderer: (params: CustomButtonParams) => (
         <div className="h-full flex items-center gap-1">
-          <SaveButton disabled={params.data.modified === true ? false : true} onClick={() => params.onUpdate(params.data._id, params.data)} />
+          <SaveButton disabled={params.data.modified === true ? false : true} onClick={() => params.onSave(params.data._id, params.data)} />
           <DeleteButton onClick={() => params.onDelete(params.data._id)} />
         </div>
       ),
       cellRendererParams: {
-        onUpdate: onUpdate,
+        onSave: onSave,
         onDelete: onDelete,
       },
     },
@@ -86,15 +131,6 @@ export default function RolePage() {
     filter: true,
     editable: true,
   };
-
-  const fetchRowData = async () => {
-    try {
-      const roles = await axiosHelper.get<ServerResponse>("/role");
-      setRowData(roles?.items);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
 
   const onGridReady = useCallback(async (params: GridReadyEvent) => {
     await fetchRowData();
@@ -112,31 +148,43 @@ export default function RolePage() {
         <p className="text-lg font-medium text-gray-700">
           Role
         </p>
-        <NewButton onClick={()=>dialogRef.current?.showModal()}>New Role</NewButton>
+        <NewButton onClick={() => onClickNewRow()}>New Role</NewButton>
         <dialog ref={dialogRef} className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Hello!</h3>
-            <p className="py-4">Press ESC key or click the button below to close</p>
+            <div className="flex flex-col gap-y-2">
+              <h3 className="font-bold text-lg">Add New Role</h3>
+              <label className="input input-sm input-bordered flex items-center gap-2">
+                Role Name
+                <input type="text" name="role_name" className="grow" placeholder="Project Manager" value={newRowFormData.role_name} onChange={onChangeValues} />
+              </label>
+              <label className="input input-sm input-bordered flex items-center gap-2">
+                Description
+                <input type="text" name="description" className="grow" placeholder="Oversees projects to ensure timely delivery." value={newRowFormData.description} onChange={onChangeValues} />
+              </label>
+            </div>
             <div className="modal-action">
+              <button className="btn btn-primary btn-sm" onClick={() => onCreate()}>Add</button>
               <form method="dialog">
-                <button className="btn">Close</button>
+                <button className="btn btn-sm">Close</button>
               </form>
             </div>
           </div>
         </dialog>
       </div>
-      <div className="h-[calc(100vh-10.6rem)] min-h-[450px]">
-        <AgGridReact
-          ref={gridRef}
-          columnDefs={colDefs}
-          rowData={rowData}
-          defaultColDef={defaultColDef}
-          onGridReady={onGridReady}
-          onCellValueChanged={onCellValueChanged}
-          pagination={true}
-          paginationPageSize={10}
-          paginationPageSizeSelector={[10, 25, 50]}
-        />
+      <div className="overflow-auto">
+        <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">
+          <AgGridReact
+            ref={gridRef}
+            columnDefs={colDefs}
+            rowData={rowData}
+            defaultColDef={defaultColDef}
+            onGridReady={onGridReady}
+            onCellValueChanged={onCellValueChanged}
+            pagination={true}
+            paginationPageSize={10}
+            paginationPageSizeSelector={[10, 25, 50]}
+          />
+        </div>
       </div>
     </div>
   );
