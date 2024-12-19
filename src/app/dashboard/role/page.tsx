@@ -4,7 +4,7 @@ import React, { useCallback, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry, themeBalham } from "ag-grid-community";
 import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
-import { DeleteButton, SaveButton } from "@/components/ui/datatable/button";
+import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -30,8 +30,9 @@ interface CustomButtonParams extends CustomCellRendererProps {
 
 export default function RolePage() {
   const gridRef = useRef<AgGridReact>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [rowData, setRowData] = useState<IRowData[]>();
-
+  
   const onUpdate = async (obj_id: string, obj: IRowData) => {
     await axiosHelper.put<IRowData>(`/role/${obj_id}`, obj, "Are you sure want to update?");
     obj.modified = false;
@@ -40,7 +41,7 @@ export default function RolePage() {
 
   const onDelete = async (obj_id: string) => {
     await axiosHelper.delete(`/role/${obj_id}`, "Are you sure want to delete?");
-    const newRowData:IRowData[] = [];
+    const newRowData: IRowData[] = [];
     gridRef.current?.api.forEachNode((node) => {
       if (node.data._id !== obj_id) {
         newRowData.push(node.data);
@@ -59,6 +60,7 @@ export default function RolePage() {
       headerName: "Description",
       field: "description",
       flex: 1,
+      minWidth: 200,
     },
     {
       headerName: "Actions",
@@ -106,13 +108,28 @@ export default function RolePage() {
 
   return (
     <div>
-      <div className="text-lg font-medium px-2 py-4">Role</div>
-      <div className="h-[calc(100vh-10.6rem)] min-h-[450px] min-w-[600px]">
+      <div className="flex justify-between px-2 py-4">
+        <p className="text-lg font-medium text-gray-700">
+          Role
+        </p>
+        <NewButton onClick={()=>dialogRef.current?.showModal()}>New Role</NewButton>
+        <dialog ref={dialogRef} className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Hello!</h3>
+            <p className="py-4">Press ESC key or click the button below to close</p>
+            <div className="modal-action">
+              <form method="dialog">
+                <button className="btn">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+      </div>
+      <div className="h-[calc(100vh-10.6rem)] min-h-[450px]">
         <AgGridReact
           ref={gridRef}
           columnDefs={colDefs}
           rowData={rowData}
-          theme={themeBalham}
           defaultColDef={defaultColDef}
           onGridReady={onGridReady}
           onCellValueChanged={onCellValueChanged}
