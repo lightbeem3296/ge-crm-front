@@ -24,7 +24,7 @@ interface ServerResponse {
 }
 
 interface CustomButtonParams extends CustomCellRendererProps {
-  onUpdate: (obj_id: string, obj: any) => void;
+  onUpdate: (obj_id: string, obj: IRowData) => void;
   onDelete: (obj_id: string) => void;
 }
 
@@ -40,6 +40,13 @@ export default function RolePage() {
 
   const onDelete = async (obj_id: string) => {
     await axiosHelper.delete(`/role/${obj_id}`, "Are you sure want to delete?");
+    const newRowData:IRowData[] = [];
+    gridRef.current?.api.forEachNode((node) => {
+      if (node.data._id !== obj_id) {
+        newRowData.push(node.data);
+      }
+    });
+    setRowData(newRowData);
   }
 
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
