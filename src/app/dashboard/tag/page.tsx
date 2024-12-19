@@ -151,24 +151,27 @@ export default function TagPage() {
         <NewButton onClick={() => onClickNewRow()}>New Tag</NewButton>
         <dialog ref={dialogRef} className="modal">
           <div className="modal-box">
-            <div className="flex flex-col gap-y-2">
-              <h3 className="font-bold text-lg">Add New Tag</h3>
+            <h3 className="font-bold text-lg p-2 mb-8 border-b">Add New Tag</h3>
+            <div className="flex flex-col gap-y-4">
               <label className="input input-sm input-bordered flex items-center gap-2">
-                Tag Name
+                Tag Name:
                 <input type="text" name="tag_name" className="grow" placeholder="Remote Worker" value={newRowFormData.tag_name} onChange={onChangeValues} />
               </label>
               <label className="input input-sm input-bordered flex items-center gap-2">
-                Description
+                Description:
                 <input type="text" name="description" className="grow" placeholder="Indicates employees working from home or another remote location." value={newRowFormData.description} onChange={onChangeValues} />
               </label>
             </div>
             <div className="modal-action">
               <button className="btn btn-primary btn-sm" onClick={() => onCreate()}>Add</button>
               <form method="dialog">
-                <button className="btn btn-sm">Close</button>
+                <button className="btn btn-sm">Cancel</button>
               </form>
             </div>
           </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
         </dialog>
       </div>
       <div className="overflow-auto">
