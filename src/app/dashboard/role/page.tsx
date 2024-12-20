@@ -46,7 +46,6 @@ export default function RolePage() {
 
   const onChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(newRowFormData, name, value);
     setNewRowFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -135,7 +134,6 @@ export default function RolePage() {
   const onCellValueChanged = (event: CellValueChangedEvent) => {
     event.data.modified = true;
     gridRef.current?.api.redrawRows();
-    console.log(`row changed: ${JSON.stringify(event.data)}`);
   };
 
   return (
