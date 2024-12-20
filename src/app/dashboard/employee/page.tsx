@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useCallback, useRef, useState } from "react";
-import type { ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
-import { AllCommunityModule, ModuleRegistry, themeBalham } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
-import axios from "axios";
 import { listAllTags } from "@/services/tagService";
 import { listAllRoles } from "@/services/roleService";
-import { DeleteButton, SaveButton } from "@/components/ui/datatable/button";
+import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
+import { axiosHelper } from "@/lib/axios";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -16,7 +16,7 @@ interface IRowData {
   username: string;
   m_nr: number;
   role: string;
-  department: boolean;
+  department: string;
   employment_start_date: string;
   employment_end_date: string;
   salary_type: string;
@@ -26,6 +26,7 @@ interface IRowData {
   bonus: number;
   deduction: number;
   tags: string[];
+  modified?: boolean;
 }
 
 interface ServerResponse {
@@ -36,7 +37,7 @@ interface ServerResponse {
 }
 
 interface CustomButtonParams extends CustomCellRendererProps {
-  onUpdate: (obj_id: string) => void;
+  onSave: (obj_id: string, obj: IRowData) => void;
   onDelete: (obj_id: string) => void;
 }
 
@@ -53,7 +54,6 @@ function lookupValue(mappings: { [key: string]: { role_name: string, description
 const roleCodes = extractKeys(roleMappings);
 
 
-// Custom Cell Renderer to display tags
 const TagsRenderer = (props: any) => {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
@@ -75,7 +75,6 @@ const TagsRenderer = (props: any) => {
   );
 };
 
-// Custom Cell Editor to add/edit tags
 const TagsEditor = (props: any) => {
   const [tags, setTags] = useState<string[]>(props.value || []);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -137,30 +136,90 @@ const TagsEditor = (props: any) => {
 };
 
 export default function EmployeePage() {
+  const gridRef = useRef<AgGridReact>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [rowData, setRowData] = useState<IRowData[]>();
+  const [newRowFormData, setNewRowFormData] = useState<IRowData>({
+    _id: "",
+    username: "",
+    m_nr: 0,
+    role: "",
+    department: "",
+    employment_start_date: "",
+    employment_end_date: "",
+    salary_type: "",
+    hourly_rate: 0,
+    salary: 0,
+    hours_worked: 0,
+    bonus: 0,
+    deduction: 0,
+    tags: [],
+  })
 
-  const onUpdate = async (obj_id: string) => {
-    alert("update: " + obj_id);
+  // UI Functions
+  const onClickNewRow = async () => {
+    setNewRowFormData({
+      _id: "",
+      username: "",
+      m_nr: 0,
+      role: "",
+      department: "",
+      employment_start_date: "",
+      employment_end_date: "",
+      salary_type: "",
+      hourly_rate: 0,
+      salary: 0,
+      hours_worked: 0,
+      bonus: 0,
+      deduction: 0,
+      tags: [],
+    });
+    dialogRef.current?.showModal();
+  }
+
+  const onChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    console.log(newRowFormData, name, value);
+    setNewRowFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // CRUD Functions
+  const onCreate = async () => {
+    if (newRowFormData.username === "") {
+      alert("Username is empty");
+      return;
+    }
+    await axiosHelper.post<IRowData, any>(`/employee`, newRowFormData);
+    await fetchRowData();
+    dialogRef.current?.close();
+  }
+
+  const fetchRowData = async () => {
+    const resp = await axiosHelper.get<ServerResponse>("/employee");
+    setRowData(resp?.items);
+  }
+
+  const onSave = async (obj_id: string, obj: IRowData) => {
+    await axiosHelper.put<IRowData>(`/employee/${obj_id}`, obj, "Are you sure want to save?");
+    obj.modified = false;
+    gridRef.current?.api.redrawRows();
   }
 
   const onDelete = async (obj_id: string) => {
-    try {
-      const isConfirmed = confirm("Are you sure you want to delete?");
-      if (!isConfirmed) return;
-
-      await axios.delete(`http://localhost:8000/api/employee/${obj_id}`);
-      await fetchRowData();
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.response?.data || error.message);
-        alert("Failed to delete employee: " + error.response?.data || error.message);
-      } else {
-        console.error("Unexpected error:", error);
-        alert("An unexpected error occurred. Please try again.");
+    await axiosHelper.delete(`/employee/${obj_id}`, "Are you sure want to delete?");
+    const newRowData: IRowData[] = [];
+    gridRef.current?.api.forEachNode((node) => {
+      if (node.data._id !== obj_id) {
+        newRowData.push(node.data);
       }
-    }
+    });
+    setRowData(newRowData);
   }
 
+  // Table functions
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
     {
       headerName: "Name",
@@ -263,12 +322,12 @@ export default function EmployeePage() {
       editable: false,
       cellRenderer: (params: CustomButtonParams) => (
         <div className="h-full flex items-center gap-1">
-          <SaveButton onClick={() => params.onUpdate(params.data._id)} />
+          <SaveButton onClick={() => params.onSave(params.data._id, params.data)} />
           <DeleteButton onClick={() => params.onDelete(params.data._id)} />
         </div>
       ),
       cellRendererParams: {
-        onUpdate: onUpdate,
+        onSave: onSave,
         onDelete: onDelete,
       },
     },
@@ -279,35 +338,62 @@ export default function EmployeePage() {
     editable: true,
   };
 
-  const fetchRowData = async () => {
-    try {
-      const response = await axios.get<ServerResponse>(
-        'http://localhost:8000/api/employee',
-      );
-      setRowData(response.data.items);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-
   const onGridReady = useCallback(async (params: GridReadyEvent) => {
     await fetchRowData();
   }, []);
 
+  const onCellValueChanged = (event: CellValueChangedEvent) => {
+    event.data.modified = true;
+    gridRef.current?.api.redrawRows();
+    console.log(`row changed: ${JSON.stringify(event.data)}`);
+  };
+
   return (
     <div>
-      <div className="text-lg font-medium px-2 py-4">Employee</div>
-      <div className="h-[calc(100vh-10.6rem)] min-h-[450px] min-w-[800px]">
-        <AgGridReact
-          columnDefs={colDefs}
-          rowData={rowData}
-          theme={themeBalham}
-          defaultColDef={defaultColDef}
-          onGridReady={onGridReady}
-          pagination={true}
-          paginationPageSize={10}
-          paginationPageSizeSelector={[10, 25, 50]}
-        />
+      <div className="flex justify-between px-2 py-4">
+        <p className="text-lg font-medium text-gray-700">
+          Employee
+        </p>
+        <NewButton onClick={() => onClickNewRow()}>New Employee</NewButton>
+        <dialog ref={dialogRef} className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg p-2 mb-8 border-b">Add New Employee</h3>
+            <div className="flex flex-col gap-y-4">
+              <label className="input input-sm input-bordered flex items-center gap-2">
+                Username:
+                <input type="text" name="username" className="grow" placeholder="John Doe" value={newRowFormData.username} onChange={onChangeValues} />
+              </label>
+              <label className="input input-sm input-bordered flex items-center gap-2">
+                M-Nr:
+                <input type="number" name="m_nr" className="grow" placeholder="1001" value={newRowFormData.m_nr} onChange={onChangeValues} />
+              </label>
+            </div>
+            <div className="modal-action">
+              <button className="btn btn-primary btn-sm" onClick={() => onCreate()}>Add</button>
+              <form method="dialog">
+                <button className="btn btn-sm">Cancel</button>
+              </form>
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+      </div>
+      <div className="overflow-auto">
+        <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">
+          <AgGridReact
+            ref={gridRef}
+            columnDefs={colDefs}
+            rowData={rowData}
+            defaultColDef={defaultColDef}
+            onGridReady={onGridReady}
+            onCellValueChanged={onCellValueChanged}
+            pagination={true}
+            paginationPageSize={10}
+            paginationPageSizeSelector={[10, 25, 50]}
+          />
+        </div>
       </div>
     </div>
   );
