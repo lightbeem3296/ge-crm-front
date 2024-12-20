@@ -1,22 +1,23 @@
+import { axiosHelper } from "@/lib/axios";
 import axios from "axios";
 
-interface RoleRowData {
+interface RowData {
   _id: string,
   role_name: string;
   description: string;
 }
 
-interface RoleServerResponse {
+interface ServerResponse {
   total: number;
   skip: number;
   limit: number;
-  items: RoleRowData[];
+  items: RowData[];
 }
 
 export async function getRoleMappings(skip: number = 0, limit: number = 0) {
   let all_roles: Record<string, string> = {};
-  const response = await axios.get<RoleServerResponse>(
-    'http://localhost:8000/api/role',
+  const resp = await axiosHelper.get<ServerResponse>(
+    "/role",
     {
       params: {
         skip: skip,
@@ -24,8 +25,6 @@ export async function getRoleMappings(skip: number = 0, limit: number = 0) {
       },
     }
   );
-  response.data.items.forEach(item => {
-    all_roles[item._id] = item.role_name
-  });
+  resp?.items.forEach(item => { all_roles[item._id] = item.role_name });
   return all_roles;
 }

@@ -3,7 +3,7 @@ import axios from "axios";
 
 interface RowData {
   _id: string,
-  tag_name: string;
+  salary_type_name: string;
   description: string;
 }
 
@@ -14,10 +14,10 @@ interface ServerResponse {
   items: RowData[];
 }
 
-export async function getTagMappings(skip: number = 0, limit: number = 0) {
-  let all_tags: Record<string, string> = {};
+export async function getSalaryTypeMappings(skip: number = 0, limit: number = 0) {
+  let all_objs: Record<string, string> = {};
   const resp = await axiosHelper.get<ServerResponse>(
-    "/tag",
+    "/salary_type",
     {
       params: {
         skip: skip,
@@ -25,6 +25,6 @@ export async function getTagMappings(skip: number = 0, limit: number = 0) {
       },
     }
   );
-  resp?.items.forEach(item => { all_tags[item._id] = item.tag_name });
-  return all_tags;
+  resp?.items.forEach(item => { all_objs[item._id] = item.salary_type_name });
+  return all_objs;
 }
