@@ -14,8 +14,8 @@ interface TagServerResponse {
 }
 
 
-export async function listAllTags(skip: number = 0, limit: number = 0) {
-  let all_tags: { [key: string]: { tag_name: string, description: string, } } = {};
+export async function getTagMappings(skip: number = 0, limit: number = 0) {
+  let all_tags: Record<string, string> = {};
   const response = await axios.get<TagServerResponse>(
     'http://localhost:8000/api/tag',
     {
@@ -26,10 +26,7 @@ export async function listAllTags(skip: number = 0, limit: number = 0) {
     }
   );
   response.data.items.forEach(item => {
-    all_tags[item._id] = {
-      tag_name: item.tag_name,
-      description: item.description,
-    }
+    all_tags[item._id] = item.tag_name
   });
   return all_tags;
 }
