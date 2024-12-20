@@ -224,17 +224,17 @@ export default function EmployeePage() {
     {
       headerName: "Name",
       field: "username",
-      width: 120,
+      width: 140,
     },
     {
       headerName: "M-Nr",
       field: "m_nr",
-      width: 80,
+      width: 100,
     },
     {
       headerName: "Role",
       field: "role",
-      width: 160,
+      width: 180,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: roleCodes,
@@ -251,7 +251,7 @@ export default function EmployeePage() {
     {
       headerName: "Department",
       field: "department",
-      width: 160,
+      width: 180,
     },
     {
       headerName: "Employment Date",
@@ -259,7 +259,7 @@ export default function EmployeePage() {
         {
           headerName: "Start Date",
           field: "employment_start_date",
-          width: 100,
+          width: 130,
           cellDataType: "dateString",
           valueFormatter: (params) => {
             return params.value.split("T")[0];
@@ -268,7 +268,7 @@ export default function EmployeePage() {
         {
           headerName: "End Date",
           field: "employment_end_date",
-          width: 100,
+          width: 130,
           cellDataType: "dateString",
           valueFormatter: (params) => {
             return params.value.split("T")[0];
@@ -279,37 +279,37 @@ export default function EmployeePage() {
     {
       headerName: "Salary Type",
       field: "salary_type",
-      width: 120,
+      width: 160,
     },
     {
       headerName: "Hourly Rate",
       field: "hourly_rate",
-      width: 110,
+      width: 140,
     },
     {
       headerName: "Salary",
       field: "salary",
-      width: 80,
+      width: 100,
     },
     {
       headerName: "Hours Worked",
       field: "hours_worked",
-      width: 120,
+      width: 150,
     },
     {
       headerName: "Bonus",
       field: "bonus",
-      width: 80,
+      width: 100,
     },
     {
       headerName: "Deduction",
       field: "deduction",
-      width: 100,
+      width: 120,
     },
     {
       headerName: "Tags",
       field: "tags",
-      width: 400,
+      width: 600,
       cellRenderer: TagsRenderer,
       cellEditor: TagsEditor,
     },
