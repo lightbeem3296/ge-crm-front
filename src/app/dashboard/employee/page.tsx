@@ -4,10 +4,11 @@ import React, { useCallback, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
-import { listAllTags } from "@/services/tagService";
-import { listAllRoles } from "@/services/roleService";
+import { getTagMappings } from "@/services/tagService";
+import { getRoleMappings } from "@/services/roleService";
 import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
+import { getSalaryTypeMappings } from "@/services/salaryTypeService";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -41,18 +42,19 @@ interface CustomButtonParams extends CustomCellRendererProps {
   onDelete: (obj_id: string) => void;
 }
 
-const roleMappings = await listAllRoles();
-
-function extractKeys(mappings: { [key: string]: { role_name: string, description: string } }) {
+function extractKeys(mappings: Record<string, string>) {
   return Object.keys(mappings);
 }
 
-function lookupValue(mappings: { [key: string]: { role_name: string, description: string } }, key: string) {
-  return mappings[key].role_name;
+function lookupValue(mappings: Record<string, string>, key: string) {
+  return mappings[key];
 }
 
+const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
 
+const salaryTypeMappings = await getSalaryTypeMappings();
+const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
 const TagsRenderer = (props: any) => {
   return (
@@ -280,6 +282,18 @@ export default function EmployeePage() {
       headerName: "Salary Type",
       field: "salary_type",
       width: 160,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: salaryTypeCodes,
+      },
+      filterParams: {
+        valueFormatter: (params: ValueFormatterParams) => {
+          return lookupValue(salaryTypeMappings, params.value);
+        },
+      },
+      valueFormatter: (params) => {
+        return lookupValue(salaryTypeMappings, params.value)
+      },
     },
     {
       headerName: "Hourly Rate",
@@ -322,7 +336,7 @@ export default function EmployeePage() {
       editable: false,
       cellRenderer: (params: CustomButtonParams) => (
         <div className="h-full flex items-center gap-1">
-          <SaveButton onClick={() => params.onSave(params.data._id, params.data)} />
+          <SaveButton disabled={params.data.modified === true ? false : true} onClick={() => params.onSave(params.data._id, params.data)} />
           <DeleteButton onClick={() => params.onDelete(params.data._id)} />
         </div>
       ),
