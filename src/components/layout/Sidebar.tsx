@@ -42,6 +42,11 @@ const sideBarMenuItems = [
     type: SidebarMenuItemType.MenuItem,
   },
   {
+    name: 'Salary Type',
+    href: '/dashboard/salary-type',
+    type: SidebarMenuItemType.MenuItem,
+  },
+  {
     name: 'Payroll',
     href: '#',
     type: SidebarMenuItemType.Title,
