@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
@@ -56,21 +56,17 @@ const roleCodes = extractKeys(roleMappings);
 const salaryTypeMappings = await getSalaryTypeMappings();
 const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
+const tagMappings = await getTagMappings();
+
 const TagsRenderer = (props: any) => {
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+    <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
       {props.value.map((tag: string, index: number) => (
         <span
           key={index}
-          style={{
-            backgroundColor: "#e2e8f0",
-            color: "#1a202c",
-            padding: "2px",
-            borderRadius: "5px",
-            fontSize: "12px",
-          }}
+          className="bg-gray-200 text-xs py-1 px-3 border border-gray-300 rounded-full text-gray-800 font-medium"
         >
-          {tag}
+          {lookupValue(tagMappings, tag)}
         </span>
       ))}
     </div>
@@ -79,60 +75,43 @@ const TagsRenderer = (props: any) => {
 
 const TagsEditor = (props: any) => {
   const [tags, setTags] = useState<string[]>(props.value || []);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const addTag = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && inputRef.current) {
-      const newTag = inputRef.current.value.trim();
-      if (newTag && !tags.includes(newTag)) {
-        setTags([...tags, newTag]);
-      }
-      inputRef.current.value = "";
+  const removeTag = (tag: string) => {
+    const updatedTags = tags.filter((t) => t !== tag);
+    props.onValueChange(updatedTags);
+    setTags(updatedTags);
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTag = event.target.value;
+    if (newTag && !tags.includes(newTag)) {
+      const updatedTags = [...tags, newTag]
+      props.onValueChange(updatedTags);
+      setTags(updatedTags);
     }
   };
 
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
-  };
-
-  const stopEditing = () => {
-    props.stopEditing();
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        gap: "5px",
-        alignItems: "center",
-        padding: "2px",
-      }}
-      onBlur={stopEditing}
-    >
+    <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
       {tags.map((tag, index) => (
         <span
           key={index}
-          style={{
-            backgroundColor: "#e2e8f0",
-            color: "#1a202c",
-            padding: "2px",
-            borderRadius: "2px",
-            fontSize: "12px",
-            cursor: "pointer",
-          }}
+          className="bg-gray-200 py-1 px-3 border border-gray-300 rounded-full text-xs text-gray-800 font-medium cursor-pointer"
           onClick={() => removeTag(tag)}
         >
-          {tag} ✕
+          {lookupValue(tagMappings, tag)} ✕
         </span>
       ))}
-      <input
-        ref={inputRef}
-        type="text"
-        style={{ flex: "1", border: "none", outline: "none" }}
-        placeholder="Add tag..."
-        onKeyDown={addTag}
-      />
+      <select
+        className="select select-sm select-bordered text-xs text-gray-800"
+        onChange={handleSelectChange}
+        value=""
+      >
+        <option disabled value="">Select a tag to add ...</option>
+        {Object.entries(tagMappings).map(([key, value], index) => (
+          tags?.includes(key) ? null : <option key={index} value={key}>{value}</option>
+        ))}
+      </select>
     </div>
   );
 };
@@ -181,7 +160,6 @@ export default function EmployeePage() {
 
   const onChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(newRowFormData, name, value);
     setNewRowFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -359,7 +337,6 @@ export default function EmployeePage() {
   const onCellValueChanged = (event: CellValueChangedEvent) => {
     event.data.modified = true;
     gridRef.current?.api.redrawRows();
-    console.log(`row changed: ${JSON.stringify(event.data)}`);
   };
 
   return (
