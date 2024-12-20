@@ -23,7 +23,7 @@ interface ServerResponse {
   items: IRowData[];
 }
 
-interface CustomButtonParams extends CustomCellRendererProps {
+interface ActionCellRenderParams extends CustomCellRendererProps {
   onSave: (obj_id: string, obj: IRowData) => void;
   onDelete: (obj_id: string) => void;
 }
@@ -109,7 +109,7 @@ export default function RolePage() {
       pinned: "right",
       filter: false,
       editable: false,
-      cellRenderer: (params: CustomButtonParams) => (
+      cellRenderer: (params: ActionCellRenderParams) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={params.data.modified === true ? false : true} onClick={() => params.onSave(params.data._id, params.data)} />
           <DeleteButton onClick={() => params.onDelete(params.data._id)} />

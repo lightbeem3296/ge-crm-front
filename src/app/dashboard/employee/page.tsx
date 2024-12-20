@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
+import React, { useCallback, useRef, useState } from "react";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, RowValueChangedEvent, ValueFormatterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
@@ -14,6 +14,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface IRowData {
   _id: string,
+
   username: string;
   m_nr: number;
   role: string;
@@ -27,7 +28,9 @@ interface IRowData {
   bonus: number;
   deduction: number;
   tags: string[];
-  modified?: boolean;
+
+  _is_modified?: boolean;
+  _is_created?: boolean;
 }
 
 interface ServerResponse {
@@ -37,7 +40,7 @@ interface ServerResponse {
   items: IRowData[];
 }
 
-interface CustomButtonParams extends CustomCellRendererProps {
+interface ActionCellRenderParams extends CustomCellRendererProps {
   onSave: (obj_id: string, obj: IRowData) => void;
   onDelete: (obj_id: string) => void;
 }
@@ -125,28 +128,11 @@ const TagsEditor = (props: any) => {
 
 export default function EmployeePage() {
   const gridRef = useRef<AgGridReact>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const [rowData, setRowData] = useState<IRowData[]>();
-  const [newRowFormData, setNewRowFormData] = useState<IRowData>({
-    _id: "",
-    username: "",
-    m_nr: 0,
-    role: "",
-    department: "",
-    employment_start_date: "",
-    employment_end_date: "",
-    salary_type: "",
-    hourly_rate: 0,
-    salary: 0,
-    hours_worked: 0,
-    bonus: 0,
-    deduction: 0,
-    tags: [],
-  })
 
   // UI Functions
   const onClickNewRow = async () => {
-    setNewRowFormData({
+    const newRow: IRowData = {
       _id: "",
       username: "",
       m_nr: 0,
@@ -161,37 +147,35 @@ export default function EmployeePage() {
       bonus: 0,
       deduction: 0,
       tags: [],
-    });
-    dialogRef.current?.showModal();
+      _is_created: true,
+    };
+    setRowData(rowData ? [newRow, ...rowData] : [newRow]);
+    setTimeout(() => {
+      gridRef.current?.api.paginationGoToPage(0);
+      gridRef.current?.api.setGridOption("editType", "fullRow");
+      gridRef.current?.api.startEditingCell({
+        rowIndex: 0,
+        colKey: "username",
+      });
+    }, 0);
   }
-
-  const onChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewRowFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   // CRUD Functions
-  const onCreate = async () => {
-    if (newRowFormData.username === "") {
-      alert("Username is empty");
-      return;
-    }
-    await axiosHelper.post<IRowData, any>(`/employee`, newRowFormData);
-    await fetchRowData();
-    dialogRef.current?.close();
-  }
-
   const fetchRowData = async () => {
     const resp = await axiosHelper.get<ServerResponse>("/employee");
     setRowData(resp?.items);
   }
 
   const onSave = async (obj_id: string, obj: IRowData) => {
-    await axiosHelper.put<IRowData>(`/employee/${obj_id}`, obj, "Are you sure want to save?");
-    obj.modified = false;
+    if (obj._is_modified === true) {
+      await axiosHelper.put<IRowData>(`/employee/${obj_id}`, obj, "Are you sure want to save?");
+      obj._is_modified = false;
+    }
+    if (obj._is_created === true) {
+      await axiosHelper.post<IRowData, any>(`/employee/${obj_id}`, obj);
+      obj._is_modified = false;
+      obj._is_created = false;
+    }
     gridRef.current?.api.redrawRows();
   }
 
@@ -319,9 +303,14 @@ export default function EmployeePage() {
       pinned: "right",
       filter: false,
       editable: false,
-      cellRenderer: (params: CustomButtonParams) => (
+      cellRenderer: (params: ActionCellRenderParams) => (
         <div className="h-full flex items-center gap-1">
-          <SaveButton disabled={params.data.modified === true ? false : true} onClick={() => params.onSave(params.data._id, params.data)} />
+          <SaveButton disabled={
+            (params.data._is_modified === true || params.data._is_created)
+              ? false
+              : true}
+            onClick={() => params.onSave(params.data._id, params.data)}
+          />
           <DeleteButton onClick={() => params.onDelete(params.data._id)} />
         </div>
       ),
@@ -346,6 +335,10 @@ export default function EmployeePage() {
     gridRef.current?.api.redrawRows();
   };
 
+  const onRowValueChanged = (event: RowValueChangedEvent) => {
+    gridRef.current?.api.setGridOption("editType", undefined);
+  }
+
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
@@ -353,30 +346,6 @@ export default function EmployeePage() {
           Employee
         </p>
         <NewButton onClick={() => onClickNewRow()}>New Employee</NewButton>
-        <dialog ref={dialogRef} className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg p-2 mb-8 border-b">Add New Employee</h3>
-            <div className="flex flex-col gap-y-4">
-              <label className="input input-sm input-bordered flex items-center gap-2">
-                Username:
-                <input type="text" name="username" className="grow" placeholder="John Doe" value={newRowFormData.username} onChange={onChangeValues} />
-              </label>
-              <label className="input input-sm input-bordered flex items-center gap-2">
-                M-Nr:
-                <input type="number" name="m_nr" className="grow" placeholder="1001" value={newRowFormData.m_nr} onChange={onChangeValues} />
-              </label>
-            </div>
-            <div className="modal-action">
-              <button className="btn btn-primary btn-sm" onClick={() => onCreate()}>Add</button>
-              <form method="dialog">
-                <button className="btn btn-sm">Cancel</button>
-              </form>
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
       </div>
       <div className="overflow-auto">
         <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">
@@ -387,6 +356,7 @@ export default function EmployeePage() {
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}
+            onRowValueChanged={onRowValueChanged}
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 25, 50]}
