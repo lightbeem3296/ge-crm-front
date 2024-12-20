@@ -69,12 +69,8 @@ export default function RolePage() {
   }
 
   const fetchRowData = async () => {
-    try {
-      const roles = await axiosHelper.get<ServerResponse>("/role");
-      setRowData(roles?.items);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+    const resp = await axiosHelper.get<ServerResponse>("/role");
+    setRowData(resp?.items);
   }
 
   const onSave = async (obj_id: string, obj: IRowData) => {

@@ -69,12 +69,8 @@ export default function TagPage() {
   }
 
   const fetchRowData = async () => {
-    try {
-      const tags = await axiosHelper.get<ServerResponse>("/tag");
-      setRowData(tags?.items);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+    const resp = await axiosHelper.get<ServerResponse>("/tag");
+    setRowData(resp?.items);
   }
 
   const onSave = async (obj_id: string, obj: IRowData) => {
