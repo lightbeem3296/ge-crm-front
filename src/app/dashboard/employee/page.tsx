@@ -50,13 +50,13 @@ function lookupValue(mappings: Record<string, string>, key: string) {
   return mappings[key];
 }
 
-const roleMappings = await getRoleMappings();
-const roleCodes = extractKeys(roleMappings);
+var roleMappings = await getRoleMappings();
+var roleCodes = extractKeys(roleMappings);
 
-const salaryTypeMappings = await getSalaryTypeMappings();
-const salaryTypeCodes = extractKeys(salaryTypeMappings);
+var salaryTypeMappings = await getSalaryTypeMappings();
+var salaryTypeCodes = extractKeys(salaryTypeMappings);
 
-const tagMappings = await getTagMappings();
+var tagMappings = await getTagMappings();
 
 const TagsRenderer = (props: any) => {
   return (
@@ -96,10 +96,17 @@ const TagsEditor = (props: any) => {
       {tags.map((tag, index) => (
         <span
           key={index}
-          className="bg-gray-200 py-1 px-3 border border-gray-300 rounded-full text-xs text-gray-800 font-medium cursor-pointer"
-          onClick={() => removeTag(tag)}
+          className="flex gap-x-1 bg-gray-200 py-1 pl-3 pr-1 border border-gray-300 rounded-full text-xs text-gray-800 font-medium"
         >
-          {lookupValue(tagMappings, tag)} ✕
+          <span>
+            {lookupValue(tagMappings, tag)}
+          </span>
+          <button
+            onClick={() => removeTag(tag)}
+            className="flex items-center justify-center rounded-full size-4 bg-gray-300 border border-gray-400 cursor-pointer"
+          >
+            ✕
+          </button>
         </span>
       ))}
       <select
