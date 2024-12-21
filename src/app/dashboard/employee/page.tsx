@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
@@ -63,7 +63,7 @@ export default function EmployeePage() {
     };
 
     return (
-      <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
+      <div className="flex overflow-auto gap-1 items-center h-full">
         {tags.map((tag, index) => (
           <span
             key={index}
@@ -184,13 +184,11 @@ export default function EmployeePage() {
       cellEditorParams: {
         values: roleCodes,
       },
-      filterParams: {
-        valueFormatter: (params: ValueFormatterParams) => {
-          return lookupValue(roleMappings, params.value);
-        },
+      valueGetter: (params: ValueGetterParams) => {
+        return lookupValue(roleMappings, params.data.role) || params.data.role;
       },
-      valueFormatter: (params) => {
-        return lookupValue(roleMappings, params.value)
+      valueFormatter: (params: ValueFormatterParams) => {
+        return lookupValue(roleMappings, params.value);
       },
     },
     {
@@ -229,13 +227,11 @@ export default function EmployeePage() {
       cellEditorParams: {
         values: salaryTypeCodes,
       },
-      filterParams: {
-        valueFormatter: (params: ValueFormatterParams) => {
-          return lookupValue(salaryTypeMappings, params.value);
-        },
+      valueGetter: (params: ValueGetterParams) => {
+        return lookupValue(salaryTypeMappings, params.data.salary_type);
       },
-      valueFormatter: (params) => {
-        return lookupValue(salaryTypeMappings, params.value)
+      valueFormatter: (params: ValueFormatterParams) => {
+        return lookupValue(salaryTypeMappings, params.value);
       },
     },
     {
@@ -269,6 +265,13 @@ export default function EmployeePage() {
       width: 600,
       cellRenderer: TagsRenderer,
       cellEditor: TagsEditor,
+      valueFormatter: (params: ValueFormatterParams) => {
+        let str = "";
+        params.value.map((tag_id: string) => {
+          str += "\n" + lookupValue(tagMappings, tag_id);
+        });
+        return str;
+      },
     },
     {
       headerName: "Actions",
