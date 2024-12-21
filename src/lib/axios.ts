@@ -13,8 +13,13 @@ export class AxiosHelper {
   // Generic GET request
   async get<T>(
     endpoint: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
+    confirmationMessage?: string,
   ): Promise<T | undefined> {
+    if (confirmationMessage) {
+      const isConfirmed = confirm(confirmationMessage);
+      if (!isConfirmed) return;
+    }
     try {
       const response = await this.axiosInstance.get<T>(endpoint, config);
       return response.data;
@@ -27,8 +32,13 @@ export class AxiosHelper {
   async post<T, R>(
     endpoint: string,
     data: T,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
+    confirmationMessage?: string,
   ): Promise<R | undefined> {
+    if (confirmationMessage) {
+      const isConfirmed = confirm(confirmationMessage);
+      if (!isConfirmed) return;
+    }
     try {
       const response = await this.axiosInstance.post<R>(
         endpoint,
@@ -42,56 +52,56 @@ export class AxiosHelper {
   }
 
   // Generic PUT request
-  async put<T>(
+  async put<T, R>(
     endpoint: string,
     data: T,
     confirmationMessage?: string
-  ): Promise<AxiosResponse | undefined> {
+  ): Promise<R | undefined> {
     if (confirmationMessage) {
       const isConfirmed = confirm(confirmationMessage);
       if (!isConfirmed) return;
     }
 
     try {
-      const response = await this.axiosInstance.put(endpoint, data);
-      return response;
+      const response = await this.axiosInstance.put<R>(endpoint, data);
+      return response.data;
     } catch (error: unknown) {
       this.handleError(error);
     }
   }
 
   // Generic PATCH request
-  async patch<T>(
+  async patch<T, R>(
     endpoint: string,
     data: T,
     confirmationMessage?: string
-  ): Promise<AxiosResponse | undefined> {
+  ): Promise<R | undefined> {
     if (confirmationMessage) {
       const isConfirmed = confirm(confirmationMessage);
       if (!isConfirmed) return;
     }
 
     try {
-      const response = await this.axiosInstance.patch(endpoint, data);
-      return response;
+      const response = await this.axiosInstance.patch<R>(endpoint, data);
+      return response.data;
     } catch (error: unknown) {
       this.handleError(error);
     }
   }
 
   // Generic DELETE request
-  async delete(
+  async delete<R>(
     endpoint: string,
     confirmationMessage?: string
-  ): Promise<AxiosResponse | undefined> {
+  ): Promise<R | undefined> {
     if (confirmationMessage) {
       const isConfirmed = confirm(confirmationMessage);
       if (!isConfirmed) return;
     }
 
     try {
-      const response = await this.axiosInstance.delete(endpoint);
-      return response;
+      const response = await this.axiosInstance.delete<R>(endpoint);
+      return response.data;
     } catch (error: unknown) {
       this.handleError(error);
     }

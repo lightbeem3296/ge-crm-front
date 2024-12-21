@@ -1,139 +1,102 @@
 'use client';
 
 import React, { useCallback, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, RowValueChangedEvent, ValueFormatterParams } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
-import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
+import { AgGridReact } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
 import { getRoleMappings } from "@/services/roleService";
 import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
+import { EmployeeRowData } from "@/types/datatable";
+import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ActionCellRenderParams } from "@/types/datatable";
+import { extractKeys, lookupValue } from "@/utils/record";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-interface IRowData {
-  _id: string,
+const roleMappings = await getRoleMappings();
+const roleCodes = extractKeys(roleMappings);
 
-  username: string;
-  m_nr: number;
-  role: string;
-  department: string;
-  employment_start_date: string;
-  employment_end_date: string;
-  salary_type: string;
-  hourly_rate: number;
-  salary: number;
-  hours_worked: number;
-  bonus: number;
-  deduction: number;
-  tags: string[];
+const salaryTypeMappings = await getSalaryTypeMappings();
+const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
-  _is_modified?: boolean;
-  _is_created?: boolean;
-}
-
-interface ServerResponse {
-  total: number;
-  skip: number;
-  limit: number;
-  items: IRowData[];
-}
-
-interface ActionCellRenderParams extends CustomCellRendererProps {
-  onSave: (obj_id: string, obj: IRowData) => void;
-  onDelete: (obj_id: string) => void;
-}
-
-function extractKeys(mappings: Record<string, string>) {
-  return Object.keys(mappings);
-}
-
-function lookupValue(mappings: Record<string, string>, key: string) {
-  return mappings[key];
-}
-
-var roleMappings = await getRoleMappings();
-var roleCodes = extractKeys(roleMappings);
-
-var salaryTypeMappings = await getSalaryTypeMappings();
-var salaryTypeCodes = extractKeys(salaryTypeMappings);
-
-var tagMappings = await getTagMappings();
-
-const TagsRenderer = (props: any) => {
-  return (
-    <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
-      {props.value.map((tag: string, index: number) => (
-        <span
-          key={index}
-          className="bg-gray-200 text-xs py-1 px-3 border border-gray-300 rounded-full text-gray-800 font-medium"
-        >
-          {lookupValue(tagMappings, tag)}
-        </span>
-      ))}
-    </div>
-  );
-};
-
-const TagsEditor = (props: any) => {
-  const [tags, setTags] = useState<string[]>(props.value || []);
-
-  const removeTag = (tag: string) => {
-    const updatedTags = tags.filter((t) => t !== tag);
-    props.onValueChange(updatedTags);
-    setTags(updatedTags);
-  };
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newTag = event.target.value;
-    if (newTag && !tags.includes(newTag)) {
-      const updatedTags = [...tags, newTag]
-      props.onValueChange(updatedTags);
-      setTags(updatedTags);
-    }
-  };
-
-  return (
-    <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
-      {tags.map((tag, index) => (
-        <span
-          key={index}
-          className="flex gap-x-1 bg-gray-200 py-1 pl-3 pr-1 border border-gray-300 rounded-full text-xs text-gray-800 font-medium"
-        >
-          <span>
-            {lookupValue(tagMappings, tag)}
-          </span>
-          <button
-            onClick={() => removeTag(tag)}
-            className="flex items-center justify-center rounded-full size-4 bg-gray-300 border border-gray-400 cursor-pointer"
-          >
-            ✕
-          </button>
-        </span>
-      ))}
-      <select
-        className="select select-sm select-bordered text-xs text-gray-800"
-        onChange={handleSelectChange}
-        value=""
-      >
-        <option disabled value="">Select a tag to add ...</option>
-        {Object.entries(tagMappings).map(([key, value], index) => (
-          tags?.includes(key) ? null : <option key={index} value={key}>{value}</option>
-        ))}
-      </select>
-    </div>
-  );
-};
+const tagMappings = await getTagMappings();
 
 export default function EmployeePage() {
   const gridRef = useRef<AgGridReact>(null);
-  const [rowData, setRowData] = useState<IRowData[]>();
+  const [rowDataList, setRowDataList] = useState<EmployeeRowData[]>();
+
+  // Custom Components
+  const TagsRenderer = (props: any) => {
+    return (
+      <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
+        {props.value.map((tag: string, index: number) => (
+          <span
+            key={index}
+            className="bg-gray-200 text-xs py-1 px-3 border border-gray-300 rounded-full text-gray-800 font-medium"
+          >
+            {lookupValue(tagMappings, tag)}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  const TagsEditor = (props: any) => {
+    const [tags, setTags] = useState<string[]>(props.value || []);
+
+    const removeTag = (tag: string) => {
+      const updatedTags = tags.filter((t) => t !== tag);
+      props.onValueChange(updatedTags);
+      setTags(updatedTags);
+    };
+
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newTag = event.target.value;
+      if (newTag && !tags.includes(newTag)) {
+        const updatedTags = [...tags, newTag]
+        props.onValueChange(updatedTags);
+        setTags(updatedTags);
+      }
+    };
+
+    return (
+      <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
+        {tags.map((tag, index) => (
+          <span
+            key={index}
+            className="flex gap-x-1 bg-gray-200 py-1 pl-3 pr-1 border border-gray-300 rounded-full text-xs text-gray-800 font-medium"
+          >
+            <span>
+              {lookupValue(tagMappings, tag)}
+            </span>
+            <button
+              onClick={() => removeTag(tag)}
+              className="flex items-center justify-center rounded-full size-4 bg-gray-300 border border-gray-400 cursor-pointer"
+            >
+              ✕
+            </button>
+          </span>
+        ))}
+        <select
+          className="select select-sm select-bordered text-xs text-gray-800"
+          onChange={handleSelectChange}
+          value=""
+        >
+          <option disabled value="">Select a tag to add ...</option>
+          {Object.entries(tagMappings).map(([key, value], index) => (
+            tags?.includes(key) ? null : <option key={index} value={key}>{value}</option>
+          ))}
+        </select>
+      </div>
+    );
+  };
 
   // UI Functions
   const onClickNewRow = async () => {
-    const newRow: IRowData = {
-      _id: "",
+    const rowData: EmployeeRowData = {
       username: "",
       m_nr: 0,
       role: "",
@@ -147,12 +110,13 @@ export default function EmployeePage() {
       bonus: 0,
       deduction: 0,
       tags: [],
+
+      _is_modified: true,
       _is_created: true,
     };
-    setRowData(rowData ? [newRow, ...rowData] : [newRow]);
+    setRowDataList(rowDataList ? [rowData, ...rowDataList] : [rowData]);
     setTimeout(() => {
       gridRef.current?.api.paginationGoToPage(0);
-      gridRef.current?.api.setGridOption("editType", "fullRow");
       gridRef.current?.api.startEditingCell({
         rowIndex: 0,
         colKey: "username",
@@ -162,32 +126,42 @@ export default function EmployeePage() {
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const resp = await axiosHelper.get<ServerResponse>("/employee");
-    setRowData(resp?.items);
+    const response = await axiosHelper.get<ApiListResponse<EmployeeRowData>>("/employee");
+    setRowDataList(response?.items);
   }
 
-  const onSave = async (obj_id: string, obj: IRowData) => {
-    if (obj._is_modified === true) {
-      await axiosHelper.put<IRowData>(`/employee/${obj_id}`, obj, "Are you sure want to save?");
-      obj._is_modified = false;
-    }
-    if (obj._is_created === true) {
-      await axiosHelper.post<IRowData, any>(`/employee/${obj_id}`, obj);
-      obj._is_modified = false;
-      obj._is_created = false;
+  const onSave = async (obj: EmployeeRowData) => {
+    if (obj._is_created) {
+      const response = await axiosHelper.post<EmployeeRowData, ApiCrudResponse>(`/employee`, obj, undefined, "Are you sure want to save?");
+      if (response) {
+        obj._id = response.detail.object_id
+        obj._is_modified = false;
+        obj._is_created = false;
+      }
+    } else if (obj._is_modified) {
+      const response = await axiosHelper.put<EmployeeRowData, ApiCrudResponse>(`/employee/${obj._id}`, obj, "Are you sure want to save?");
+      if (response) {
+        obj._is_modified = false;
+      }
     }
     gridRef.current?.api.redrawRows();
   }
 
-  const onDelete = async (obj_id: string) => {
-    await axiosHelper.delete(`/employee/${obj_id}`, "Are you sure want to delete?");
-    const newRowData: IRowData[] = [];
-    gridRef.current?.api.forEachNode((node) => {
-      if (node.data._id !== obj_id) {
-        newRowData.push(node.data);
-      }
-    });
-    setRowData(newRowData);
+  const onDelete = async (obj: EmployeeRowData) => {
+    let needRedraw = true;
+    if (!obj._is_created) {
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/employee/${obj._id}`, "Are you sure want to delete?");
+      needRedraw = response !== undefined;
+    }
+    if (needRedraw) {
+      const newRowData: EmployeeRowData[] = [];
+      gridRef.current?.api.forEachNode((node) => {
+        if (node.data._id !== obj._id) {
+          newRowData.push(node.data);
+        }
+      });
+      setRowDataList(newRowData);
+    }
   }
 
   // Table functions
@@ -303,15 +277,15 @@ export default function EmployeePage() {
       pinned: "right",
       filter: false,
       editable: false,
-      cellRenderer: (params: ActionCellRenderParams) => (
+      cellRenderer: (params: ActionCellRenderParams<EmployeeRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={
-            (params.data._is_modified === true || params.data._is_created)
+            (params.data._is_modified || params.data._is_created)
               ? false
               : true}
-            onClick={() => params.onSave(params.data._id, params.data)}
+            onClick={() => params.onSave(params.data)}
           />
-          <DeleteButton onClick={() => params.onDelete(params.data._id)} />
+          <DeleteButton onClick={() => params.onDelete(params.data)} />
         </div>
       ),
       cellRendererParams: {
@@ -331,13 +305,9 @@ export default function EmployeePage() {
   }, []);
 
   const onCellValueChanged = (event: CellValueChangedEvent) => {
-    event.data.modified = true;
+    event.data._is_modified = true;
     gridRef.current?.api.redrawRows();
   };
-
-  const onRowValueChanged = (event: RowValueChangedEvent) => {
-    gridRef.current?.api.setGridOption("editType", undefined);
-  }
 
   return (
     <div>
@@ -352,11 +322,10 @@ export default function EmployeePage() {
           <AgGridReact
             ref={gridRef}
             columnDefs={colDefs}
-            rowData={rowData}
+            rowData={rowDataList}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}
-            onRowValueChanged={onRowValueChanged}
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 25, 50]}
