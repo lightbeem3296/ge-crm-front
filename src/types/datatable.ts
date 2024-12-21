@@ -34,3 +34,10 @@ export interface TagRowData extends BaseRowData {
   tag_name: string;
   description: string;
 }
+
+export interface RoleRowData extends BaseRowData {
+  _id?: string,
+
+  role_name: string;
+  description: string;
+}
