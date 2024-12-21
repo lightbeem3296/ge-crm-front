@@ -3,90 +3,75 @@
 import React, { useCallback, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
-import { AgGridReact, CustomCellRendererProps } from "ag-grid-react";
+import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
+import { ActionCellRenderParams, SalaryTypeRowData } from "@/types/datatable";
+import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-interface IRowData {
-  _id: string,
-  salary_type_name: string;
-  description: string;
-  modified?: boolean;
-}
-
-interface ServerResponse {
-  total: number;
-  skip: number;
-  limit: number;
-  items: IRowData[];
-}
-
-interface ActionCellRenderParams extends CustomCellRendererProps {
-  onSave: (obj_id: string, obj: IRowData) => void;
-  onDelete: (obj_id: string) => void;
-}
-
 export default function SalaryTypePage() {
   const gridRef = useRef<AgGridReact>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const [rowData, setRowData] = useState<IRowData[]>();
-  const [newRowFormData, setNewRowFormData] = useState<IRowData>({
-    _id: "",
-    salary_type_name: "",
-    description: "",
-  });
+  const [rowDataList, setRowDataList] = useState<SalaryTypeRowData[]>();
 
   // UI Functions
   const onClickNewRow = async () => {
-    setNewRowFormData({ _id: "", salary_type_name: "", description: "" });
-    dialogRef.current?.showModal();
-  }
+    const rowData: SalaryTypeRowData = {
+      salary_type_name: "",
+      description: "",
 
-  const onChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewRowFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+      _is_modified: true,
+      _is_created: true,
+    };
+    setRowDataList(rowDataList ? [rowData, ...rowDataList] : [rowData]);
+    setTimeout(() => {
+      gridRef.current?.api.paginationGoToPage(0);
+      gridRef.current?.api.startEditingCell({
+        rowIndex: 0,
+        colKey: "role_name",
+      });
+    }, 0);
+  }
 
   // CRUD Functions
-  const onCreate = async () => {
-    if (newRowFormData.salary_type_name === "") {
-      alert("Salary Type name is empty");
-      return;
-    }
-    if (newRowFormData.description === "") {
-      alert("Description is empty");
-      return;
-    }
-    await axiosHelper.post<IRowData, any>(`/salary_type`, newRowFormData);
-    await fetchRowData();
-    dialogRef.current?.close();
-  }
-
   const fetchRowData = async () => {
-    const resp = await axiosHelper.get<ServerResponse>("/salary_type");
-    setRowData(resp?.items);
+    const resp = await axiosHelper.get<ApiListResponse<SalaryTypeRowData>>("/salary_type");
+    setRowDataList(resp?.items);
   }
 
-  const onSave = async (obj_id: string, obj: IRowData) => {
-    await axiosHelper.put<IRowData>(`/salary_type/${obj_id}`, obj, "Are you sure want to save?");
-    obj.modified = false;
+  const onSave = async (obj: SalaryTypeRowData) => {
+    if (obj._is_created) {
+      const response = await axiosHelper.post<SalaryTypeRowData, ApiCrudResponse>(`/salary_type`, obj, undefined, "Are you sure want to save?");
+      if (response) {
+        obj._id = response.detail.object_id
+        obj._is_modified = false;
+        obj._is_created = false;
+      }
+    } else if (obj._is_modified) {
+      const response = await axiosHelper.put<SalaryTypeRowData, ApiCrudResponse>(`/salary_type/${obj._id}`, obj, "Are you sure want to save?");
+      if (response) {
+        obj._is_modified = false;
+      }
+    }
     gridRef.current?.api.redrawRows();
   }
 
-  const onDelete = async (obj_id: string) => {
-    await axiosHelper.delete(`/salary_type/${obj_id}`, "Are you sure want to delete?");
-    const newRowData: IRowData[] = [];
-    gridRef.current?.api.forEachNode((node) => {
-      if (node.data._id !== obj_id) {
-        newRowData.push(node.data);
-      }
-    });
-    setRowData(newRowData);
+  const onDelete = async (obj: SalaryTypeRowData) => {
+    let needRedraw = true;
+    if (!obj._is_created) {
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/salary_type/${obj._id}`, "Are you sure want to delete?");
+      needRedraw = response !== undefined;
+    }
+    if (needRedraw) {
+      const newRowData: SalaryTypeRowData[] = [];
+      gridRef.current?.api.forEachNode((node) => {
+        if (node.data._id !== obj._id) {
+          newRowData.push(node.data);
+        }
+      });
+      setRowDataList(newRowData);
+    }
   }
 
   // Table functions
@@ -109,10 +94,15 @@ export default function SalaryTypePage() {
       pinned: "right",
       filter: false,
       editable: false,
-      cellRenderer: (params: ActionCellRenderParams) => (
+      cellRenderer: (params: ActionCellRenderParams<SalaryTypeRowData>) => (
         <div className="h-full flex items-center gap-1">
-          <SaveButton disabled={params.data.modified === true ? false : true} onClick={() => params.onSave(params.data._id, params.data)} />
-          <DeleteButton onClick={() => params.onDelete(params.data._id)} />
+          <SaveButton disabled={
+            (params.data._is_modified || params.data._is_created)
+              ? false
+              : true}
+            onClick={() => params.onSave(params.data)}
+          />
+          <DeleteButton onClick={() => params.onDelete(params.data)} />
         </div>
       ),
       cellRendererParams: {
@@ -132,7 +122,7 @@ export default function SalaryTypePage() {
   }, []);
 
   const onCellValueChanged = (event: CellValueChangedEvent) => {
-    event.data.modified = true;
+    event.data._is_modified = true;
     gridRef.current?.api.redrawRows();
   };
 
@@ -143,37 +133,13 @@ export default function SalaryTypePage() {
           Salary Type
         </p>
         <NewButton onClick={() => onClickNewRow()}>New Salary Type</NewButton>
-        <dialog ref={dialogRef} className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg p-2 mb-8 border-b">Add New Salary Type</h3>
-            <div className="flex flex-col gap-y-4">
-              <label className="input input-sm input-bordered flex items-center gap-2">
-                Salary Type Name:
-                <input type="text" name="salary_type_name" className="grow" placeholder="Contract" value={newRowFormData.salary_type_name} onChange={onChangeValues} />
-              </label>
-              <label className="input input-sm input-bordered flex items-center gap-2">
-                Description:
-                <input type="text" name="description" className="grow" placeholder="Contract-based payment structure" value={newRowFormData.description} onChange={onChangeValues} />
-              </label>
-            </div>
-            <div className="modal-action">
-              <button className="btn btn-primary btn-sm" onClick={() => onCreate()}>Add</button>
-              <form method="dialog">
-                <button className="btn btn-sm">Cancel</button>
-              </form>
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
       </div>
       <div className="overflow-auto">
         <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">
           <AgGridReact
             ref={gridRef}
             columnDefs={colDefs}
-            rowData={rowData}
+            rowData={rowDataList}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}

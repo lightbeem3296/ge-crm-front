@@ -41,3 +41,10 @@ export interface RoleRowData extends BaseRowData {
   role_name: string;
   description: string;
 }
+
+export interface SalaryTypeRowData extends BaseRowData {
+  _id?: string,
+
+  salary_type_name: string;
+  description: string;
+}
