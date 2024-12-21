@@ -5,7 +5,12 @@ export interface ActionCellRenderParams<TRowData> extends CustomCellRendererProp
   onDelete: (obj: TRowData) => void;
 }
 
-export interface EmployeeRowData {
+interface BaseRowData {
+  _is_modified?: boolean;
+  _is_created?: boolean;
+}
+
+export interface EmployeeRowData extends BaseRowData {
   _id?: string,
 
   username: string;
@@ -21,7 +26,11 @@ export interface EmployeeRowData {
   bonus: number;
   deduction: number;
   tags: string[];
+}
 
-  _is_modified?: boolean;
-  _is_created?: boolean;
+export interface TagRowData extends BaseRowData {
+  _id?: string,
+
+  tag_name: string;
+  description: string;
 }
