@@ -31,7 +31,7 @@ export default function EmployeePage() {
   // Custom Components
   const TagsRenderer = (props: any) => {
     return (
-      <div className="flex flex-wrap overflow-auto gap-1 items-center h-full">
+      <div className="flex overflow-hidden gap-1 items-center h-full">
         {props.value.map((tag: string, index: number) => (
           <span
             key={index}
@@ -63,7 +63,7 @@ export default function EmployeePage() {
     };
 
     return (
-      <div className="flex overflow-auto gap-1 items-center h-full">
+      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-gray-50 border border-gray-400 rounded-sm px-2 py-[0.18rem] my-auto">
         {tags.map((tag, index) => (
           <span
             key={index}
@@ -262,7 +262,7 @@ export default function EmployeePage() {
     {
       headerName: "Tags",
       field: "tags",
-      width: 600,
+      width: 400,
       cellRenderer: TagsRenderer,
       cellEditor: TagsEditor,
       valueFormatter: (params: ValueFormatterParams) => {
