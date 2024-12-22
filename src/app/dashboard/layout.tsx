@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Header from '@/components/layout/Header'
+import Navbar from '@/components/layout/Navbar'
 import Sidebar from '@/components/layout/Sidebar'
 import Footer from '@/components/layout/Footer'
 
@@ -12,12 +12,12 @@ export default function Example({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-white flex min-h-screen">
       <Sidebar mobileFiltersOpen={mobileFiltersOpen} setMobileFiltersOpen={setMobileFiltersOpen} />
-      <main className="flex-1 w-full z-10 lg:ml-64">
-        <Header setMobileFiltersOpen={setMobileFiltersOpen} />
-        <div className='px-4 rounded-md mt-4'>
+      <main className="flex-1 w-full z-10 lg:ml-72">
+        <Navbar setMobileFiltersOpen={setMobileFiltersOpen} />
+        <div className='rounded-md px-4 mt-4 overflow-auto max-w-screen-2xl mx-auto'>
           {children}
+          <Footer />
         </div>
-        <Footer />
       </main>
     </div>
   )
