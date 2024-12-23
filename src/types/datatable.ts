@@ -1,8 +1,9 @@
 import { CustomCellRendererProps } from "ag-grid-react";
 
 export interface ActionCellRenderParams<TRowData> extends CustomCellRendererProps {
-  onSave: (obj: TRowData) => void;
-  onDelete: (obj: TRowData) => void;
+  onSave?: (obj: TRowData) => void;
+  onDelete?: (obj: TRowData) => void;
+  onEdit?: (obj: TRowData) => void;
 }
 
 interface BaseRowData {
@@ -11,7 +12,7 @@ interface BaseRowData {
 }
 
 export interface EmployeeRowData extends BaseRowData {
-  _id?: string,
+  _id?: string;
 
   username: string;
   m_nr: number;
@@ -29,22 +30,30 @@ export interface EmployeeRowData extends BaseRowData {
 }
 
 export interface TagRowData extends BaseRowData {
-  _id?: string,
+  _id?: string;
 
   tag_name: string;
   description: string;
 }
 
 export interface RoleRowData extends BaseRowData {
-  _id?: string,
+  _id?: string;
 
   role_name: string;
   description: string;
 }
 
 export interface SalaryTypeRowData extends BaseRowData {
-  _id?: string,
+  _id?: string;
 
   salary_type_name: string;
   description: string;
+}
+
+export interface RuleRowData extends BaseRowData {
+  _id?: string;
+
+  rule_name: string;
+  description: string;
+  display?: string;
 }

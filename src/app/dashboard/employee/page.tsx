@@ -286,9 +286,9 @@ export default function EmployeePage() {
             (params.data._is_modified || params.data._is_created)
               ? false
               : true}
-            onClick={() => params.onSave(params.data)}
+            onClick={() => params.onSave ? params.onSave(params.data) : alert("click")}
           />
-          <DeleteButton onClick={() => params.onDelete(params.data)} />
+          <DeleteButton onClick={() => params.onDelete ? params.onDelete(params.data) : alert("click")} />
         </div>
       ),
       cellRendererParams: {
