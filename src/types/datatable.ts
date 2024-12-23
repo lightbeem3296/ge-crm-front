@@ -1,3 +1,4 @@
+import { extractKeys } from "@/utils/record";
 import { CustomCellRendererProps } from "ag-grid-react";
 
 export interface ActionCellRenderParams<TRowData> extends CustomCellRendererProps {
@@ -51,10 +52,83 @@ export interface SalaryTypeRowData extends BaseRowData {
   description: string;
 }
 
+export enum RuleConditionField {
+  ROLE = "Role",
+  POINTS_EARNED = "Points Earned",
+  HOURS_WORKED = "Hours Worked",
+}
+export const ruleConditionFieldMap: Record<string, string> = {
+  "Role": "Role",
+  "Points Earned": "Points Earned",
+  "Hours Worked": "Hours Worked",
+}
+export const ruleConditionFieldCodes = extractKeys(ruleConditionFieldMap);
+
+export const ruleConditionOperatorMap: Record<string, string> = {
+  "==": "EQ",
+  "!=": "NE",
+  ">": "GT",
+  ">=": "GTE",
+  "<": "LT",
+  "<=": "LTE",
+}
+export const ruleConditionOperatorCodes = extractKeys(ruleConditionOperatorMap);
+
+export interface AtomicCondition {
+  field: string;
+  operator: string;
+  value: string | number;
+}
+
+export enum ConditionCombinationOperator {
+  NOT = "not",
+  AND = "and",
+  OR = "or",
+}
+export const ruleConditionCombinationOperatorMap: Record<string, string> = {
+  "not": "NOT",
+  "and": "AND",
+  "or": "OR",
+}
+export const ruleConditionCombinationOperatorCodes = extractKeys(ruleConditionCombinationOperatorMap)
+
+export interface RuleCondition {
+  combination?: string;
+  conditions: AtomicCondition[];
+}
+
+export const ruleActionMap: Record<string, string> = {
+  "Salary": "Salary",
+  "Bonus": "Bonus",
+  "Deduction": "Deduction",
+}
+export const ruleActionMapCodes = extractKeys(ruleActionMap);
+
+export const ruleActionOperatorMap: Record<string, string> = {
+  "+": "Add",
+  "-": "Subtract",
+  "*": "Multiply",
+  "/": "Divide",
+}
+export const ruleActionOperatorCodes = extractKeys(ruleActionOperatorMap);
+
+export interface RuleAction {
+  field: string;
+  operator: string;
+  value: number;
+}
+
+export interface AtomicRule {
+  condition: RuleCondition;
+  action: RuleAction;
+}
+
 export interface RuleRowData extends BaseRowData {
   _id?: string;
 
   rule_name: string;
   description: string;
+  atomic_rules: AtomicRule[];
+
   display?: string;
 }
