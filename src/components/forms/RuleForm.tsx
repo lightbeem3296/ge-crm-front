@@ -22,7 +22,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
   const [display, setDisplay] = useState<string>();
 
   // UI Handlers
-  const handleClickNewAtomCondition = async (rule_index: number) => {
+  const handleClickNewAtomCondition = (rule_index: number) => {
     const newRule = {
       ...rule,
       atom_rules: rule.atom_rules.map((atom_rule, index) =>
@@ -47,7 +47,26 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
     setRule(newRule);
   };
 
-  const handleClickDeleteAtomCondition = async (rule_index: number, condition_index: number) => {
+  const handleConditionCombinationChange = (rule_index: number, value: string) => {
+    console.log(value);
+    const newRule = {
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, index) =>
+        index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              combination: value,
+            },
+          }
+          : atom_rule
+      ),
+    };
+    setRule(newRule);
+  }
+
+  const handleClickDeleteAtomCondition = (rule_index: number, condition_index: number) => {
     const newRule = {
       ...rule,
       atom_rules: rule.atom_rules.map((atom_rule, index) =>
@@ -168,7 +187,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 <select
                                   className="select select-bordered select-sm"
                                   value={atom_rule.condition.combination}
-                                  onChange={handleSelectChange}
+                                  onChange={(e) => handleConditionCombinationChange(rule_index, e.target.value)}
                                 >
                                   <option disabled value="">Select an operator</option>
                                   {ruleConditionCombinationOperatorCodes.map((key) => (

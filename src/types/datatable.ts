@@ -103,7 +103,7 @@ export const ruleConditionCombinationOperatorMap: Record<string, string> = {
 export const ruleConditionCombinationOperatorCodes = extractKeys(ruleConditionCombinationOperatorMap)
 
 export interface RuleCondition {
-  combination?: string;
+  combination: string;
   conditions: AtomCondition[];
 }
 
