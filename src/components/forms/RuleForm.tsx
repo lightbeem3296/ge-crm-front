@@ -1,7 +1,7 @@
 import { FormModeEnum } from "@/app/dashboard/rule/page";
 import { RuleRowData } from "@/types/datatable";
-import { Button, Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
-import { useEffect, useState } from "react";
+import { Button, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
+import { useState } from "react";
 
 
 
