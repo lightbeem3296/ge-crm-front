@@ -86,6 +86,8 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
     const response = await axiosHelper.post<RuleRowData, string>("/rule/display", rule);
     if (response) {
       setDisplay(response);
+    } else {
+      setDisplay("# ERROR")
     }
   }
 
