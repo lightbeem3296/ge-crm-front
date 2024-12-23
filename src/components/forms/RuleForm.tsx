@@ -1,31 +1,47 @@
 import { FormModeEnum } from "@/app/dashboard/rule/page";
 import { getRoleMappings } from "@/services/roleService";
-import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionOperatorCodes, ruleConditionOperatorMap, RuleRowData } from "@/types/datatable";
+import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionOperatorCodes, ruleConditionOperatorMap, RuleRowData, RuleConditionOperator } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
-import { useState } from "react";
-import { DeleteButton } from "../ui/datatable/button";
-
-
 
 interface RuleFormProps {
   isFormOpen: boolean;
   formMode: FormModeEnum;
   rule: RuleRowData;
+  setRule: React.Dispatch<React.SetStateAction<RuleRowData>>
   closeForm: () => void;
 }
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
 
-export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: RuleFormProps) {
-  const [formData, setFormData] = useState<RuleRowData>(rule);
-
-  if (rule !== formData) {
-    setFormData(rule);
-  }
-  console.log(isFormOpen, formMode, rule.rule_name, JSON.stringify(rule.atomic_rules));
-
+export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeForm }: RuleFormProps) {
+  // UI Handlers
+  const handleClickNewAtomCondition = async (rule_index: number) => {
+    console.log(rule_index);
+    const newRule = {
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, index) =>
+        index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: [
+                ...atom_rule.condition.conditions,
+                {
+                  field: RuleConditionField.ROLE,
+                  operator: RuleConditionOperator.EQ,
+                  value: roleCodes[0],
+                },
+              ],
+            },
+          }
+          : atom_rule
+      ),
+    };
+    setRule(newRule);
+  };
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event?.target;
     console.log(name, value);
@@ -65,7 +81,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                     id="rule-name"
                     name="rule-name"
                     className="input input-bordered input-sm w-full"
-                    value={formData.rule_name}
+                    value={rule.rule_name}
                     onChange={handleChanges}
                     readOnly={formMode === FormModeEnum.VIEW} />
                 </div>
@@ -80,7 +96,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                     id="description"
                     name="description"
                     className="input input-bordered input-sm w-full"
-                    value={formData.description}
+                    value={rule.description}
                     onChange={handleChanges}
                     readOnly={formMode === FormModeEnum.VIEW} />
                 </div>
@@ -89,7 +105,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
               {/* Edit Rule */}
               <div className="join join-vertical col-span-6 rounded-md">
                 {formMode !== FormModeEnum.VIEW
-                  ? rule.atomic_rules.map((atomic_rule, rule_index) => (
+                  ? rule.atom_rules.map((atom_rule, rule_index) => (
                     <div
                       key={rule_index}
                       className="collapse collapse-plus join-item border border-base-300"
@@ -111,7 +127,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                                 </div>
                                 <select
                                   className="select select-bordered select-sm"
-                                  value={atomic_rule.condition.combination}
+                                  value={atom_rule.condition.combination}
                                   onChange={handleSelectChange}
                                 >
                                   <option disabled value="">Select an operator</option>
@@ -123,14 +139,19 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                                 </select>
                               </label>
 
-                              {/* New Atomic Condition Button */}
+                              {/* New Atom Condition Button */}
                               <div className="col-span-6 sm:col-span-2 flex justify-center place-items-end">
-                                <button className="btn btn-sm btn-primary w-full">Add Atom Condition</button>
+                                <button
+                                  className="btn btn-sm btn-primary w-full"
+                                  onClick={() => handleClickNewAtomCondition(rule_index)}
+                                >
+                                  Add Atom Condition
+                                </button>
                               </div>
                             </div>
 
-                            {/* Atomic Conditions */}
-                            {atomic_rule.condition.conditions.map((atomic_condition, condition_index) => (
+                            {/* Atom Conditions */}
+                            {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
                               <div key={condition_index} className="grid grid-cols-7 gap-2 sm:col-span-6 border rounded-md p-2">
                                 <div className="text-sm font-medium p-2 border-b col-span-7">Atom Contition {condition_index + 1}</div>
 
@@ -141,7 +162,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                                   </div>
                                   <select
                                     className="select select-bordered select-sm"
-                                    value={atomic_condition.field}
+                                    value={atom_condition.field}
                                     onChange={handleSelectChange}
                                   >
                                     <option disabled value="">Select a field</option>
@@ -160,7 +181,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                                   </div>
                                   <select
                                     className="select select-bordered select-sm"
-                                    value={atomic_condition.operator}
+                                    value={atom_condition.operator}
                                     onChange={handleSelectChange}
                                   >
                                     <option disabled value="">Select an operator</option>
@@ -177,10 +198,10 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                                   <div className="label">
                                     <span className="label-text">Value</span>
                                   </div>
-                                  {atomic_condition.field === RuleConditionField.ROLE
+                                  {atom_condition.field === RuleConditionField.ROLE
                                     ? <select
                                       className="select select-bordered select-sm"
-                                      value={atomic_condition.value}
+                                      value={atom_condition.value}
                                       onChange={handleSelectChange}
                                     >
                                       <option disabled value="">Select a value</option>
@@ -193,7 +214,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                                     : <input
                                       type="text"
                                       className="input input-bordered w-full input-sm"
-                                      value={atomic_condition.value}
+                                      value={atom_condition.value}
                                       onChange={handleChanges}
                                     />}
                                 </label>
@@ -215,7 +236,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                               </div>
                               <select
                                 className="select select-bordered select-sm"
-                                value={atomic_rule.action.operator}
+                                value={atom_rule.action.operator}
                                 onChange={handleSelectChange}
                               >
                                 <option disabled value="">Select a field</option>
@@ -234,7 +255,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                               </div>
                               <select
                                 className="select select-bordered select-sm"
-                                value={atomic_rule.action.operator}
+                                value={atom_rule.action.operator}
                                 onChange={handleSelectChange}
                               >
                                 <option disabled value="">Select an operator</option>
@@ -254,7 +275,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
                               <input
                                 type="text"
                                 className="input input-bordered w-full input-sm"
-                                value={atomic_rule.action.value}
+                                value={atom_rule.action.value}
                                 onChange={handleChanges}
                               />
                             </label>
@@ -270,7 +291,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, closeForm }: Rule
               <div className="col-span-6">
                 <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Display</label>
                 <div className="mt-2">
-                  <textarea name="display" rows={formData.display ? formData.display.split("\n").length + 2 : 10} className="block w-full rounded-md bg-white p-4 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-600 text-xs border font-mono overflow-x-auto whitespace-pre" value={formData.display} readOnly />
+                  <textarea name="display" rows={rule.display ? rule.display.split("\n").length + 2 : 10} className="block w-full rounded-md bg-white p-4 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-600 text-xs border font-mono overflow-x-auto whitespace-pre" value={rule.display} readOnly />
                 </div>
               </div>
             </div>

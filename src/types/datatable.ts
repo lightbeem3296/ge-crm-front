@@ -64,6 +64,14 @@ export const ruleConditionFieldMap: Record<string, string> = {
 }
 export const ruleConditionFieldCodes = extractKeys(ruleConditionFieldMap);
 
+export enum RuleConditionOperator {
+  EQ = "==",
+  NE = "!=",
+  GT = ">",
+  GTE = ">=",
+  LT = "<",
+  LTE = "<=",
+}
 export const ruleConditionOperatorMap: Record<string, string> = {
   "==": "EQ",
   "!=": "NE",
@@ -74,13 +82,13 @@ export const ruleConditionOperatorMap: Record<string, string> = {
 }
 export const ruleConditionOperatorCodes = extractKeys(ruleConditionOperatorMap);
 
-export interface AtomicCondition {
+export interface AtomCondition {
   field: string;
   operator: string;
   value: string | number;
 }
 
-export enum ConditionCombinationOperator {
+export enum RuleConditionCombinationOperator {
   NOT = "not",
   AND = "and",
   OR = "or",
@@ -94,7 +102,7 @@ export const ruleConditionCombinationOperatorCodes = extractKeys(ruleConditionCo
 
 export interface RuleCondition {
   combination?: string;
-  conditions: AtomicCondition[];
+  conditions: AtomCondition[];
 }
 
 export const ruleActionMap: Record<string, string> = {
@@ -118,7 +126,7 @@ export interface RuleAction {
   value: number;
 }
 
-export interface AtomicRule {
+export interface AtomRule {
   condition: RuleCondition;
   action: RuleAction;
 }
@@ -128,7 +136,7 @@ export interface RuleRowData extends BaseRowData {
 
   rule_name: string;
   description: string;
-  atomic_rules: AtomicRule[];
+  atom_rules: AtomRule[];
 
   display?: string;
 }
