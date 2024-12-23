@@ -29,7 +29,7 @@ export default function SalaryTypePage() {
       gridRef.current?.api.paginationGoToPage(0);
       gridRef.current?.api.startEditingCell({
         rowIndex: 0,
-        colKey: "role_name",
+        colKey: "salary_type_name",
       });
     }, 0);
   }
