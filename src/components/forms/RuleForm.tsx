@@ -1,8 +1,11 @@
 import { FormModeEnum } from "@/app/dashboard/rule/page";
+import { axiosHelper } from "@/lib/axios";
 import { getRoleMappings } from "@/services/roleService";
+import { ApiCrudResponse } from "@/types/api";
 import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionOperatorCodes, ruleConditionOperatorMap, RuleRowData, RuleConditionOperator } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
+import { useEffect, useState } from "react";
 
 interface RuleFormProps {
   isFormOpen: boolean;
@@ -16,9 +19,10 @@ const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
 
 export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeForm }: RuleFormProps) {
+  const [display, setDisplay] = useState<string>();
+
   // UI Handlers
   const handleClickNewAtomCondition = async (rule_index: number) => {
-    console.log(rule_index);
     const newRule = {
       ...rule,
       atom_rules: rule.atom_rules.map((atom_rule, index) =>
@@ -41,7 +45,9 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
       ),
     };
     setRule(newRule);
+    await updateDisplay();
   };
+
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event?.target;
     console.log(name, value);
@@ -55,6 +61,19 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
   const handleSave = () => {
     closeForm();
   }
+
+  // Data functions
+  const updateDisplay = async () => {
+    const response = await axiosHelper.post<RuleRowData, string>("/rule/display", rule);
+    if (response) {
+      setDisplay(response);
+    }
+  }
+
+  // Hooks
+  useEffect(() => {
+    updateDisplay();
+  }, [rule]);
 
   return (
     <Dialog open={isFormOpen} as="div" className="relative z-10 focus:outline-none" onClose={closeForm}>
@@ -291,7 +310,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
               <div className="col-span-6">
                 <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Display</label>
                 <div className="mt-2">
-                  <textarea name="display" rows={rule.display ? rule.display.split("\n").length + 2 : 10} className="block w-full rounded-md bg-white p-4 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-600 text-xs border font-mono overflow-x-auto whitespace-pre" value={rule.display} readOnly />
+                  <textarea name="display" rows={display ? display.split("\n").length + 2 : 10} className="block w-full rounded-md bg-white p-4 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-600 text-xs border font-mono overflow-x-auto whitespace-pre" value={display} readOnly />
                 </div>
               </div>
             </div>

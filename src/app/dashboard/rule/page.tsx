@@ -22,13 +22,13 @@ export enum FormModeEnum {
 export default function RulePage() {
   const gridRef = useRef<AgGridReact>(null);
   const [rowDataList, setRowDataList] = useState<RuleRowData[]>();
-  let [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  let [formData, setFormData] = useState<RuleRowData>({
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [formData, setFormData] = useState<RuleRowData>({
     rule_name: "",
     description: "",
     atom_rules: [],
   })
-  let [formMode, setFormMode] = useState<FormModeEnum>(FormModeEnum.VIEW);
+  const [formMode, setFormMode] = useState<FormModeEnum>(FormModeEnum.VIEW);
 
   // UI Functions
   function openForm() {
