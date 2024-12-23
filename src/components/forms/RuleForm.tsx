@@ -23,10 +23,10 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
 
   // UI Handlers
   const handleClickNewAtomCondition = (rule_index: number) => {
-    const newRule = {
+    setRule({
       ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, index) =>
-        index === rule_index
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
           ? {
             ...atom_rule,
             condition: {
@@ -43,16 +43,14 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
           }
           : atom_rule
       ),
-    };
-    setRule(newRule);
+    });
   };
 
-  const handleConditionCombinationChange = (rule_index: number, value: string) => {
-    console.log(value);
-    const newRule = {
+  const handleChangeConditionCombination = (rule_index: number, value: string) => {
+    setRule({
       ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, index) =>
-        index === rule_index
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
           ? {
             ...atom_rule,
             condition: {
@@ -62,15 +60,14 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
           }
           : atom_rule
       ),
-    };
-    setRule(newRule);
+    });
   }
 
   const handleClickDeleteAtomCondition = (rule_index: number, condition_index: number) => {
-    const newRule = {
+    setRule({
       ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, index) =>
-        index === rule_index
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
           ? {
             ...atom_rule,
             condition: {
@@ -82,9 +79,32 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
           }
           : atom_rule
       ),
-    };
-    setRule(newRule);
+    });
   };
+
+  const handleChangeConditionField = (rule_index: number, condition_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
+                c_index === condition_index
+                  ? {
+                    ...atom_condition,
+                    field: value,
+                  }
+                  : atom_condition
+              ),
+            },
+          }
+          : atom_rule
+      ),
+    });
+  }
 
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event?.target;
@@ -187,7 +207,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 <select
                                   className="select select-bordered select-sm"
                                   value={atom_rule.condition.combination}
-                                  onChange={(e) => handleConditionCombinationChange(rule_index, e.target.value)}
+                                  onChange={(e) => handleChangeConditionCombination(rule_index, e.target.value)}
                                 >
                                   <option disabled value="">Select an operator</option>
                                   {ruleConditionCombinationOperatorCodes.map((key) => (
@@ -222,7 +242,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                   <select
                                     className="select select-bordered select-sm"
                                     value={atom_condition.field}
-                                    onChange={handleSelectChange}
+                                    onChange={(e) => handleChangeConditionField(rule_index, condition_index, e.target.value)}
                                   >
                                     <option disabled value="">Select a field</option>
                                     {ruleConditionFieldCodes.map((key) => (
