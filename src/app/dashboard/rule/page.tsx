@@ -26,6 +26,7 @@ export default function RulePage() {
   let [formData, setFormData] = useState<RuleRowData>({
     rule_name: "",
     description: "",
+    atomic_rules: [],
   })
   let [formMode, setFormMode] = useState<FormModeEnum>(FormModeEnum.VIEW);
 
@@ -42,6 +43,7 @@ export default function RulePage() {
     setFormData({
       rule_name: "New Rule",
       description: "This is a new Rule.",
+      atomic_rules: [],
     });
     setFormMode(FormModeEnum.CREATE);
     openForm();
