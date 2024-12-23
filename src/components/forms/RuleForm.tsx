@@ -45,7 +45,26 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
       ),
     };
     setRule(newRule);
-    await updateDisplay();
+  };
+
+  const handleClickDeleteAtomCondition = async (rule_index: number, condition_index: number) => {
+    const newRule = {
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, index) =>
+        index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: [
+                ...atom_rule.condition.conditions.filter((c, i) => i !== condition_index),
+              ],
+            },
+          }
+          : atom_rule
+      ),
+    };
+    setRule(newRule);
   };
 
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,7 +257,12 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                     />}
                                 </label>
                                 <div className="col-span-7 sm:col-span-1 flex justify-center place-items-end">
-                                  <button className="btn btn-sm btn-error w-full">Delete</button>
+                                  <button
+                                    className="btn btn-sm btn-error w-full"
+                                    onClick={() => { handleClickDeleteAtomCondition(rule_index, condition_index) }}
+                                  >
+                                    Delete
+                                  </button>
                                 </div>
                               </div>
                             ))}
