@@ -396,11 +396,11 @@ export default function RuleEditPage() {
             : null}
         </div>
       </div>
-      <div className="grid grid-cols-6 gap-2 h-fit sm:h-[calc(100vh-10.6rem)]">
-        <div className="col-span-6 md:col-span-4 grid grid-cols-1 sm:grid-cols-6 gap-2 p-2 w-full h-fit sm:max-h-[calc(100vh-10.6rem)] overflow-auto border rounded-md">
+      <div className="grid grid-cols-6 gap-2 h-fit md:h-[calc(100vh-10.6rem)]">
+        <div className="col-span-6 md:col-span-4 flex flex-col gap-2 p-4 w-full h-fit md:max-h-[calc(100vh-10.6rem)] overflow-auto border rounded-md">
 
           {/* Rulename */}
-          <div className="col-span-6">
+          <div className="">
             <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Rule name</label>
             <div className="mt-2">
               <input
@@ -415,7 +415,7 @@ export default function RuleEditPage() {
           </div>
 
           {/* Description */}
-          <div className="col-span-6">
+          <div className="">
             <label htmlFor="description" className="block text-sm font-medium text-gray-900">Description</label>
             <div className="mt-2">
               <input
@@ -430,7 +430,7 @@ export default function RuleEditPage() {
           </div>
 
           {/* New Atom Rule Button */}
-          <div className={`col-span-6 ${formMode === FormModeEnum.VIEW ? "hidden" : ""}`}>
+          <div className={`mt-4 ${formMode === FormModeEnum.VIEW ? "hidden" : ""}`}>
             <button
               className="btn btn-primary btn-sm btn-outline"
               onClick={() => handleClickNewAtomRule()}
@@ -440,16 +440,13 @@ export default function RuleEditPage() {
           </div>
 
           {/* Edit Rule */}
-          <div className="join join-vertical col-span-6 rounded-md">
+          <div className="join join-vertical rounded-md">
             {formMode !== FormModeEnum.VIEW
               ? rule.atom_rules.map((atom_rule, rule_index) => (
                 // Atom Rules
-                <div
-                  key={rule_index}
-                  className="collapse collapse-plus join-item border border-base-300"
-                >
+                <div key={rule_index} className="collapse collapse-arrow join-item border border-base-300">
                   <input type="checkbox" className="peer" />
-                  <div className="collapse-title h-8 text-sm font-medium">Atom Rule {rule_index + 1}</div>
+                  <div className="collapse-title font-medium">Atom Rule {rule_index + 1}</div>
                   <div className="collapse-content">
                     <div className="w-full grid grid-cols-6 gap-2">
 
@@ -457,9 +454,10 @@ export default function RuleEditPage() {
                       <div className="col-span-6 sm:col-span-4 flex flex-col gap-2 border rounded-lg p-2">
                         <div className="text-sm font-medium p-2 border-b">Condition</div>
 
-                        <div className="w-full grid grid-cols-6 gap-2">
+                        <div className="w-full flex flex-col gap-2">
+
                           {/* Combination */}
-                          <label className="form-control col-span-6 sm:col-span-4">
+                          <label className="form-control">
                             <div className="label">
                               <span className="label-text">Combinator</span>
                             </div>
@@ -478,9 +476,9 @@ export default function RuleEditPage() {
                           </label>
 
                           {/* New Atom Condition Button */}
-                          <div className="col-span-6 sm:col-span-2 flex justify-center place-items-end">
+                          <div className="flex place-items-end mt-4">
                             <button
-                              className="btn btn-sm btn-primary btn-outline w-full"
+                              className="btn btn-sm btn-primary btn-outline"
                               onClick={() => handleClickNewAtomCondition(rule_index)}
                             >
                               <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Condition
@@ -489,89 +487,96 @@ export default function RuleEditPage() {
                         </div>
 
                         {/* Atom Conditions */}
-                        {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
-                          <div key={condition_index} className="grid grid-cols-8 gap-2 sm:col-span-6 border rounded-md p-2">
-                            <div className="text-sm font-medium p-2 border-b col-span-8">Atom Contition {condition_index + 1}</div>
+                        <div className="join join-vertical w-full border">
+                          {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
+                            <div key={condition_index} className={`join-item collapse collapse-arrow ${condition_index !== 0 ? "border-t" : ""}`}>
+                              <input type="checkbox" className="peer" />
+                              <div className="collapse-title font-medium ">Atom Contition {condition_index + 1}</div>
+                              <div className="collapse-content">
+                                <div className="grid grid-cols-6 gap-2">
 
-                            {/* Condition Field */}
-                            <label className="form-control w-full col-span-8 sm:col-span-2">
-                              <div className="label">
-                                <span className="label-text">Field</span>
-                              </div>
-                              <select
-                                className="select select-bordered select-sm"
-                                value={atom_condition.field}
-                                onChange={(e) => handleChangeConditionField(rule_index, condition_index, e.target.value)}
-                              >
-                                <option disabled value="">Select a field</option>
-                                {ruleConditionFieldCodes.map((key) => (
-                                  <option key={key} value={key}>
-                                    {lookupValue(ruleConditionFieldMap, key)}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
+                                  {/* Condition Field */}
+                                  <label className="form-control w-full col-span-6 sm:col-span-2">
+                                    <div className="label">
+                                      <span className="label-text">Field</span>
+                                    </div>
+                                    <select
+                                      className="select select-bordered select-sm"
+                                      value={atom_condition.field}
+                                      onChange={(e) => handleChangeConditionField(rule_index, condition_index, e.target.value)}
+                                    >
+                                      <option disabled value="">Select a field</option>
+                                      {ruleConditionFieldCodes.map((key) => (
+                                        <option key={key} value={key}>
+                                          {lookupValue(ruleConditionFieldMap, key)}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </label>
 
-                            {/* Condition Operator */}
-                            <label className="form-control w-full col-span-8 sm:col-span-2">
-                              <div className="label">
-                                <span className="label-text">Operator</span>
-                              </div>
-                              <select
-                                className="select select-bordered select-sm"
-                                value={atom_condition.operator}
-                                onChange={(e) => handleChangeConditionOperator(rule_index, condition_index, e.target.value)}
-                              >
-                                <option disabled value="">Select an operator</option>
-                                {atom_condition.field === RuleConditionField.ROLE
-                                  ? ruleConditionObjectOperatorCodes.map((key) => (
-                                    <option key={key} value={key}>
-                                      {lookupValue(ruleConditionObjectOperatorMap, key)}
-                                    </option>
-                                  ))
-                                  : ruleConditionNumberOperatorCodes.map((key) => (
-                                    <option key={key} value={key}>
-                                      {lookupValue(ruleConditionNumberOperatorMap, key)}
-                                    </option>))
-                                }
-                              </select>
-                            </label>
+                                  {/* Condition Operator */}
+                                  <label className="form-control w-full col-span-6 sm:col-span-2">
+                                    <div className="label">
+                                      <span className="label-text">Operator</span>
+                                    </div>
+                                    <select
+                                      className="select select-bordered select-sm"
+                                      value={atom_condition.operator}
+                                      onChange={(e) => handleChangeConditionOperator(rule_index, condition_index, e.target.value)}
+                                    >
+                                      <option disabled value="">Select an operator</option>
+                                      {atom_condition.field === RuleConditionField.ROLE
+                                        ? ruleConditionObjectOperatorCodes.map((key) => (
+                                          <option key={key} value={key}>
+                                            {lookupValue(ruleConditionObjectOperatorMap, key)}
+                                          </option>
+                                        ))
+                                        : ruleConditionNumberOperatorCodes.map((key) => (
+                                          <option key={key} value={key}>
+                                            {lookupValue(ruleConditionNumberOperatorMap, key)}
+                                          </option>))
+                                      }
+                                    </select>
+                                  </label>
 
-                            {/* Condition Value */}
-                            <label className="form-control w-full col-span-8 sm:col-span-2">
-                              <div className="label">
-                                <span className="label-text">Value</span>
+                                  {/* Condition Value */}
+                                  <label className="form-control w-full col-span-6 sm:col-span-2">
+                                    <div className="label">
+                                      <span className="label-text">Value</span>
+                                    </div>
+                                    {atom_condition.field === RuleConditionField.ROLE
+                                      ? <select
+                                        className="select select-bordered select-sm"
+                                        value={atom_condition.value}
+                                        onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
+                                      >
+                                        <option disabled value="">Select a value</option>
+                                        {roleCodes.map((key) => (
+                                          <option key={key} value={key}>
+                                            {lookupValue(roleMappings, key)}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      : <input
+                                        type="text"
+                                        className="input input-bordered w-full input-sm"
+                                        value={atom_condition.value}
+                                        onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
+                                      />}
+                                  </label>
+                                  <div className="col-span-6 flex justify-end">
+                                    <button
+                                      className="btn btn-sm btn-error btn-outline"
+                                      onClick={() => { handleClickDeleteAtomCondition(rule_index, condition_index) }}
+                                    >
+                                      <FontAwesomeIcon icon={faTrash} width={12} />Delete
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              {atom_condition.field === RuleConditionField.ROLE
-                                ? <select
-                                  className="select select-bordered select-sm"
-                                  value={atom_condition.value}
-                                  onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
-                                >
-                                  <option disabled value="">Select a value</option>
-                                  {roleCodes.map((key) => (
-                                    <option key={key} value={key}>
-                                      {lookupValue(roleMappings, key)}
-                                    </option>
-                                  ))}
-                                </select>
-                                : <input
-                                  type="text"
-                                  className="input input-bordered w-full input-sm"
-                                  value={atom_condition.value}
-                                  onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
-                                />}
-                            </label>
-                            <div className="col-span-8 sm:col-span-2 flex justify-center place-items-end">
-                              <button
-                                className="btn btn-sm btn-error btn-outline w-full"
-                                onClick={() => { handleClickDeleteAtomCondition(rule_index, condition_index) }}
-                              >
-                                <FontAwesomeIcon icon={faTrash} width={12} />Delete
-                              </button>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
 
                       {/* Action */}
@@ -649,7 +654,7 @@ export default function RuleEditPage() {
         </div>
 
         {/* Display */}
-        <div className="col-span-6 md:col-span-2 flex flex-col justify-between border rounded-md p-2">
+        <div className="col-span-6 md:col-span-2 flex flex-col justify-between border rounded-md p-4">
           <div>
             <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Display</label>
             <div className="mt-2">
