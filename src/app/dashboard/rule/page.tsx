@@ -6,9 +6,9 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, EditButton, NewButton, ViewButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { ActionCellRenderParams, RuleActionField, RuleActionOperator, RuleConditionCombinationOperator, RuleConditionField, RuleConditionNumberOperator, RuleRowData } from "@/types/datatable";
+import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
-import RuleForm from "@/components/forms/RuleForm";
+import { useRouter } from "next/navigation";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -18,71 +18,28 @@ export enum FormModeEnum {
   CREATE = "create",
 }
 
-
 export default function RulePage() {
+  const router = useRouter();
   const gridRef = useRef<AgGridReact>(null);
   const [rowDataList, setRowDataList] = useState<RuleRowData[]>();
-  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [formData, setFormData] = useState<RuleRowData>({
-    rule_name: "",
-    description: "",
-    atom_rules: [],
-  })
-  const [formMode, setFormMode] = useState<FormModeEnum>(FormModeEnum.VIEW);
 
   // UI Functions
-  function openForm() {
-    setIsFormOpen(true);
-  }
-
-  function closeForm() {
-    setIsFormOpen(false);
-  }
-
   const onClickNewRow = async () => {
-    setFormData({
-      rule_name: "New Rule",
-      description: "This is a new Rule.",
-      atom_rules: [
-        {
-          condition: {
-            combination: RuleConditionCombinationOperator.NONE,
-            conditions: [
-              {
-                field: RuleConditionField.HOURS_WORKED,
-                operator: RuleConditionNumberOperator.GTE,
-                value: 40.0,
-              }
-            ],
-          },
-          action: {
-            field: RuleActionField.SALARY,
-            operator: RuleActionOperator.MULTIPLY,
-            value: 1.5,
-          },
-        },
-      ],
-    });
-    setFormMode(FormModeEnum.CREATE);
-    openForm();
+    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.CREATE}`);
+  }
+
+  const onView = async (obj: RuleRowData) => {
+    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.VIEW}&id=${obj._id}`);
+  }
+
+  const onEdit = async (obj: RuleRowData) => {
+    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.EDIT}&id=${obj._id}`);
   }
 
   // CRUD Functions
   const fetchRowData = async () => {
     const resp = await axiosHelper.get<ApiListResponse<RuleRowData>>("/rule");
     setRowDataList(resp?.items);
-  }
-
-  const onView = async (obj: RuleRowData) => {
-    setFormData(obj);
-    setFormMode(FormModeEnum.VIEW);
-    openForm();
-  }
-
-  const onEdit = async (obj: RuleRowData) => {
-    setFormData(obj);
-    setFormMode(FormModeEnum.EDIT);
-    openForm();
   }
 
   const onDelete = async (obj: RuleRowData) => {
@@ -178,7 +135,6 @@ export default function RulePage() {
           />
         </div>
       </div>
-      <RuleForm isFormOpen={isFormOpen} closeForm={closeForm} rule={formData} setRule={setFormData} formMode={formMode} />
     </div>
   );
 };
