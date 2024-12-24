@@ -1,4 +1,4 @@
-import { faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { faEdit, faEye, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface ButtonProps {
@@ -26,6 +26,28 @@ export function SaveButton({ disabled = false, onClick }: ButtonProps) {
       onClick={onClick}
     >
       <FontAwesomeIcon icon={faSave} />
+    </button >
+  );
+}
+
+export function ViewButton({ onClick }: ButtonProps) {
+  return (
+    <button
+      className="btn btn-info btn-sm btn-outline"
+      onClick={onClick}
+    >
+      <FontAwesomeIcon icon={faEye} />
+    </button >
+  );
+}
+
+export function EditButton({ onClick }: ButtonProps) {
+  return (
+    <button
+      className="btn btn-primary btn-sm btn-outline"
+      onClick={onClick}
+    >
+      <FontAwesomeIcon icon={faEdit} />
     </button >
   );
 }
