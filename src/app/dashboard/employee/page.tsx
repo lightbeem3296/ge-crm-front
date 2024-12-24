@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
+import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
 import { getRoleMappings } from "@/services/roleService";
@@ -13,6 +13,7 @@ import { EmployeeRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { ActionCellRenderParams } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
+import { myTheme } from "@/components/ui/theme/agGrid";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -35,7 +36,7 @@ export default function EmployeePage() {
         {props.value.map((tag: string, index: number) => (
           <span
             key={index}
-            className="bg-gray-200 text-xs py-1 px-3 border border-gray-300 rounded-full text-gray-800 font-medium"
+            className="bg-base-200 text-xs py-1 px-3 border border-base-content/30 rounded-full text-base-content font-medium"
           >
             {lookupValue(tagMappings, tag)}
           </span>
@@ -63,25 +64,25 @@ export default function EmployeePage() {
     };
 
     return (
-      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-gray-50 border border-gray-400 rounded-sm px-2 py-[0.18rem] my-auto">
+      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-base-100 border border-base-content/30 rounded-sm px-2 py-[0.18rem] my-auto">
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="flex gap-x-1 bg-gray-200 py-1 pl-3 pr-1 border border-gray-300 rounded-full text-xs text-gray-800 font-medium"
+            className="flex gap-x-1 bg-base-200 py-1 pl-3 pr-1 border border-base-content/30 rounded-full text-xs text-base-content font-medium"
           >
             <span>
               {lookupValue(tagMappings, tag)}
             </span>
             <button
               onClick={() => removeTag(tag)}
-              className="flex items-center justify-center rounded-full size-4 bg-gray-300 border border-gray-400 cursor-pointer"
+              className="flex items-center justify-center rounded-full size-4 bg-base-200 border border-base-content/30 cursor-pointer"
             >
               ✕
             </button>
           </span>
         ))}
         <select
-          className="select select-sm select-bordered text-xs text-gray-800"
+          className="select select-sm select-bordered bg-base-200 text-xs text-base-content"
           onChange={handleSelectChange}
           value=""
         >
@@ -312,10 +313,14 @@ export default function EmployeePage() {
     gridRef.current?.api.redrawRows();
   };
 
+  const theme = useMemo<Theme | "legacy">(() => {
+    return myTheme;
+  }, []);
+
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
-        <p className="text-lg font-medium text-gray-700">
+        <p className="text-lg font-medium text-base-content/80">
           Employee
         </p>
         <NewButton onClick={() => onClickNewRow()}>New Employee</NewButton>
@@ -326,6 +331,7 @@ export default function EmployeePage() {
             ref={gridRef}
             columnDefs={colDefs}
             rowData={rowDataList}
+            theme={theme}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}

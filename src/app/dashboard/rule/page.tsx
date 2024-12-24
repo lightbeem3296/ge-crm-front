@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, EditButton, NewButton } from "@/components/ui/datatable/button";
@@ -9,6 +9,7 @@ import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { useRouter } from "next/navigation";
+import { myTheme } from "@/components/ui/theme/agGrid";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -105,10 +106,14 @@ export default function RulePage() {
     gridRef.current?.api.redrawRows();
   };
 
+  const theme = useMemo<Theme | "legacy">(() => {
+    return myTheme;
+  }, []);
+
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
-        <p className="text-lg font-medium text-gray-700">
+        <p className="text-lg font-medium text-base-content/80">
           Rule
         </p>
         <NewButton onClick={() => onClickNewRow()}>New Rule</NewButton>
@@ -119,6 +124,7 @@ export default function RulePage() {
             ref={gridRef}
             columnDefs={colDefs}
             rowData={rowDataList}
+            theme={theme}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}

@@ -10,7 +10,7 @@ export default function Example({ children }: { children: React.ReactNode }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   return (
-    <div className="bg-white flex min-h-screen">
+    <div className="bg-base-100 flex min-h-screen">
       <Sidebar mobileFiltersOpen={mobileFiltersOpen} setMobileFiltersOpen={setMobileFiltersOpen} />
       <main className="flex-1 w-full z-10 lg:ml-72">
         <Navbar setMobileFiltersOpen={setMobileFiltersOpen} />
