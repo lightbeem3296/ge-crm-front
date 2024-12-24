@@ -182,7 +182,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
           }
           : atom_rule
       ),
-    })
+    });
   }
 
   const handleChangeActionOperator = (rule_index: number, value: string) => {
@@ -199,7 +199,31 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
           }
           : atom_rule
       ),
-    })
+    });
+  }
+
+  const handleChangeActionValue = (rule_index: number, str_value: string) => {
+    const num_value = parseFloat(str_value);
+    if (isNaN(num_value)) {
+      alert("Invalid number format: " + str_value);
+      return;
+    } else {
+      console.log(num_value);
+    }
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            action: {
+              ...atom_rule.action,
+              value: num_value,
+            },
+          }
+          : atom_rule
+      ),
+    });
   }
 
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -456,7 +480,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 type="text"
                                 className="input input-bordered w-full input-sm"
                                 value={atom_rule.action.value}
-                                onChange={handleChanges}
+                                onChange={(e) => handleChangeActionValue(rule_index, e.target.value)}
                               />
                             </label>
                           </div>
