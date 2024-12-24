@@ -4,85 +4,37 @@ import React, { useCallback, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { DeleteButton, EditButton, NewButton, ViewButton } from "@/components/ui/datatable/button";
+import { DeleteButton, EditButton, NewButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { ActionCellRenderParams, RuleActionField, RuleActionOperator, RuleConditionCombinationOperator, RuleConditionField, RuleConditionNumberOperator, RuleRowData } from "@/types/datatable";
+import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
-import RuleForm from "@/components/forms/RuleForm";
+import { useRouter } from "next/navigation";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export enum FormModeEnum {
-  VIEW = "view",
+export enum RuleEditPageMode {
   EDIT = "edit",
   CREATE = "create",
 }
 
-
 export default function RulePage() {
+  const router = useRouter();
   const gridRef = useRef<AgGridReact>(null);
   const [rowDataList, setRowDataList] = useState<RuleRowData[]>();
-  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [formData, setFormData] = useState<RuleRowData>({
-    rule_name: "",
-    description: "",
-    atom_rules: [],
-  })
-  const [formMode, setFormMode] = useState<FormModeEnum>(FormModeEnum.VIEW);
 
   // UI Functions
-  function openForm() {
-    setIsFormOpen(true);
-  }
-
-  function closeForm() {
-    setIsFormOpen(false);
-  }
-
   const onClickNewRow = async () => {
-    setFormData({
-      rule_name: "New Rule",
-      description: "This is a new Rule.",
-      atom_rules: [
-        {
-          condition: {
-            combination: RuleConditionCombinationOperator.NONE,
-            conditions: [
-              {
-                field: RuleConditionField.HOURS_WORKED,
-                operator: RuleConditionNumberOperator.GTE,
-                value: 40.0,
-              }
-            ],
-          },
-          action: {
-            field: RuleActionField.SALARY,
-            operator: RuleActionOperator.MULTIPLY,
-            value: 1.5,
-          },
-        },
-      ],
-    });
-    setFormMode(FormModeEnum.CREATE);
-    openForm();
+    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.CREATE}`);
+  }
+
+  const onEdit = async (obj: RuleRowData) => {
+    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${obj._id}`);
   }
 
   // CRUD Functions
   const fetchRowData = async () => {
     const resp = await axiosHelper.get<ApiListResponse<RuleRowData>>("/rule");
     setRowDataList(resp?.items);
-  }
-
-  const onView = async (obj: RuleRowData) => {
-    setFormData(obj);
-    setFormMode(FormModeEnum.VIEW);
-    openForm();
-  }
-
-  const onEdit = async (obj: RuleRowData) => {
-    setFormData(obj);
-    setFormMode(FormModeEnum.EDIT);
-    openForm();
   }
 
   const onDelete = async (obj: RuleRowData) => {
@@ -123,19 +75,17 @@ export default function RulePage() {
     {
       headerName: "Actions",
       field: "actions",
-      width: 160,
+      width: 120,
       pinned: "right",
       filter: false,
       editable: false,
       cellRenderer: (params: ActionCellRenderParams<RuleRowData>) => (
         <div className="h-full flex items-center gap-1">
-          <ViewButton onClick={() => params.onView ? params.onView(params.data) : alert("click")} />
           <EditButton onClick={() => params.onEdit ? params.onEdit(params.data) : alert("click")} />
           <DeleteButton onClick={() => params.onDelete ? params.onDelete(params.data) : alert("click")} />
         </div>
       ),
       cellRendererParams: {
-        onView: onView,
         onEdit: onEdit,
         onDelete: onDelete,
       },
@@ -178,7 +128,6 @@ export default function RulePage() {
           />
         </div>
       </div>
-      <RuleForm isFormOpen={isFormOpen} closeForm={closeForm} rule={formData} setRule={setFormData} formMode={formMode} />
     </div>
   );
 };

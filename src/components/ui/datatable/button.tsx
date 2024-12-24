@@ -30,17 +30,6 @@ export function SaveButton({ disabled = false, onClick }: ButtonProps) {
   );
 }
 
-export function ViewButton({ onClick }: ButtonProps) {
-  return (
-    <button
-      className="btn btn-info btn-sm btn-outline"
-      onClick={onClick}
-    >
-      <FontAwesomeIcon icon={faEye} />
-    </button >
-  );
-}
-
 export function EditButton({ onClick }: ButtonProps) {
   return (
     <button
