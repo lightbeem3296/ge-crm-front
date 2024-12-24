@@ -130,6 +130,30 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
     });
   }
 
+  const handleChangeConditionValue = (rule_index: number, condition_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
+                c_index === condition_index
+                  ? {
+                    ...atom_condition,
+                    value: value,
+                  }
+                  : atom_condition
+              ),
+            },
+          }
+          : atom_rule
+      ),
+    });
+  }
+
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event?.target;
     console.log(name, value);
@@ -305,7 +329,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                     ? <select
                                       className="select select-bordered select-sm"
                                       value={atom_condition.value}
-                                      onChange={handleSelectChange}
+                                      onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
                                     >
                                       <option disabled value="">Select a value</option>
                                       {roleCodes.map((key) => (
@@ -318,7 +342,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                       type="text"
                                       className="input input-bordered w-full input-sm"
                                       value={atom_condition.value}
-                                      onChange={handleChanges}
+                                      onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
                                     />}
                                 </label>
                                 <div className="col-span-7 sm:col-span-1 flex justify-center place-items-end">
