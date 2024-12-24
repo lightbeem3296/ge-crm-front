@@ -108,7 +108,7 @@ export default function RulePage() {
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
-        <p className="text-lg font-medium text-gray-700">
+        <p className="text-lg font-medium text-base-content/80">
           Rule
         </p>
         <NewButton onClick={() => onClickNewRow()}>New Rule</NewButton>
