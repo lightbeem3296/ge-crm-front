@@ -393,11 +393,11 @@ export default function RuleEditPage() {
         </div>
       </div>
       <div className="grid grid-cols-6 gap-2 h-fit md:h-[calc(100vh-10.6rem)]">
-        <div className="col-span-6 md:col-span-4 flex flex-col gap-2 p-4 w-full h-fit md:max-h-[calc(100vh-10.6rem)] overflow-auto border rounded-md">
+        <div className="col-span-6 md:col-span-4 flex flex-col gap-2 p-4 w-full h-fit md:max-h-[calc(100vh-10.6rem)] overflow-auto border border-base-content/20 rounded-md">
 
           {/* Rulename */}
           <div className="">
-            <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Rule name</label>
+            <label htmlFor="rule-name" className="block text-sm font-medium text-base-content">Rule name</label>
             <div className="mt-2">
               <input
                 type="text"
@@ -412,7 +412,7 @@ export default function RuleEditPage() {
 
           {/* Description */}
           <div className="">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-900">Description</label>
+            <label htmlFor="description" className="block text-sm font-medium text-base-content">Description</label>
             <div className="mt-2">
               <input
                 type="text"
@@ -439,15 +439,15 @@ export default function RuleEditPage() {
           <div className="join join-vertical rounded-md">
             {rule.atom_rules.map((atom_rule, rule_index) => (
               // Atom Rules
-              <div key={rule_index} className="collapse collapse-arrow join-item border border-base-300">
+              <div key={rule_index} className="collapse collapse-arrow join-item border border-base-content/20">
                 <input type="checkbox" className="peer" defaultChecked={rule_index === 0} />
                 <div className="collapse-title font-medium">Atom Rule {rule_index + 1}</div>
                 <div className="collapse-content">
                   <div className="w-full grid grid-cols-6 gap-2">
 
                     {/* Condition */}
-                    <div className="col-span-6 sm:col-span-4 flex flex-col gap-2 border rounded-lg p-2">
-                      <div className="text-sm font-medium p-2 border-b">Condition</div>
+                    <div className="col-span-6 sm:col-span-4 flex flex-col gap-2 border border-base-content/20 rounded-lg p-2">
+                      <div className="text-sm font-medium p-2 border-b border-base-content/20">Condition</div>
 
                       <div className="w-full flex flex-col gap-2">
 
@@ -482,9 +482,9 @@ export default function RuleEditPage() {
                       </div>
 
                       {/* Atom Conditions */}
-                      <div className="join join-vertical w-full border">
+                      <div className="join join-vertical w-full border border-base-content/20">
                         {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
-                          <div key={condition_index} className={`join-item collapse collapse-arrow ${condition_index !== 0 ? "border-t" : ""}`}>
+                          <div key={condition_index} className={`join-item collapse collapse-arrow ${condition_index !== 0 ? "border-t" : ""} border-base-content/20`}>
                             <input type="checkbox" className="peer" />
                             <div className="collapse-title font-medium ">Atom Contition {condition_index + 1}</div>
                             <div className="collapse-content">
@@ -575,8 +575,8 @@ export default function RuleEditPage() {
                     </div>
 
                     {/* Action */}
-                    <div className="col-span-6 sm:col-span-2 flex flex-col gap-2 border rounded-lg p-2">
-                      <div className="text-sm font-medium p-2 border-b">Action</div>
+                    <div className="col-span-6 sm:col-span-2 flex flex-col gap-2 border border-base-content/20 rounded-lg p-2">
+                      <div className="text-sm font-medium p-2 border-b border-base-content/20">Action</div>
 
                       {/* Action Field */}
                       <label className="form-control w-full">
@@ -655,9 +655,9 @@ export default function RuleEditPage() {
         </div>
 
         {/* Display */}
-        <div className="col-span-6 md:col-span-2 flex flex-col justify-between border rounded-md p-4">
+        <div className="col-span-6 md:col-span-2 flex flex-col justify-between border border-base-content/20 rounded-md p-4">
           <div className="grow overflow-auto">
-            <label htmlFor="display" className="block text-sm font-medium text-gray-900">Display</label>
+            <label htmlFor="display" className="block text-sm font-medium text-base-content">Display</label>
             <textarea
               name="display"
               className="textarea textarea-bordered w-full text-sm font-mono font-medium mt-2 h-80 md:h-[calc(100%-2.5rem)] resize-none"
