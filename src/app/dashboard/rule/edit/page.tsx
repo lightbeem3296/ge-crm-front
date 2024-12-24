@@ -17,6 +17,8 @@ const roleCodes = extractKeys(roleMappings);
 export default function RuleEditPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [currentRuleIndex, setCurrentRuleIndex] = useState<number>(0);
+  const [actionValues, setActionValues] = useState<string[]>([]);
 
   const formMode = searchParams.get("mode") || FormModeEnum.VIEW;
   const id = searchParams.get("id");
@@ -55,12 +57,6 @@ export default function RuleEditPage() {
       alert("fetch error");
     }
   }
-
-  useEffect(() => {
-    if (formMode !== FormModeEnum.CREATE) {
-      fetchRule();
-    }
-  }, []);
 
   const [display, setDisplay] = useState<string>();
 
@@ -291,30 +287,6 @@ export default function RuleEditPage() {
     });
   }
 
-  const handleChangeActionValue = (rule_index: number, str_value: string) => {
-    const num_value = parseFloat(str_value);
-    if (isNaN(num_value)) {
-      alert("Invalid number format: " + str_value);
-      return;
-    } else {
-      console.log(num_value);
-    }
-    setRule({
-      ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
-        r_index === rule_index
-          ? {
-            ...atom_rule,
-            action: {
-              ...atom_rule.action,
-              value: num_value,
-            },
-          }
-          : atom_rule
-      ),
-    });
-  }
-
   const handleSave = async () => {
     if (formMode === FormModeEnum.CREATE) {
       const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined, "Are you sure want to save?");
@@ -362,8 +334,41 @@ export default function RuleEditPage() {
 
   // Hooks
   useEffect(() => {
+    if (formMode !== FormModeEnum.CREATE) {
+      fetchRule();
+    }
+    setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
+  }, []);
+
+  useEffect(() => {
+    const currentActionValue = actionValues[currentRuleIndex];
+    const num_value = parseFloat(currentActionValue);
+    if (isNaN(num_value)) {
+      return;
+    }
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === currentRuleIndex
+          ? {
+            ...atom_rule,
+            action: {
+              ...atom_rule.action,
+              value: num_value,
+            },
+          }
+          : atom_rule
+      ),
+    });
+  }, [currentRuleIndex, actionValues]);
+
+  useEffect(() => {
     updateDisplay();
   }, [rule]);
+
+  useEffect(() => {
+    setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
+  }, [rule.atom_rules.length]);
 
   return (
     <div>
@@ -629,8 +634,15 @@ export default function RuleEditPage() {
                           <input
                             type="text"
                             className="input input-bordered w-full input-sm"
-                            value={atom_rule.action.value}
-                            onChange={(e) => handleChangeActionValue(rule_index, e.target.value)}
+                            value={actionValues.length > rule_index ? actionValues[rule_index] : "0.0"}
+                            onChange={(e) => {
+                              setCurrentRuleIndex(rule_index);
+                              setActionValues(prev => {
+                                const newActionValues = [...prev];
+                                newActionValues[rule_index] = e.target.value;
+                                return newActionValues;
+                              });
+                            }}
                           />
                         </label>
                       </div>
