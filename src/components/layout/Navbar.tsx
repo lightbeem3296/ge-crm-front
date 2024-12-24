@@ -2,8 +2,6 @@
 
 import { Bars3Icon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { Dispatch, SetStateAction } from 'react'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import ThemeController from '../ui/ThemeController';
 
 interface HeaderProps {
