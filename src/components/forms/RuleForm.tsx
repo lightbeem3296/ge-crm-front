@@ -22,6 +22,13 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
   const [display, setDisplay] = useState<string>();
 
   // UI Handlers
+  const handleChangeRuleName = (value: string) => {
+    setRule({
+      ...rule,
+      rule_name: value,
+    })
+  }
+
   const handleClickNewAtomCondition = (rule_index: number) => {
     setRule({
       ...rule,
@@ -209,7 +216,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                     name="rule-name"
                     className="input input-bordered input-sm w-full"
                     value={rule.rule_name}
-                    onChange={handleChanges}
+                    onChange={(e) => handleChangeRuleName(e.target.value)}
                     readOnly={formMode === FormModeEnum.VIEW} />
                 </div>
               </div>
