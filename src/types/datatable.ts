@@ -1,5 +1,6 @@
-import { extractKeys } from "@/utils/record";
 import { CustomCellRendererProps } from "ag-grid-react";
+import { RuleAction } from "./rule/action";
+import { RuleCondition } from "./rule/condition";
 
 export interface ActionCellRenderParams<TRowData> extends CustomCellRendererProps {
   onSave?: (obj: TRowData) => void;
@@ -49,103 +50,6 @@ export interface SalaryTypeRowData extends BaseRowData {
 
   salary_type_name: string;
   description: string;
-}
-
-export enum RuleConditionField {
-  ROLE = "Role",
-  POINTS_EARNED = "Points Earned",
-  HOURS_WORKED = "Hours Worked",
-}
-export const ruleConditionFieldMap: Record<string, string> = {
-  "Role": "Role",
-  "Points Earned": "Points Earned",
-  "Hours Worked": "Hours Worked",
-}
-export const ruleConditionFieldCodes = extractKeys(ruleConditionFieldMap);
-
-export enum RuleConditionNumberOperator {
-  EQ = "==",
-  NE = "!=",
-  GT = ">",
-  GTE = ">=",
-  LT = "<",
-  LTE = "<=",
-}
-export const ruleConditionNumberOperatorMap: Record<string, string> = {
-  "==": "EQ",
-  "!=": "NE",
-  ">": "GT",
-  ">=": "GTE",
-  "<": "LT",
-  "<=": "LTE",
-}
-export const ruleConditionNumberOperatorCodes = extractKeys(ruleConditionNumberOperatorMap);
-
-export enum RuleConditionObjectOperator {
-  EQ = "==",
-  NE = "!=",
-}
-export const ruleConditionObjectOperatorMap: Record<string, string> = {
-  "==": "EQ",
-  "!=": "NE",
-}
-export const ruleConditionObjectOperatorCodes = extractKeys(ruleConditionObjectOperatorMap);
-
-export interface AtomCondition {
-  field: string;
-  operator: string;
-  value: string | number;
-}
-
-export enum RuleConditionCombinationOperator {
-  NONE = "none",
-  NOT = "not",
-  AND = "and",
-  OR = "or",
-}
-export const ruleConditionCombinationOperatorMap: Record<string, string> = {
-  "none": "None",
-  "not": "NOT",
-  "and": "AND",
-  "or": "OR",
-}
-export const ruleConditionCombinationOperatorCodes = extractKeys(ruleConditionCombinationOperatorMap)
-
-export interface RuleCondition {
-  combination: string;
-  conditions: AtomCondition[];
-}
-
-export enum RuleActionField {
-  SALARY = "Salary",
-  BONUS = "Bonus",
-  DEDUCTION = "Deduction",
-}
-export const ruleActionFieldMap: Record<string, string> = {
-  "Salary": "Salary",
-  "Bonus": "Bonus",
-  "Deduction": "Deduction",
-}
-export const ruleActionFieldCodes = extractKeys(ruleActionFieldMap);
-
-export enum RuleActionOperator {
-  ADD = "+",
-  SUBTRACT = "-",
-  MULTIPLY = "*",
-  DEVIDE = "/",
-}
-export const ruleActionOperatorMap: Record<string, string> = {
-  "+": "Add",
-  "-": "Subtract",
-  "*": "Multiply",
-  "/": "Divide",
-}
-export const ruleActionOperatorCodes = extractKeys(ruleActionOperatorMap);
-
-export interface RuleAction {
-  field: string;
-  operator: string;
-  value: number;
 }
 
 export interface AtomRule {

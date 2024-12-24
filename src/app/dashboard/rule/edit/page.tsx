@@ -1,7 +1,7 @@
 "use client";
 
-import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionCombinationOperator, ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap, RuleRowData } from "@/types/datatable";
-import { FormModeEnum } from "../page";
+import { RuleRowData } from "@/types/datatable";
+import { RuleEditPageMode } from "../page";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { axiosHelper } from "@/lib/axios";
@@ -9,7 +9,9 @@ import { ApiCrudResponse } from "@/types/api";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { getRoleMappings } from "@/services/roleService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faEdit, faHandPointLeft, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { RuleConditionCombinationOperator, ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
+import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
@@ -20,7 +22,7 @@ export default function RuleEditPage() {
   const [currentRuleIndex, setCurrentRuleIndex] = useState<number>(0);
   const [actionValues, setActionValues] = useState<string[]>([]);
 
-  const formMode = searchParams.get("mode") || FormModeEnum.EDIT;
+  const formMode = searchParams.get("mode") || RuleEditPageMode.EDIT;
   const id = searchParams.get("id");
 
   const [rule, setRule] = useState<RuleRowData>({
@@ -64,7 +66,7 @@ export default function RuleEditPage() {
   }
 
   const handleClickViewEdit = () => {
-    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.EDIT}&id=${id}`);
+    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${id}`);
   }
 
   const handleChangeRuleName = (value: string) => {
@@ -286,15 +288,16 @@ export default function RuleEditPage() {
   }
 
   const handleSave = async () => {
-    if (formMode === FormModeEnum.CREATE) {
+    if (formMode === RuleEditPageMode.CREATE) {
       const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined, "Are you sure want to save?");
       if (response) {
         setRule({
           ...rule,
           _id: response.detail.object_id,
         });
+        router.push("/dashboard/rule");
       }
-    } else if (formMode === FormModeEnum.EDIT) {
+    } else if (formMode === RuleEditPageMode.EDIT) {
       const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule, "Are you sure want to save?");
       if (response) {
       }
@@ -332,7 +335,7 @@ export default function RuleEditPage() {
 
   // Hooks
   useEffect(() => {
-    if (formMode !== FormModeEnum.CREATE) {
+    if (formMode !== RuleEditPageMode.CREATE) {
       fetchRule();
     }
     setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
@@ -373,9 +376,9 @@ export default function RuleEditPage() {
       <div className="flex justify-between px-2 py-4">
         <p className="text-lg font-medium text-gray-700">
           {
-            formMode === FormModeEnum.CREATE
+            formMode === RuleEditPageMode.CREATE
               ? "Create New Rule"
-              : formMode === FormModeEnum.EDIT
+              : formMode === RuleEditPageMode.EDIT
                 ? "Edit Rule"
                 : "View Rule"
           }
@@ -653,18 +656,20 @@ export default function RuleEditPage() {
 
         {/* Display */}
         <div className="col-span-6 md:col-span-2 flex flex-col justify-between border rounded-md p-4">
-          <div>
-            <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Display</label>
-            <div className="mt-2">
-              <textarea name="display" rows={display ? display.split("\n").length + 2 : 10} className="block w-full rounded-md bg-white p-4 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-600 text-xs border font-mono overflow-x-auto whitespace-pre" value={display} readOnly />
-            </div>
+          <div className="grow overflow-auto">
+            <label htmlFor="display" className="block text-sm font-medium text-gray-900">Display</label>
+            <textarea
+              name="display"
+              className="textarea textarea-bordered w-full text-sm font-mono font-medium mt-2 h-80 md:h-[calc(100%-2.5rem)] resize-none"
+              value={display}
+              readOnly />
           </div>
           <div className="mt-4 flex justify-end gap-x-2">
             <button
-              className="btn btn-sm btn-primary px-8"
+              className="btn btn-primary px-8"
               onClick={handleSave}
             >
-              Save
+              <FontAwesomeIcon icon={faSave} width={12} /> Save
             </button>
           </div>
         </div>

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export enum FormModeEnum {
+export enum RuleEditPageMode {
   EDIT = "edit",
   CREATE = "create",
 }
@@ -24,11 +24,11 @@ export default function RulePage() {
 
   // UI Functions
   const onClickNewRow = async () => {
-    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.CREATE}`);
+    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.CREATE}`);
   }
 
   const onEdit = async (obj: RuleRowData) => {
-    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.EDIT}&id=${obj._id}`);
+    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${obj._id}`);
   }
 
   // CRUD Functions
