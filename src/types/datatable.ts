@@ -4,7 +4,6 @@ import { CustomCellRendererProps } from "ag-grid-react";
 export interface ActionCellRenderParams<TRowData> extends CustomCellRendererProps {
   onSave?: (obj: TRowData) => void;
   onDelete?: (obj: TRowData) => void;
-  onView?: (obj: TRowData) => void;
   onEdit?: (obj: TRowData) => void;
 }
 

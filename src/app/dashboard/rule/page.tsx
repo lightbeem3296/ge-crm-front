@@ -4,7 +4,7 @@ import React, { useCallback, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { DeleteButton, EditButton, NewButton, ViewButton } from "@/components/ui/datatable/button";
+import { DeleteButton, EditButton, NewButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export enum FormModeEnum {
-  VIEW = "view",
   EDIT = "edit",
   CREATE = "create",
 }
@@ -26,10 +25,6 @@ export default function RulePage() {
   // UI Functions
   const onClickNewRow = async () => {
     router.push(`/dashboard/rule/edit?mode=${FormModeEnum.CREATE}`);
-  }
-
-  const onView = async (obj: RuleRowData) => {
-    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.VIEW}&id=${obj._id}`);
   }
 
   const onEdit = async (obj: RuleRowData) => {
@@ -80,19 +75,17 @@ export default function RulePage() {
     {
       headerName: "Actions",
       field: "actions",
-      width: 160,
+      width: 120,
       pinned: "right",
       filter: false,
       editable: false,
       cellRenderer: (params: ActionCellRenderParams<RuleRowData>) => (
         <div className="h-full flex items-center gap-1">
-          <ViewButton onClick={() => params.onView ? params.onView(params.data) : alert("click")} />
           <EditButton onClick={() => params.onEdit ? params.onEdit(params.data) : alert("click")} />
           <DeleteButton onClick={() => params.onDelete ? params.onDelete(params.data) : alert("click")} />
         </div>
       ),
       cellRendererParams: {
-        onView: onView,
         onEdit: onEdit,
         onDelete: onDelete,
       },
