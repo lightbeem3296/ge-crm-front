@@ -35,7 +35,7 @@ export default function EmployeePage() {
         {props.value.map((tag: string, index: number) => (
           <span
             key={index}
-            className="bg-gray-200 text-xs py-1 px-3 border border-gray-300 rounded-full text-gray-800 font-medium"
+            className="bg-base-200 text-xs py-1 px-3 border border-base-300 rounded-full text-base-content font-medium"
           >
             {lookupValue(tagMappings, tag)}
           </span>
@@ -63,25 +63,25 @@ export default function EmployeePage() {
     };
 
     return (
-      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-gray-50 border border-gray-400 rounded-sm px-2 py-[0.18rem] my-auto">
+      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-base-100 border border-base-content/30 rounded-sm px-2 py-[0.18rem] my-auto">
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="flex gap-x-1 bg-gray-200 py-1 pl-3 pr-1 border border-gray-300 rounded-full text-xs text-gray-800 font-medium"
+            className="flex gap-x-1 bg-base-100 py-1 pl-3 pr-1 border border-base-content/30 rounded-full text-xs text-base-content font-medium"
           >
             <span>
               {lookupValue(tagMappings, tag)}
             </span>
             <button
               onClick={() => removeTag(tag)}
-              className="flex items-center justify-center rounded-full size-4 bg-gray-300 border border-gray-400 cursor-pointer"
+              className="flex items-center justify-center rounded-full size-4 bg-base-200 border border-base-content cursor-pointer"
             >
               ✕
             </button>
           </span>
         ))}
         <select
-          className="select select-sm select-bordered text-xs text-gray-800"
+          className="select select-sm select-bordered text-xs text-base-content"
           onChange={handleSelectChange}
           value=""
         >
@@ -315,7 +315,7 @@ export default function EmployeePage() {
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
-        <p className="text-lg font-medium text-gray-700">
+        <p className="text-lg font-medium text-base-content/80">
           Employee
         </p>
         <NewButton onClick={() => onClickNewRow()}>New Employee</NewButton>
