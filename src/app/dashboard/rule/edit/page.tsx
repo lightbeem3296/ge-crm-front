@@ -9,7 +9,7 @@ import { ApiCrudResponse } from "@/types/api";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { getRoleMappings } from "@/services/roleService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faHandPointLeft, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faEdit, faHandPointLeft, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
@@ -67,6 +67,10 @@ export default function RuleEditPage() {
   // UI Handlers
   const handleClickBack = () => {
     router.push("/dashboard/rule");
+  }
+
+  const handleClickViewEdit = () => {
+    router.push(`/dashboard/rule/edit?mode=${FormModeEnum.EDIT}&id=${id}`);
   }
 
   const handleChangeRuleName = (value: string) => {
@@ -373,12 +377,24 @@ export default function RuleEditPage() {
                 : "View Rule"
           }
         </p>
-        <button
-          className="btn btn-info btn-sm"
-          onClick={() => handleClickBack()}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} width={12} /> Back to Rules
-        </button>
+        <div className="flex justify-end gap-2">
+          <button
+            className="btn btn-accent btn-sm"
+            onClick={() => handleClickBack()}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} width={12} /> Back to Rules
+          </button>
+          {formMode === FormModeEnum.VIEW
+            ? (
+              <button
+                className="btn btn-info btn-sm"
+                onClick={() => handleClickViewEdit()}
+              >
+                <FontAwesomeIcon icon={faEdit} width={12} /> Edit
+              </button>
+            )
+            : null}
+        </div>
       </div>
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-6 gap-x-4 gap-y-4 w-full">
 
