@@ -10,7 +10,7 @@ import { extractKeys, lookupValue } from "@/utils/record";
 import { getRoleMappings } from "@/services/roleService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { RuleConditionCombinationOperator, ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
+import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
 import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
 
 const roleMappings = await getRoleMappings();
@@ -31,7 +31,7 @@ export default function RuleEditPage() {
     atom_rules: [
       {
         condition: {
-          combination: RuleConditionCombinationOperator.NONE,
+          combinator: RuleConditionCombinator.NONE,
           conditions: [
             {
               field: RuleConditionField.HOURS_WORKED,
@@ -90,7 +90,7 @@ export default function RuleEditPage() {
         ...rule.atom_rules,
         {
           condition: {
-            combination: RuleConditionCombinationOperator.NONE,
+            combinator: RuleConditionCombinator.NONE,
             conditions: [
               {
                 field: RuleConditionField.HOURS_WORKED,
@@ -125,9 +125,9 @@ export default function RuleEditPage() {
             ...atom_rule,
             condition: {
               ...atom_rule.condition,
-              combination: atom_rule.condition.combination === RuleConditionCombinationOperator.NONE || atom_rule.condition.combination === RuleConditionCombinationOperator.NOT
-                ? RuleConditionCombinationOperator.AND
-                : atom_rule.condition.combination,
+              combinator: atom_rule.condition.combinator === RuleConditionCombinator.NONE || atom_rule.condition.combinator === RuleConditionCombinator.NOT
+                ? RuleConditionCombinator.AND
+                : atom_rule.condition.combinator,
               conditions: [
                 ...atom_rule.condition.conditions,
                 {
@@ -143,7 +143,7 @@ export default function RuleEditPage() {
     });
   };
 
-  const handleChangeConditionCombination = (rule_index: number, value: string) => {
+  const handleChangeConditionCombinator = (rule_index: number, value: string) => {
     setRule({
       ...rule,
       atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
@@ -152,7 +152,7 @@ export default function RuleEditPage() {
             ...atom_rule,
             condition: {
               ...atom_rule.condition,
-              combination: value,
+              combinator: value,
             },
           }
           : atom_rule
@@ -451,20 +451,20 @@ export default function RuleEditPage() {
 
                       <div className="w-full flex flex-col gap-2">
 
-                        {/* Combination */}
+                        {/* Combinator */}
                         <label className="form-control">
                           <div className="label">
                             <span className="label-text">Combinator</span>
                           </div>
                           <select
                             className="select select-bordered select-sm"
-                            value={atom_rule.condition.combination}
-                            onChange={(e) => handleChangeConditionCombination(rule_index, e.target.value)}
+                            value={atom_rule.condition.combinator}
+                            onChange={(e) => handleChangeConditionCombinator(rule_index, e.target.value)}
                           >
                             <option disabled value="">Select an operator</option>
-                            {ruleConditionCombinationOperatorCodes.map((key) => (
-                              <option key={key} value={key} disabled={atom_rule.condition.conditions.length > 1 && (key === RuleConditionCombinationOperator.NONE || key === RuleConditionCombinationOperator.NOT)}>
-                                {lookupValue(ruleConditionCombinationOperatorMap, key)}
+                            {ruleConditionCombinatorCodes.map((key) => (
+                              <option key={key} value={key} disabled={atom_rule.condition.conditions.length > 1 && (key === RuleConditionCombinator.NONE || key === RuleConditionCombinator.NOT)}>
+                                {lookupValue(ruleConditionCombinatorMap, key)}
                               </option>
                             ))}
                           </select>

@@ -46,21 +46,21 @@ export interface AtomCondition {
   value: string | number;
 }
 
-export enum RuleConditionCombinationOperator {
+export enum RuleConditionCombinator {
   NONE = "NONE",
   NOT = "NOT",
   AND = "AND",
   OR = "OR",
 }
-export const ruleConditionCombinationOperatorMap: Record<string, string> = {
+export const ruleConditionCombinatorMap: Record<string, string> = {
   "NONE": "None",
   "NOT": "NOT",
   "AND": "AND",
   "OR": "OR",
 }
-export const ruleConditionCombinationOperatorCodes = extractKeys(ruleConditionCombinationOperatorMap)
+export const ruleConditionCombinatorCodes = extractKeys(ruleConditionCombinatorMap)
 
 export interface RuleCondition {
-  combination: string;
+  combinator: string;
   conditions: AtomCondition[];
 }
