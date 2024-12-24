@@ -117,13 +117,24 @@ export interface RuleCondition {
   conditions: AtomCondition[];
 }
 
-export const ruleActionMap: Record<string, string> = {
+export enum RuleActionField {
+  SALARY = "Salary",
+  BONUS = "Bonus",
+  DEDUCTION = "Deduction",
+}
+export const ruleActionFieldMap: Record<string, string> = {
   "Salary": "Salary",
   "Bonus": "Bonus",
   "Deduction": "Deduction",
 }
-export const ruleActionMapCodes = extractKeys(ruleActionMap);
+export const ruleActionFieldCodes = extractKeys(ruleActionFieldMap);
 
+export enum RuleActionOperator {
+  ADD = "+",
+  SUBTRACT = "-",
+  MULTIPLY = "*",
+  DEVIDE = "/",
+}
 export const ruleActionOperatorMap: Record<string, string> = {
   "+": "Add",
   "-": "Subtract",

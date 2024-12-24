@@ -2,8 +2,10 @@ import { FormModeEnum } from "@/app/dashboard/rule/page";
 import { axiosHelper } from "@/lib/axios";
 import { getRoleMappings } from "@/services/roleService";
 import { ApiCrudResponse } from "@/types/api";
-import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, RuleRowData, RuleConditionNumberOperator, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap, RuleConditionCombinationOperator } from "@/types/datatable";
+import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionFieldMap, ruleActionFieldCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, RuleRowData, RuleConditionNumberOperator, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap, RuleConditionCombinationOperator, RuleActionField, RuleActionOperator } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
 import { useEffect, useState } from "react";
 
@@ -36,6 +38,39 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
     })
   }
 
+  const handleClickNewAtomRule = () => {
+    setRule({
+      ...rule,
+      atom_rules: [
+        ...rule.atom_rules,
+        {
+          condition: {
+            combination: RuleConditionCombinationOperator.NONE,
+            conditions: [
+              {
+                field: RuleConditionField.HOURS_WORKED,
+                operator: RuleConditionNumberOperator.GTE,
+                value: 40.0,
+              }
+            ],
+          },
+          action: {
+            field: RuleActionField.SALARY,
+            operator: RuleActionOperator.MULTIPLY,
+            value: 1.5,
+          },
+        },
+      ]
+    });
+  }
+
+  const handleClickDeleteAtomRule = (rule_index: number) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.filter((atom_rule, r_index) => r_index !== rule_index),
+    });
+  }
+
   const handleClickNewAtomCondition = (rule_index: number) => {
     setRule({
       ...rule,
@@ -45,6 +80,9 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
             ...atom_rule,
             condition: {
               ...atom_rule.condition,
+              combination: atom_rule.condition.combination === RuleConditionCombinationOperator.NONE || atom_rule.condition.combination === RuleConditionCombinationOperator.NOT
+                ? RuleConditionCombinationOperator.AND
+                : atom_rule.condition.combination,
               conditions: [
                 ...atom_rule.condition.conditions,
                 {
@@ -228,8 +266,24 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
     });
   }
 
-  const handleSave = () => {
-    closeForm();
+  const handleSave = async () => {
+    if (formMode === FormModeEnum.CREATE) {
+      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined, "Are you sure want to save?");
+      if (response) {
+        setRule({
+          ...rule,
+          _id: response.detail.object_id,
+        });
+        closeForm();
+      }
+    } else if (formMode === FormModeEnum.EDIT) {
+      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule, "Are you sure want to save?");
+      if (response) {
+        closeForm();
+      }
+    } else {
+      alert(`Unhandled form mode: ${formMode}`);
+    }
   }
 
   // Data functions
@@ -310,15 +364,25 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                 </div>
               </div>
 
+              <div className="col-span-6">
+                <button
+                  className="btn btn-primary btn-sm btn-outline"
+                  onClick={() => handleClickNewAtomRule()}
+                >
+                  <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Rule
+                </button>
+              </div>
+
               {/* Edit Rule */}
               <div className="join join-vertical col-span-6 rounded-md">
                 {formMode !== FormModeEnum.VIEW
                   ? rule.atom_rules.map((atom_rule, rule_index) => (
+                    // Atom Rules
                     <div
                       key={rule_index}
                       className="collapse collapse-plus join-item border border-base-300"
                     >
-                      <input type="checkbox" className="peer" defaultChecked={rule_index === 0} />
+                      <input type="checkbox" className="peer" />
                       <div className="collapse-title h-8 text-sm font-medium">Atom Rule {rule_index + 1}</div>
                       <div className="collapse-content">
                         <div className="w-full grid grid-cols-6 gap-2">
@@ -350,21 +414,21 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                               {/* New Atom Condition Button */}
                               <div className="col-span-6 sm:col-span-2 flex justify-center place-items-end">
                                 <button
-                                  className="btn btn-sm btn-primary w-full"
+                                  className="btn btn-sm btn-primary btn-outline w-full"
                                   onClick={() => handleClickNewAtomCondition(rule_index)}
                                 >
-                                  Add Atom Condition
+                                  <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Condition
                                 </button>
                               </div>
                             </div>
 
                             {/* Atom Conditions */}
                             {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
-                              <div key={condition_index} className="grid grid-cols-7 gap-2 sm:col-span-6 border rounded-md p-2">
-                                <div className="text-sm font-medium p-2 border-b col-span-7">Atom Contition {condition_index + 1}</div>
+                              <div key={condition_index} className="grid grid-cols-8 gap-2 sm:col-span-6 border rounded-md p-2">
+                                <div className="text-sm font-medium p-2 border-b col-span-8">Atom Contition {condition_index + 1}</div>
 
                                 {/* Condition Field */}
-                                <label className="form-control w-full col-span-7 sm:col-span-2">
+                                <label className="form-control w-full col-span-8 sm:col-span-2">
                                   <div className="label">
                                     <span className="label-text">Field</span>
                                   </div>
@@ -383,7 +447,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 </label>
 
                                 {/* Condition Operator */}
-                                <label className="form-control w-full col-span-7 sm:col-span-2">
+                                <label className="form-control w-full col-span-8 sm:col-span-2">
                                   <div className="label">
                                     <span className="label-text">Operator</span>
                                   </div>
@@ -408,7 +472,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 </label>
 
                                 {/* Condition Value */}
-                                <label className="form-control w-full col-span-7 sm:col-span-2">
+                                <label className="form-control w-full col-span-8 sm:col-span-2">
                                   <div className="label">
                                     <span className="label-text">Value</span>
                                   </div>
@@ -432,12 +496,12 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                       onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
                                     />}
                                 </label>
-                                <div className="col-span-7 sm:col-span-1 flex justify-center place-items-end">
+                                <div className="col-span-8 sm:col-span-2 flex justify-center place-items-end">
                                   <button
-                                    className="btn btn-sm btn-error w-full"
+                                    className="btn btn-sm btn-error btn-outline w-full"
                                     onClick={() => { handleClickDeleteAtomCondition(rule_index, condition_index) }}
                                   >
-                                    Delete
+                                    <FontAwesomeIcon icon={faTrash} width={12} />Delete
                                   </button>
                                 </div>
                               </div>
@@ -459,9 +523,9 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 onChange={(e) => handleChangeActionField(rule_index, e.target.value)}
                               >
                                 <option disabled value="">Select a field</option>
-                                {ruleActionMapCodes.map((key) => (
+                                {ruleActionFieldCodes.map((key) => (
                                   <option key={key} value={key}>
-                                    {lookupValue(ruleActionMap, key)}
+                                    {lookupValue(ruleActionFieldMap, key)}
                                   </option>
                                 ))}
                               </select>
@@ -498,6 +562,16 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 onChange={(e) => handleChangeActionValue(rule_index, e.target.value)}
                               />
                             </label>
+                          </div>
+
+                          {/* Delete Button */}
+                          <div className="col-span-6 flex justify-end gap-2 p-2">
+                            <button
+                              className="btn btn-sm btn-error btn-outline"
+                              onClick={(e) => handleClickDeleteAtomRule(rule_index)}
+                            >
+                              <FontAwesomeIcon icon={faTrash} width={12} />Delete Atom Rule
+                            </button>
                           </div>
                         </div>
                       </div>
