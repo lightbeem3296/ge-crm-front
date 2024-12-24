@@ -106,6 +106,30 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
     });
   }
 
+  const handleChangeConditionOperator = (rule_index: number, condition_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
+                c_index === condition_index
+                  ? {
+                    ...atom_condition,
+                    operator: value,
+                  }
+                  : atom_condition
+              ),
+            },
+          }
+          : atom_rule
+      ),
+    });
+  }
+
   const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event?.target;
     console.log(name, value);
@@ -261,7 +285,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                   <select
                                     className="select select-bordered select-sm"
                                     value={atom_condition.operator}
-                                    onChange={handleSelectChange}
+                                    onChange={(e) => handleChangeConditionOperator(rule_index, condition_index, e.target.value)}
                                   >
                                     <option disabled value="">Select an operator</option>
                                     {ruleConditionOperatorCodes.map((key) => (
