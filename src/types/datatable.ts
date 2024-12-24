@@ -64,7 +64,7 @@ export const ruleConditionFieldMap: Record<string, string> = {
 }
 export const ruleConditionFieldCodes = extractKeys(ruleConditionFieldMap);
 
-export enum RuleConditionOperator {
+export enum RuleConditionNumberOperator {
   EQ = "==",
   NE = "!=",
   GT = ">",
@@ -72,7 +72,7 @@ export enum RuleConditionOperator {
   LT = "<",
   LTE = "<=",
 }
-export const ruleConditionOperatorMap: Record<string, string> = {
+export const ruleConditionNumberOperatorMap: Record<string, string> = {
   "==": "EQ",
   "!=": "NE",
   ">": "GT",
@@ -80,7 +80,17 @@ export const ruleConditionOperatorMap: Record<string, string> = {
   "<": "LT",
   "<=": "LTE",
 }
-export const ruleConditionOperatorCodes = extractKeys(ruleConditionOperatorMap);
+export const ruleConditionNumberOperatorCodes = extractKeys(ruleConditionNumberOperatorMap);
+
+export enum RuleConditionObjectOperator {
+  EQ = "==",
+  NE = "!=",
+}
+export const ruleConditionObjectOperatorMap: Record<string, string> = {
+  "==": "EQ",
+  "!=": "NE",
+}
+export const ruleConditionObjectOperatorCodes = extractKeys(ruleConditionObjectOperatorMap);
 
 export interface AtomCondition {
   field: string;

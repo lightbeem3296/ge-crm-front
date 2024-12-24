@@ -2,7 +2,7 @@ import { FormModeEnum } from "@/app/dashboard/rule/page";
 import { axiosHelper } from "@/lib/axios";
 import { getRoleMappings } from "@/services/roleService";
 import { ApiCrudResponse } from "@/types/api";
-import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionOperatorCodes, ruleConditionOperatorMap, RuleRowData, RuleConditionOperator } from "@/types/datatable";
+import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, RuleRowData, RuleConditionNumberOperator, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
 import { useEffect, useState } from "react";
@@ -49,7 +49,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                 ...atom_rule.condition.conditions,
                 {
                   field: RuleConditionField.ROLE,
-                  operator: RuleConditionOperator.EQ,
+                  operator: RuleConditionNumberOperator.EQ,
                   value: roleCodes[0],
                 },
               ],
@@ -110,6 +110,8 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                   ? {
                     ...atom_condition,
                     field: value,
+                    operator: value === RuleConditionField.ROLE ? ruleConditionObjectOperatorCodes[0] : ruleConditionNumberOperatorCodes[0],
+                    value: value === RuleConditionField.ROLE ? roleCodes[0] : 1.0,
                   }
                   : atom_condition
               ),
@@ -224,16 +226,6 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
           : atom_rule
       ),
     });
-  }
-
-  const handleChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event?.target;
-    console.log(name, value);
-  }
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event?.target;
-    console.log(name, value);
   }
 
   const handleSave = () => {
@@ -384,11 +376,17 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                     onChange={(e) => handleChangeConditionOperator(rule_index, condition_index, e.target.value)}
                                   >
                                     <option disabled value="">Select an operator</option>
-                                    {ruleConditionOperatorCodes.map((key) => (
-                                      <option key={key} value={key}>
-                                        {lookupValue(ruleConditionOperatorMap, key)}
-                                      </option>
-                                    ))}
+                                    {atom_condition.field === RuleConditionField.ROLE
+                                      ? ruleConditionObjectOperatorCodes.map((key) => (
+                                        <option key={key} value={key}>
+                                          {lookupValue(ruleConditionObjectOperatorMap, key)}
+                                        </option>
+                                      ))
+                                      : ruleConditionNumberOperatorCodes.map((key) => (
+                                        <option key={key} value={key}>
+                                          {lookupValue(ruleConditionNumberOperatorMap, key)}
+                                        </option>))
+                                    }
                                   </select>
                                 </label>
 
