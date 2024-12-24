@@ -2,7 +2,7 @@
 
 import { Bars3Icon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { Dispatch, SetStateAction } from 'react'
-import ThemeController from '../ui/ThemeController';
+import ThemeController from '../ui/theme/ThemeController';
 
 interface HeaderProps {
   setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>;

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
+import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
 import { getRoleMappings } from "@/services/roleService";
@@ -13,6 +13,7 @@ import { EmployeeRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { ActionCellRenderParams } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
+import { myTheme } from "@/components/ui/theme/agGrid";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -312,6 +313,10 @@ export default function EmployeePage() {
     gridRef.current?.api.redrawRows();
   };
 
+  const theme = useMemo<Theme | "legacy">(() => {
+    return myTheme;
+  }, []);
+
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
@@ -326,6 +331,7 @@ export default function EmployeePage() {
             ref={gridRef}
             columnDefs={colDefs}
             rowData={rowDataList}
+            theme={theme}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}

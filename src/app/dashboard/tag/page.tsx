@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent } from "ag-grid-community";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, TagRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { myTheme } from "@/components/ui/theme/agGrid";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -126,6 +127,10 @@ export default function TagPage() {
     gridRef.current?.api.redrawRows();
   };
 
+  const theme = useMemo<Theme | "legacy">(() => {
+    return myTheme;
+  }, []);
+
   return (
     <div>
       <div className="flex justify-between px-2 py-4">
@@ -140,6 +145,7 @@ export default function TagPage() {
             ref={gridRef}
             columnDefs={colDefs}
             rowData={rowDataList}
+            theme={theme}
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}

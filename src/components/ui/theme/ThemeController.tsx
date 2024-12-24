@@ -11,102 +11,6 @@ const themeList = [
     name: "dark",
     value: "dark",
   },
-  {
-    name: "cupcake",
-    value: "cupcake",
-  },
-  {
-    name: "emerald",
-    value: "emerald",
-  },
-  {
-    name: "synthwave",
-    value: "synthwave",
-  },
-  {
-    name: "retro",
-    value: "retro",
-  },
-  {
-    name: "valentine",
-    value: "valentine",
-  },
-  {
-    name: "halloween",
-    value: "halloween",
-  },
-  {
-    name: "forest",
-    value: "forest",
-  },
-  {
-    name: "aqua",
-    value: "aqua",
-  },
-  {
-    name: "pastel",
-    value: "pastel",
-  },
-  {
-    name: "fantasy",
-    value: "fantasy",
-  },
-  {
-    name: "wireframe",
-    value: "wireframe",
-  },
-  {
-    name: "black",
-    value: "black",
-  },
-  {
-    name: "luxury",
-    value: "luxury",
-  },
-  {
-    name: "dracula",
-    value: "dracula",
-  },
-  {
-    name: "cmyk",
-    value: "cmyk",
-  },
-  {
-    name: "autumn",
-    value: "autumn",
-  },
-  {
-    name: "business",
-    value: "business",
-  },
-  {
-    name: "lemonade",
-    value: "lemonade",
-  },
-  {
-    name: "night",
-    value: "night",
-  },
-  {
-    name: "coffee",
-    value: "coffee",
-  },
-  {
-    name: "winter",
-    value: "winter",
-  },
-  {
-    name: "dim",
-    value: "dim",
-  },
-  {
-    name: "nord",
-    value: "nord",
-  },
-  {
-    name: "sunset",
-    value: "sunset",
-  },
 ];
 
 export default function ThemeController() {
@@ -119,6 +23,7 @@ export default function ThemeController() {
 
   const handleChangeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTheme(event.target.value);
+    window.location.reload();
   }
 
   return (
