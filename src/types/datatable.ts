@@ -24,8 +24,9 @@ export interface EmployeeRowData extends BaseRowData {
   employment_end_date: string;
   salary_type: string;
   hourly_rate: number;
-  salary: number;
   hours_worked: number;
+  points_earned: number;
+  salary: number;
   bonus: number;
   deduction: number;
   tags: string[];

@@ -106,8 +106,9 @@ export default function EmployeePage() {
       employment_end_date: "",
       salary_type: "",
       hourly_rate: 0,
-      salary: 0,
       hours_worked: 0,
+      points_earned: 0,
+      salary: 0,
       bonus: 0,
       deduction: 0,
       tags: [],
@@ -241,14 +242,19 @@ export default function EmployeePage() {
       width: 140,
     },
     {
-      headerName: "Salary",
-      field: "salary",
-      width: 100,
-    },
-    {
       headerName: "Hours Worked",
       field: "hours_worked",
       width: 150,
+    },
+    {
+      headerName: "Points Earned",
+      field: "points_earned",
+      width: 150,
+    },
+    {
+      headerName: "Salary",
+      field: "salary",
+      width: 100,
     },
     {
       headerName: "Bonus",
