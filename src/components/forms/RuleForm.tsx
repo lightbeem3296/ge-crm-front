@@ -334,6 +334,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
               }
             </DialogTitle>
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-6 gap-x-4 gap-y-4 w-full">
+
               {/* Rulename */}
               <div className="col-span-6">
                 <label htmlFor="rule-name" className="block text-sm font-medium text-gray-900">Rule name</label>
@@ -364,7 +365,8 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                 </div>
               </div>
 
-              <div className="col-span-6">
+              {/* New Atom Rule Button */}
+              <div className={`col-span-6 ${formMode === FormModeEnum.VIEW ? "hidden" : ""}`}>
                 <button
                   className="btn btn-primary btn-sm btn-outline"
                   onClick={() => handleClickNewAtomRule()}

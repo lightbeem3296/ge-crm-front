@@ -6,7 +6,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, EditButton, NewButton, ViewButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
+import { ActionCellRenderParams, RuleActionField, RuleActionOperator, RuleConditionCombinationOperator, RuleConditionField, RuleConditionNumberOperator, RuleRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import RuleForm from "@/components/forms/RuleForm";
 
@@ -43,7 +43,25 @@ export default function RulePage() {
     setFormData({
       rule_name: "New Rule",
       description: "This is a new Rule.",
-      atom_rules: [],
+      atom_rules: [
+        {
+          condition: {
+            combination: RuleConditionCombinationOperator.NONE,
+            conditions: [
+              {
+                field: RuleConditionField.HOURS_WORKED,
+                operator: RuleConditionNumberOperator.GTE,
+                value: 40.0,
+              }
+            ],
+          },
+          action: {
+            field: RuleActionField.SALARY,
+            operator: RuleActionOperator.MULTIPLY,
+            value: 1.5,
+          },
+        },
+      ],
     });
     setFormMode(FormModeEnum.CREATE);
     openForm();
