@@ -36,7 +36,7 @@ export default function EmployeePage() {
         {props.value.map((tag: string, index: number) => (
           <span
             key={index}
-            className="bg-base-200 text-xs py-1 px-3 border border-base-300 rounded-full text-base-content font-medium"
+            className="bg-base-200 text-xs py-1 px-3 border border-base-content/30 rounded-full text-base-content font-medium"
           >
             {lookupValue(tagMappings, tag)}
           </span>
@@ -68,21 +68,21 @@ export default function EmployeePage() {
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="flex gap-x-1 bg-base-100 py-1 pl-3 pr-1 border border-base-content/30 rounded-full text-xs text-base-content font-medium"
+            className="flex gap-x-1 bg-base-200 py-1 pl-3 pr-1 border border-base-content/30 rounded-full text-xs text-base-content font-medium"
           >
             <span>
               {lookupValue(tagMappings, tag)}
             </span>
             <button
               onClick={() => removeTag(tag)}
-              className="flex items-center justify-center rounded-full size-4 bg-base-200 border border-base-content cursor-pointer"
+              className="flex items-center justify-center rounded-full size-4 bg-base-200 border border-base-content/30 cursor-pointer"
             >
               ✕
             </button>
           </span>
         ))}
         <select
-          className="select select-sm select-bordered text-xs text-base-content"
+          className="select select-sm select-bordered bg-base-200 text-xs text-base-content"
           onChange={handleSelectChange}
           value=""
         >
