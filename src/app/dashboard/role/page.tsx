@@ -128,7 +128,7 @@ export default function RolePage() {
   };
 
   const theme = useMemo<Theme | "legacy">(() => {
-    return myTheme;
+    return myTheme();
   }, []);
 
   return (

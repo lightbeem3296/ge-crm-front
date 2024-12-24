@@ -107,7 +107,7 @@ export default function RulePage() {
   };
 
   const theme = useMemo<Theme | "legacy">(() => {
-    return myTheme;
+    return myTheme();
   }, []);
 
   return (

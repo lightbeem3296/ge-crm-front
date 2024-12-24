@@ -128,7 +128,7 @@ export default function SalaryTypePage() {
   };
 
   const theme = useMemo<Theme | "legacy">(() => {
-    return myTheme;
+    return myTheme();
   }, []);
 
   return (

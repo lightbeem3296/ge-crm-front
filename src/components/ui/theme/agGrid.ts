@@ -3,7 +3,7 @@ import { themeQuartz } from "ag-grid-community";
 export const lightTheme = themeQuartz;
 
 export const darkTheme = themeQuartz.withParams({
-  borderColor:'rgb(50, 50, 50)',
+  borderColor: 'rgb(50, 50, 50)',
   backgroundColor: 'rgb(25, 30, 36)',
   foregroundColor: 'rgb(160, 160, 160)',
   headerTextColor: 'rgb(160, 160, 160)',
@@ -12,4 +12,9 @@ export const darkTheme = themeQuartz.withParams({
   headerColumnResizeHandleColor: 'rgb(126, 126, 132)',
 });
 
-export const myTheme = localStorage.getItem("theme") === "light" ? lightTheme : darkTheme;
+export const myTheme = () => {
+  if (typeof window !== "undefined" && localStorage?.getItem("theme") === "light") {
+    return lightTheme;
+  }
+  return darkTheme;
+}
