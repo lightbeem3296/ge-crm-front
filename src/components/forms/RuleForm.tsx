@@ -2,7 +2,7 @@ import { FormModeEnum } from "@/app/dashboard/rule/page";
 import { axiosHelper } from "@/lib/axios";
 import { getRoleMappings } from "@/services/roleService";
 import { ApiCrudResponse } from "@/types/api";
-import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, RuleRowData, RuleConditionNumberOperator, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/datatable";
+import { ruleConditionCombinationOperatorCodes, ruleConditionCombinationOperatorMap, ruleActionMap, ruleActionMapCodes, ruleActionOperatorCodes, ruleActionOperatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, RuleRowData, RuleConditionNumberOperator, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap, RuleConditionCombinationOperator } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react"
 import { useEffect, useState } from "react";
@@ -234,12 +234,29 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
 
   // Data functions
   const updateDisplay = async () => {
-    const response = await axiosHelper.post<RuleRowData, string>("/rule/display", rule);
-    if (response) {
-      setDisplay(response);
+    let display = "";
+    if (rule.atom_rules.length == 0) {
+      display = "# NO RULES";
     } else {
-      setDisplay("# ERROR")
+      let conditions_valid = true;
+      for (let i = 0; i < rule.atom_rules.length; i++) {
+        const atom_rule = rule.atom_rules[i];
+        if (atom_rule.condition.conditions.length == 0) {
+          display = `# NO CONDITIONS FOR ${i + 1}-th RULE`;
+          conditions_valid = false;
+          break;
+        }
+      }
+      if (conditions_valid) {
+        const response = await axiosHelper.post<RuleRowData, string>("/rule/display", rule);
+        if (response) {
+          display = response;
+        } else {
+          display = "# SERVER ERROR";
+        }
+      }
     }
+    setDisplay(display);
   }
 
   // Hooks
@@ -323,7 +340,7 @@ export default function RuleForm({ isFormOpen, formMode, rule, setRule, closeFor
                                 >
                                   <option disabled value="">Select an operator</option>
                                   {ruleConditionCombinationOperatorCodes.map((key) => (
-                                    <option key={key} value={key}>
+                                    <option key={key} value={key} disabled={atom_rule.condition.conditions.length > 1 && (key === RuleConditionCombinationOperator.NONE || key === RuleConditionCombinationOperator.NOT)}>
                                       {lookupValue(ruleConditionCombinationOperatorMap, key)}
                                     </option>
                                   ))}
