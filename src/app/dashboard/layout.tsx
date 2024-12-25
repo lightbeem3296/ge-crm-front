@@ -12,9 +12,9 @@ export default function Example({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-base-100 flex min-h-screen">
       <Sidebar mobileFiltersOpen={mobileFiltersOpen} setMobileFiltersOpen={setMobileFiltersOpen} />
-      <main className="flex-1 w-full z-10 lg:ml-72">
+      <main className="flex-1 w-full z-10 lg:ml-60">
         <Navbar setMobileFiltersOpen={setMobileFiltersOpen} />
-        <div className='rounded-md px-4 mt-4 overflow-auto max-w-screen-2xl mx-auto'>
+        <div className='rounded-md px-4 mt-4 overflow-auto'>
           {children}
           <Footer />
         </div>

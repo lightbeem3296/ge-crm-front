@@ -67,7 +67,7 @@ interface SidebarProps {
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
   const pathname = usePathname();
   return (
-    <div className="w-72 h-full hidden lg:flex flex-col bg-neutral-900 p-8 z-10 fixed">
+    <div className="w-60 h-full hidden lg:flex flex-col bg-neutral-900 p-8 z-10 fixed">
       <div className='grow-0 py-4 border-b border-gray-600'>
         <p className='text-md text-gray-200 font-medium uppercase'>Admin Panel</p>
         <p className='text-sm text-gray-400'>Employee & Payroll</p>
