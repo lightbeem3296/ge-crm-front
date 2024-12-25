@@ -25,8 +25,6 @@ export default function EmployeePage() {
   const gridRef = useRef<AgGridReact>(null);
   const [rowDataList, setRowDataList] = useState<EmployeeRowData[]>();
 
-  console.log(roleMappings);
-
   // Custom Components
   const TagsRenderer = (props: any) => {
     return (

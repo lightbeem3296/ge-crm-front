@@ -67,7 +67,6 @@ export class AxiosHelper {
 
       // Extract the filename from the response headers
       const contentDisposition = response.headers["content-disposition"];
-      console.log("contentDisposition", contentDisposition, JSON.stringify(response.headers));
       const filename = contentDisposition
         ? contentDisposition.split("filename=")[1].replace(/"/g, "")
         : "downloaded-file";
