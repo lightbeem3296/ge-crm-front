@@ -1,9 +1,9 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
-import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings, } from "@/types/filter";
+import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
 import { PayrollExportFilterField } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface FilterComponentProps {
   field: PayrollExportFilterField
@@ -18,15 +18,36 @@ const roleCodes = extractKeys(roleMappings);
 const salaryTypeMappings = await getSalaryTypeMappings();
 const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
-export default function FilterComponent({ field, label, type, setFilterField: setValue }: FilterComponentProps) {
-  const [filterValue, setFilterValue] = useState<string | [string, string]>("");
+export default function FilterComponent({ field, label, type, setFilterField }: FilterComponentProps) {
+  const [filterValue, setFilterValue] = useState<string>("");
+  const [filterValues, setFilterValues] = useState<[string, string]>(["", ""]);
   const [filterCondition, setFilterCondition] = useState<string>("");
-  const [caseSensitive, setCaseSensitive] = useState<boolean>();
+  const [filterCaseSensitive, setFilterCaseSensitive] = useState<boolean>(false);
 
   // UI Handlers
   const handleChangeFilterCondition = (value: string) => {
     setFilterCondition(value);
   }
+
+  const handleChangeCaseSensitive = (value: boolean) => {
+    setFilterCaseSensitive(value);
+  }
+
+  const handleChangeFilterValue = (value: string) => {
+    setFilterValue(value);
+  }
+
+  const handleChangeFilterValues = (value: [string?, string?]) => {
+    setFilterValues([
+      value[0] || filterValues[0],
+      value[1] || filterValues[1],
+    ]);
+  }
+
+  // Hooks
+  useEffect(() => {
+
+  }, [filterValue, filterValues, filterCondition, filterCaseSensitive]);
 
   return (
     <div>
@@ -64,6 +85,7 @@ export default function FilterComponent({ field, label, type, setFilterField: se
         {/* Input Value */}
         {
           filterCondition !== ""
+
             // String Filter
             ? type === FilterType.STRING_FILTER
               ? (
@@ -71,11 +93,16 @@ export default function FilterComponent({ field, label, type, setFilterField: se
                   <input
                     type="text"
                     className="input input-sm input-bordered w-full"
-                    onChange={(e) => setFilterValue(e.target.value)}
+                    onChange={(e) => handleChangeFilterValue(e.target.value)}
                   />
                   <div className="form-control">
                     <label className="cursor-pointer label flex justify-start gap-2">
-                      <input type="checkbox" className="checkbox checkbox-sm checkbox-info" />
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm checkbox-info"
+                        checked={filterCaseSensitive}
+                        onChange={(e) => handleChangeCaseSensitive(e.target.checked)}
+                      />
                       <span className="label-text">Case Sensitive</span>
                     </label>
                   </div>
@@ -90,7 +117,7 @@ export default function FilterComponent({ field, label, type, setFilterField: se
                   ? <select
                     className="select select-bordered select-sm"
                     value={filterValue}
-                    onChange={(e) => setFilterValue(e.target.value)}
+                    onChange={(e) => handleChangeFilterValue(e.target.value)}
                   >
                     <option value="">Not Selected</option>
                     {roleCodes.map((key) => (
@@ -103,7 +130,7 @@ export default function FilterComponent({ field, label, type, setFilterField: se
                     ? <select
                       className="select select-bordered select-sm"
                       value={filterValue}
-                      onChange={(e) => setFilterValue(e.target.value)}
+                      onChange={(e) => handleChangeFilterValue(e.target.value)}
                     >
                       <option value="">Not Selected</option>
                       {salaryTypeCodes.map((key) => (
@@ -115,7 +142,7 @@ export default function FilterComponent({ field, label, type, setFilterField: se
                     : <input
                       type="text"
                       className="input input-sm input-bordered w-full"
-                      onChange={(e) => setFilterValue(e.target.value)}
+                      onChange={(e) => handleChangeFilterValue(e.target.value)}
                     />
 
                 // Comparable Filter
@@ -133,12 +160,12 @@ export default function FilterComponent({ field, label, type, setFilterField: se
                         <input
                           type="text"
                           className="input input-sm input-bordered w-full"
-                          onChange={(e) => setFilterValue(e.target.value)}
+                          onChange={(e) => handleChangeFilterValues([e.target.value, undefined])}
                         />
                         <input
                           type="text"
                           className="input input-sm input-bordered w-full"
-                          onChange={(e) => setFilterValue(e.target.value)}
+                          onChange={(e) => handleChangeFilterValues([undefined, e.target.value])}
                         />
                       </div>
                     )
@@ -147,7 +174,7 @@ export default function FilterComponent({ field, label, type, setFilterField: se
                     : <input
                       type="text"
                       className="input input-sm input-bordered w-full"
-                      onChange={(e) => setFilterValue(e.target.value)}
+                      onChange={(e) => handleChangeFilterValue(e.target.value)}
                     />
                   : null
             : null
