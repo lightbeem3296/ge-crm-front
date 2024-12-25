@@ -1,17 +1,23 @@
 import { extractKeys } from "@/utils/record"
 
-export enum ValueFilterCondition {
+export enum FilterType {
+  STRING_FILTER = "string",
+  OBJECT_FILTER = "object",
+  COMPARIBLE_FILTER = "comparable",
+}
+
+export enum ObjectFilterCondition {
   NE = "ne",
   EQ = "eq",
 }
-export const valueFilterConditionMappings: Record<string, string> = {
+export const objectFilterConditionMappings: Record<string, string> = {
   "ne": "NE",
   "eq": "EQ",
 }
-export const valueFilterConditionCodes = extractKeys(valueFilterConditionMappings);
-export interface ValueFilterField<T> {
-  valie: T,
-  condition: ValueFilterCondition
+export const objectFilterConditionCodes = extractKeys(objectFilterConditionMappings);
+export interface ObjectFilterField {
+  value: string,
+  condition: ObjectFilterCondition
 }
 
 export enum StringFilterCondition {
@@ -28,7 +34,7 @@ export const stringFilterConditionMappings: Record<string, string> = {
   "ends_with": "ENDS_WITH",
   "contains": "CONTAINS",
 }
-export const stringFIlterConditionCodes = extractKeys(stringFilterConditionMappings);
+export const stringFilterConditionCodes = extractKeys(stringFilterConditionMappings);
 export interface StringFilterField {
   value: string
   condition: StringFilterCondition
@@ -59,8 +65,8 @@ export const comparableFilterConditionMappings: Record<string, string> = {
   "gte_le": "GTE_LT",  // [min, max)
   "gte_lte": "GTE_LTE",  // [min, max]
 }
-export const comparibleFilterConditionCodes = extractKeys(comparableFilterConditionMappings);
-export interface ComparableFilterField<T> {
-  value: T | [T, T],
+export const comparableFilterConditionCodes = extractKeys(comparableFilterConditionMappings);
+export interface ComparableFilterField {
+  value: string | [string, string],
   condition: ComparableFilterCondition,
 }

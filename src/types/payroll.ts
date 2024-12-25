@@ -1,25 +1,41 @@
 import { extractKeys } from "@/utils/record";
-import { ComparableFilterField, StringFilterField, ValueFilterField } from "./filter";
+import { ComparableFilterField, StringFilterField, ObjectFilterField } from "./filter";
 
 export interface FieldMapItem {
   field: string,
   title: string,
 }
 
+export enum PayrollExportFilterField {
+  USERNAME = "username",
+  M_NR = "m_nr",
+  ROLE = "role",
+  DEPARTMENT = "department",
+  EMPLOYMENT_START_DATE = "employment_start_date",
+  EMPLOYMENT_END_DATE = "employment_end_date",
+  SALARY_TYPE = "salary_type",
+  HOURLY_RATE = "hourly_rate",
+  HOURS_WORKED = "hours_worked",
+  POINTS_EARNED = "points_earned",
+  SALARY = "salary",
+  BONUS = "bonus",
+  DEDUCTION = "deduction",
+}
+
 export interface PayrollExportFilter {
   username?: StringFilterField,
-  m_nr?: ValueFilterField<number>,
-  role?: ValueFilterField<string>,
+  m_nr?: ObjectFilterField,
+  role?: ObjectFilterField,
   department?: StringFilterField,
-  employment_start_date?: ComparableFilterField<string>,
-  employment_end_date?: ComparableFilterField<string>,
-  salary_type?: ValueFilterField<string>,
-  hourly_rate?: ComparableFilterField<number>,
-  hours_worked?: ComparableFilterField<number>,
-  points_earned?: ComparableFilterField<number>,
-  salary?: ComparableFilterField<number>,
-  bonus?: ComparableFilterField<number>,
-  deduction?: ComparableFilterField<number>,
+  employment_start_date?: ComparableFilterField,
+  employment_end_date?: ComparableFilterField,
+  salary_type?: ObjectFilterField,
+  hourly_rate?: ComparableFilterField,
+  hours_worked?: ComparableFilterField,
+  points_earned?: ComparableFilterField,
+  salary?: ComparableFilterField,
+  bonus?: ComparableFilterField,
+  deduction?: ComparableFilterField,
 }
 
 export interface PayrollExportRequest extends PayrollExportPreviewRequest {

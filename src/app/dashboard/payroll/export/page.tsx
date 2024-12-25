@@ -3,8 +3,8 @@
 import Filter from "@/components/ui/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
-import { ComparableFilterField, StringFilterField, ValueFilterField } from "@/types/filter";
-import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilter, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
+import { ComparableFilterField, StringFilterField, ObjectFilterField, FilterType } from "@/types/filter";
+import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilter, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,18 +22,18 @@ export default function PayrollExportPage() {
   })));
 
   const [filterUsername, setFilterUsername] = useState<StringFilterField>();
-  const [filterMnr, setFilterMnr] = useState<ValueFilterField<number>>();
-  const [filterRole, setFilterRole] = useState<ValueFilterField<string>>();
+  const [filterMnr, setFilterMnr] = useState<ObjectFilterField>();
+  const [filterRole, setFilterRole] = useState<ObjectFilterField>();
   const [filterDepartment, setFilterDepartment] = useState<StringFilterField>();
-  const [filterEmploymentStartDate, setFilterEmploymentStartDate] = useState<ComparableFilterField<string>>();
-  const [filterEmploymentEndDate, setFilterEmploymentEndDate] = useState<ComparableFilterField<string>>();
-  const [filterSalaryType, setFilterSalaryType] = useState<ValueFilterField<string>>();
-  const [filterHourlyRate, setFilterHourlyRate] = useState<ComparableFilterField<number>>();
-  const [filterHoursWorked, setFilterHoursWorked] = useState<ComparableFilterField<number>>();
-  const [filterPointsEeaned, setFilterPointsEeaned] = useState<ComparableFilterField<number>>();
-  const [filterSalary, setFilterSalary] = useState<ComparableFilterField<number>>();
-  const [filterBonus, setFilterBonus] = useState<ComparableFilterField<number>>();
-  const [filterDeduction, setFilterDeduction] = useState<ComparableFilterField<number>>();
+  const [filterEmploymentStartDate, setFilterEmploymentStartDate] = useState<ComparableFilterField>();
+  const [filterEmploymentEndDate, setFilterEmploymentEndDate] = useState<ComparableFilterField>();
+  const [filterSalaryType, setFilterSalaryType] = useState<ObjectFilterField>();
+  const [filterHourlyRate, setFilterHourlyRate] = useState<ComparableFilterField>();
+  const [filterHoursWorked, setFilterHoursWorked] = useState<ComparableFilterField>();
+  const [filterPointsEeaned, setFilterPointsEeaned] = useState<ComparableFilterField>();
+  const [filterSalary, setFilterSalary] = useState<ComparableFilterField>();
+  const [filterBonus, setFilterBonus] = useState<ComparableFilterField>();
+  const [filterDeduction, setFilterDeduction] = useState<ComparableFilterField>();
 
   const gridRef = useRef<AgGridReact>(null);
   const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
@@ -226,19 +226,84 @@ export default function PayrollExportPage() {
             Filter
           </div>
           <div className="flex flex-col gap-2 max-h-64 border border-base-content/20 rounded-md p-4 overflow-auto">
-            <Filter label="Username" setValue={setFilterUsername} />
-            <Filter label="M-Nr" setValue={setFilterMnr} />
-            <Filter label="Role" setValue={setFilterRole} />
-            <Filter label="Department" setValue={setFilterDepartment} />
-            <Filter label="Employment Start Date" setValue={setFilterEmploymentStartDate} />
-            <Filter label="Employment End Date" setValue={setFilterEmploymentEndDate} />
-            <Filter label="Salary Type" setValue={setFilterSalaryType} />
-            <Filter label="Hourly Rate" setValue={setFilterHourlyRate} />
-            <Filter label="Hours Worked" setValue={setFilterHoursWorked} />
-            <Filter label="Points Earned" setValue={setFilterPointsEeaned} />
-            <Filter label="Salary" setValue={setFilterSalary} />
-            <Filter label="Bonus" setValue={setFilterBonus} />
-            <Filter label="Deduction" setValue={setFilterDeduction} />
+            <Filter
+              field={PayrollExportFilterField.USERNAME}
+              label="Username"
+              type={FilterType.STRING_FILTER}
+              setValue={setFilterUsername}
+            />
+            <Filter
+              field={PayrollExportFilterField.M_NR}
+              label="M-Nr"
+              type={FilterType.OBJECT_FILTER}
+              setValue={setFilterMnr}
+            />
+            <Filter
+              field={PayrollExportFilterField.ROLE}
+              label="Role"
+              type={FilterType.OBJECT_FILTER}
+              setValue={setFilterRole}
+            />
+            <Filter
+              field={PayrollExportFilterField.DEPARTMENT}
+              label="Department"
+              type={FilterType.STRING_FILTER}
+              setValue={setFilterDepartment}
+            />
+            <Filter
+              field={PayrollExportFilterField.EMPLOYMENT_START_DATE}
+              label="Employment Start Date"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterEmploymentStartDate}
+            />
+            <Filter
+              field={PayrollExportFilterField.EMPLOYMENT_END_DATE}
+              label="Employment End Date"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterEmploymentEndDate}
+            />
+            <Filter
+              field={PayrollExportFilterField.SALARY_TYPE}
+              label="Salary Type"
+              type={FilterType.OBJECT_FILTER}
+              setValue={setFilterSalaryType}
+            />
+            <Filter
+              field={PayrollExportFilterField.HOURLY_RATE}
+              label="Hourly Rate"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterHourlyRate}
+            />
+            <Filter
+              field={PayrollExportFilterField.HOURS_WORKED}
+              label="Hours Worked"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterHoursWorked}
+            />
+            <Filter
+              field={PayrollExportFilterField.POINTS_EARNED}
+              label="Points Earned"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterPointsEeaned}
+            />
+            <Filter
+              field={PayrollExportFilterField.SALARY}
+              label="Salary"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterSalary}
+            />
+            <Filter
+              field={PayrollExportFilterField.BONUS}
+              label="Bonus"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterBonus}
+            />
+            <Filter
+              field={PayrollExportFilterField.DEDUCTION}
+              label="Deduction"
+              type={FilterType.COMPARIBLE_FILTER}
+              setValue={setFilterDeduction}
+            />
           </div>
         </div>
 
