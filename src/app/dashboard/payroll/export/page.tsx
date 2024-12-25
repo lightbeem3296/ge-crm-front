@@ -42,7 +42,22 @@ export default function PayrollExportPage() {
   // Hooks
   useEffect(() => {
     refreshPreviewTable();
-  }, [exportFieldMap]);
+  }, [
+    exportFieldMap,
+    filterUsername,
+    filterMnr,
+    filterRole,
+    filterDepartment,
+    filterEmploymentStartDate,
+    filterEmploymentEndDate,
+    filterSalaryType,
+    filterHourlyRate,
+    filterHoursWorked,
+    filterPointsEeaned,
+    filterSalary,
+    filterBonus,
+    filterDeduction,
+  ]);
 
   // UI Handlers
   const handleChangeExportFileName = (fileName: string) => {

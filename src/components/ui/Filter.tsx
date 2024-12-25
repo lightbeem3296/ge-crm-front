@@ -1,6 +1,6 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
-import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
+import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, ObjectFilterField, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
 import { PayrollExportFilterField } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -24,6 +24,16 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
   const [filterCondition, setFilterCondition] = useState<string>("");
   const [filterCaseSensitive, setFilterCaseSensitive] = useState<boolean>(false);
 
+  const isDateField = field === PayrollExportFilterField.EMPLOYMENT_START_DATE || field === PayrollExportFilterField.EMPLOYMENT_END_DATE;
+  const is2values = () => {
+    return [
+      ComparableFilterCondition.GTE_LT.toString(),
+      ComparableFilterCondition.GTE_LTE.toString(),
+      ComparableFilterCondition.GT_LT.toString(),
+      ComparableFilterCondition.GT_LTE.toString(),
+    ].includes(filterCondition);
+  }
+
   // UI Handlers
   const handleChangeFilterCondition = (value: string) => {
     setFilterCondition(value);
@@ -46,7 +56,57 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
 
   // Hooks
   useEffect(() => {
+    if (filterCondition === "") {
+      setFilterField(undefined);
+      return;
+    }
+    if ((type === FilterType.OBJECT_FILTER || type === FilterType.STRING_FILTER) && filterValue === "") {
+      setFilterField(undefined);
+      return;
+    }
+    if (type === FilterType.COMPARIBLE_FILTER) {
+      if (is2values()) {
+        if (filterValues[0] === "" || filterValues[1] === "") {
+          setFilterField(undefined);
+          return;
+        }
+      } else {
+        if (filterValue === "") {
+          setFilterField(undefined);
+          return;
+        }
+      }
+    }
 
+    if (type === FilterType.OBJECT_FILTER) {
+      setFilterField({
+        value: filterValue,
+        condition: filterCondition,
+      });
+    } else if (type === FilterType.STRING_FILTER) {
+      setFilterField({
+        value: filterValue,
+        condition: filterCondition,
+        case_sensitive: filterCaseSensitive,
+      });
+    } else if (type === FilterType.COMPARIBLE_FILTER) {
+      if ([
+        ComparableFilterCondition.GTE_LT.toString(),
+        ComparableFilterCondition.GTE_LTE.toString(),
+        ComparableFilterCondition.GT_LT.toString(),
+        ComparableFilterCondition.GT_LTE.toString(),
+      ].includes(filterCondition)) {
+        setFilterField({
+          value: filterValues,
+          condition: filterCondition,
+        });
+      } else {
+        setFilterField({
+          value: filterValue,
+          condition: filterCondition,
+        });
+      }
+    }
   }, [filterValue, filterValues, filterCondition, filterCaseSensitive]);
 
   return (
@@ -121,7 +181,7 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
                   >
                     <option value="">Not Selected</option>
                     {roleCodes.map((key) => (
-                      <option key={key}>{lookupValue(roleMappings, key)}</option>
+                      <option key={key} value={key}>{lookupValue(roleMappings, key)}</option>
                     ))}
                   </select>
 
@@ -134,7 +194,7 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
                     >
                       <option value="">Not Selected</option>
                       {salaryTypeCodes.map((key) => (
-                        <option key={key}>{lookupValue(salaryTypeMappings, key)}</option>
+                        <option key={key} value={key}>{lookupValue(salaryTypeMappings, key)}</option>
                       ))}
                     </select>
 
@@ -149,21 +209,16 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
                 : type === FilterType.COMPARIBLE_FILTER
 
                   // Two Value Type Filter
-                  ? [
-                    ComparableFilterCondition.GTE_LT.toString(),
-                    ComparableFilterCondition.GTE_LTE.toString(),
-                    ComparableFilterCondition.GT_LT.toString(),
-                    ComparableFilterCondition.GT_LTE.toString(),
-                  ].includes(filterCondition)
+                  ? is2values()
                     ? (
                       <div className="flex flex-col gap-1">
                         <input
-                          type="text"
+                          type={isDateField ? "date" : "text"}
                           className="input input-sm input-bordered w-full"
                           onChange={(e) => handleChangeFilterValues([e.target.value, undefined])}
                         />
                         <input
-                          type="text"
+                          type={isDateField ? "date" : "text"}
                           className="input input-sm input-bordered w-full"
                           onChange={(e) => handleChangeFilterValues([undefined, e.target.value])}
                         />
@@ -172,7 +227,7 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
 
                     // Single Value Type Filter
                     : <input
-                      type="text"
+                      type={isDateField ? "date" : "text"}
                       className="input input-sm input-bordered w-full"
                       onChange={(e) => handleChangeFilterValue(e.target.value)}
                     />
