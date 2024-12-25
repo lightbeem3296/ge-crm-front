@@ -2,7 +2,7 @@
 
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
-import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportPreviewRequest, PayrollExportPreviewResponse } from "@/types/payroll";
+import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilter, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,10 +13,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function PayrollExportPage() {
-  const [fieldMap, setFieldMap] = useState<FieldMapItem[]>(fieldMapCodes.map((key) => ({
+  const [exportFileName, setExportFileName] = useState("payroll.csv");
+  const [exportFieldMap, setExportFieldMap] = useState<FieldMapItem[]>(fieldMapCodes.map((key) => ({
     field: key,
     title: lookupValue(fieldMapMapping, key),
   })));
+  const [exportFilter, setExportFilter] = useState<PayrollExportFilter>();
   const gridRef = useRef<AgGridReact>(null);
   const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
@@ -24,16 +26,25 @@ export default function PayrollExportPage() {
   // Hooks
   useEffect(() => {
     refreshPreviewTable();
-  }, [fieldMap]);
+  }, [exportFieldMap]);
 
   // UI Handlers
-  const handleClickExport = () => {
-    alert("export");
+  const handleChangeExportFileName = (fileName: string) => {
+    setExportFileName(fileName);
+  }
+
+  const handleClickExport = async () => {
+    await axiosHelper.download_post<PayrollExportRequest>("/payroll/export",
+      {
+        filename: exportFileName,
+        field_map: exportFieldMap,
+        filter: exportFilter,
+      });
   }
 
   const handleClickAddFieldMapItem = () => {
-    setFieldMap([
-      ...fieldMap,
+    setExportFieldMap([
+      ...exportFieldMap,
       {
         field: "username",
         title: "Username",
@@ -42,12 +53,12 @@ export default function PayrollExportPage() {
   }
 
   const handleClickDeleteFieldMapItem = (delete_index: number) => {
-    setFieldMap(fieldMap.filter((item, index) => index !== delete_index));
+    setExportFieldMap(exportFieldMap.filter((item, index) => index !== delete_index));
   }
 
   const handleChangeFieldMapField = (change_index: number, value: string) => {
-    setFieldMap(
-      fieldMap.map((item, item_index) => (
+    setExportFieldMap(
+      exportFieldMap.map((item, item_index) => (
         item_index === change_index
           ? {
             field: value,
@@ -58,8 +69,8 @@ export default function PayrollExportPage() {
   }
 
   const handleChangeFieldMapTitle = (change_index: number, value: string) => {
-    setFieldMap(
-      fieldMap.map((item, item_index) => (
+    setExportFieldMap(
+      exportFieldMap.map((item, item_index) => (
         item_index === change_index
           ? {
             ...item,
@@ -76,13 +87,13 @@ export default function PayrollExportPage() {
   // Table Functions
   const refreshPreviewTable = async () => {
     const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
-      field_map: fieldMap,
+      field_map: exportFieldMap,
       filter: undefined,
     });
     if (response) {
       response.total_rows;
       response.preview_content;
-      setColDefs(fieldMap.map((item) => (
+      setColDefs(exportFieldMap.map((item) => (
         {
           headerName: item.title,
           field: item.title,
@@ -106,12 +117,19 @@ export default function PayrollExportPage() {
         <p className="text-lg font-medium text-base-content/80">
           Payroll Export
         </p>
-        <button
-          className="btn btn-sm btn-info"
-          onClick={() => handleClickExport()}
-        >
-          <FontAwesomeIcon icon={faDownload} width={12} />Export
-        </button>
+        <div className="flex justify-end gap-2">
+          <input
+            className="input input-sm input-bordered"
+            value={exportFileName}
+            onChange={(e) => handleChangeExportFileName(e.target.value)}
+          />
+          <button
+            className="btn btn-sm btn-info"
+            onClick={() => handleClickExport()}
+          >
+            <FontAwesomeIcon icon={faDownload} width={12} />Export
+          </button>
+        </div>
       </div>
       <div className="overflow-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
 
@@ -127,7 +145,7 @@ export default function PayrollExportPage() {
             </button>
           </div>
           <div className="flex flex-col gap-2 max-h-64 border border-base-content/20 rounded-md p-4 overflow-auto">
-            {fieldMap.map((fieldMapItem, item_index) => (
+            {exportFieldMap.map((fieldMapItem, item_index) => (
               <div key={item_index} className="grid grid-cols-5 gap-2">
                 <select
                   className="select select-bordered select-sm col-span-2"

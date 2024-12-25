@@ -9,6 +9,15 @@ export interface PayrollExportFilter {
 
 }
 
+export interface PayrollExportRequest extends PayrollExportPreviewRequest {
+  filename: string,
+}
+
+export interface PayrollExportResponse {
+  total_rows: number,
+  preview_content: any[],
+}
+
 export interface PayrollExportPreviewRequest {
   field_map?: FieldMapItem[],
   filter?: PayrollExportFilter,
