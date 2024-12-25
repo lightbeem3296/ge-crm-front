@@ -97,6 +97,11 @@ export default function PayrollExportPage() {
   }
 
   const handleClickExport = async () => {
+    if (!exportFileName) {
+      alert("Export filename is invalid.");
+      return;
+    }
+
     await axiosHelper.download_post<PayrollExportRequest>("/payroll/export",
       {
         filename: exportFileName,
@@ -218,6 +223,7 @@ export default function PayrollExportPage() {
           <input
             className="input input-sm input-bordered"
             value={exportFileName}
+            placeholder="Export filename"
             onChange={(e) => handleChangeExportFileName(e.target.value)}
           />
           <button
