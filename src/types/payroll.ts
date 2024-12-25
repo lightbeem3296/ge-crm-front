@@ -50,6 +50,7 @@ export interface PayrollExportResponse {
 export interface PayrollExportPreviewRequest {
   field_map?: FieldMapItem[],
   filter?: PayrollExportFilter,
+  rule?: string,
 }
 
 export interface PayrollExportPreviewResponse {

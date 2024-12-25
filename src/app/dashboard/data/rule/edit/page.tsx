@@ -660,7 +660,7 @@ export default function RuleEditPage() {
             <label htmlFor="display" className="block text-sm font-medium text-base-content">Display</label>
             <textarea
               name="display"
-              className="textarea textarea-bordered w-full text-sm font-mono font-medium mt-2 h-80 md:h-[calc(100%-2.5rem)] resize-none"
+              className="textarea textarea-bordered w-full text-xs font-mono font-medium mt-2 h-80 md:h-[calc(100%-2.5rem)] resize-none"
               value={display}
               readOnly />
           </div>

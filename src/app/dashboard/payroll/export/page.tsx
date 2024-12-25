@@ -3,9 +3,10 @@
 import FilterComponent from "@/components/ui/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
+import { getRuleDescription, getRuleMappings } from "@/services/ruleService";
 import { ComparableFilterField, StringFilterField, ObjectFilterField, FilterType } from "@/types/filter";
 import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
-import { lookupValue } from "@/utils/record";
+import { extractKeys, lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AllCommunityModule, ColDef, ModuleRegistry, Theme } from "ag-grid-community";
@@ -14,7 +15,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
+const ruleMappings = await getRuleMappings();
+const ruleCodes = extractKeys(ruleMappings);
+
 export default function PayrollExportPage() {
+  // State variables
   const [exportFileName, setExportFileName] = useState("payroll.csv");
   const [exportFieldMap, setExportFieldMap] = useState<FieldMapItem[]>(fieldMapCodes.map((key) => ({
     field: key,
@@ -34,6 +39,9 @@ export default function PayrollExportPage() {
   const [filterSalary, setFilterSalary] = useState<ComparableFilterField>();
   const [filterBonus, setFilterBonus] = useState<ComparableFilterField>();
   const [filterDeduction, setFilterDeduction] = useState<ComparableFilterField>();
+
+  const [exportRule, setExportRule] = useState("");
+  const [exportRuleDiaplay, setExportRuleDisplay] = useState("");
 
   const gridRef = useRef<AgGridReact>(null);
   const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
@@ -57,7 +65,22 @@ export default function PayrollExportPage() {
     filterSalary,
     filterBonus,
     filterDeduction,
+    exportRule,
   ]);
+
+  useEffect(() => {
+    const updateRuleDisplay = async () => {
+      if (exportRule != "") {
+        const ruleDisplay = await getRuleDescription(exportRule);
+        if (ruleDisplay) {
+          setExportRuleDisplay(ruleDisplay);
+        }
+      } else {
+        setExportRuleDisplay("");
+      }
+    }
+    updateRuleDisplay();
+  }, [exportRule]);
 
   // UI Handlers
   const handleChangeExportFileName = (fileName: string) => {
@@ -84,6 +107,7 @@ export default function PayrollExportPage() {
           bonus: filterBonus,
           deduction: filterDeduction,
         },
+        rule: exportRule || undefined,
       });
   }
 
@@ -148,6 +172,7 @@ export default function PayrollExportPage() {
         bonus: filterBonus,
         deduction: filterDeduction,
       },
+      rule: exportRule || undefined,
     });
     if (response) {
       response.total_rows;
@@ -204,7 +229,7 @@ export default function PayrollExportPage() {
               <FontAwesomeIcon icon={faPlus} width={12} />Add
             </button>
           </div>
-          <div className="flex flex-col gap-2 max-h-64 border border-base-content/20 rounded-md p-4 overflow-auto">
+          <div className="flex flex-col gap-2 max-h-80 border border-base-content/20 rounded-md p-4 overflow-auto">
             {exportFieldMap.map((fieldMapItem, item_index) => (
               <div key={item_index} className="grid grid-cols-5 gap-2">
                 <select
@@ -240,7 +265,7 @@ export default function PayrollExportPage() {
           <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Filter
           </div>
-          <div className="flex flex-col gap-2 max-h-64 border border-base-content/20 rounded-md p-4 overflow-auto">
+          <div className="flex flex-col gap-2 max-h-80 border border-base-content/20 rounded-md p-4 overflow-auto">
             <FilterComponent
               field={PayrollExportFilterField.USERNAME}
               label="Username"
@@ -327,8 +352,23 @@ export default function PayrollExportPage() {
           <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Rule
           </div>
-          <div className="bg-gray-300">
-            fff
+          <div className="flex flex-col gap-2 h-80 rounded-md">
+            <select
+              className="select select-bordered select-sm w-full"
+              value={exportRule}
+              onChange={(e) => setExportRule(e.target.value)}
+            >
+              <option value="">Not Selected</option>
+              {ruleCodes.map((key) => (
+                <option key={key} value={key}>{lookupValue(ruleMappings, key)}</option>
+              ))}
+            </select>
+            <textarea
+              className="textarea textarea-bordered text-xs resize-none font-mono grow"
+              placeholder="Rule display"
+              value={exportRuleDiaplay}
+              readOnly
+            />
           </div>
         </div>
 
