@@ -1,7 +1,9 @@
 "use client";
 
+import Filter from "@/components/ui/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
+import { ComparableFilterField, StringFilterField, ValueFilterField } from "@/types/filter";
 import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilter, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -18,7 +20,21 @@ export default function PayrollExportPage() {
     field: key,
     title: lookupValue(fieldMapMapping, key),
   })));
-  const [exportFilter, setExportFilter] = useState<PayrollExportFilter>();
+
+  const [filterUsername, setFilterUsername] = useState<StringFilterField>();
+  const [filterMnr, setFilterMnr] = useState<ValueFilterField<number>>();
+  const [filterRole, setFilterRole] = useState<ValueFilterField<string>>();
+  const [filterDepartment, setFilterDepartment] = useState<StringFilterField>();
+  const [filterEmploymentStartDate, setFilterEmploymentStartDate] = useState<ComparableFilterField<string>>();
+  const [filterEmploymentEndDate, setFilterEmploymentEndDate] = useState<ComparableFilterField<string>>();
+  const [filterSalaryType, setFilterSalaryType] = useState<ValueFilterField<string>>();
+  const [filterHourlyRate, setFilterHourlyRate] = useState<ComparableFilterField<number>>();
+  const [filterHoursWorked, setFilterHoursWorked] = useState<ComparableFilterField<number>>();
+  const [filterPointsEeaned, setFilterPointsEeaned] = useState<ComparableFilterField<number>>();
+  const [filterSalary, setFilterSalary] = useState<ComparableFilterField<number>>();
+  const [filterBonus, setFilterBonus] = useState<ComparableFilterField<number>>();
+  const [filterDeduction, setFilterDeduction] = useState<ComparableFilterField<number>>();
+
   const gridRef = useRef<AgGridReact>(null);
   const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
@@ -38,7 +54,21 @@ export default function PayrollExportPage() {
       {
         filename: exportFileName,
         field_map: exportFieldMap,
-        filter: exportFilter,
+        filter: {
+          username: filterUsername,
+          m_nr: filterMnr,
+          role: filterRole,
+          department: filterDepartment,
+          employment_start_date: filterEmploymentStartDate,
+          employment_end_date: filterEmploymentEndDate,
+          salary_type: filterSalaryType,
+          hourly_rate: filterHourlyRate,
+          hours_worked: filterHoursWorked,
+          points_earned: filterPointsEeaned,
+          salary: filterSalary,
+          bonus: filterBonus,
+          deduction: filterDeduction,
+        },
       });
   }
 
@@ -88,7 +118,21 @@ export default function PayrollExportPage() {
   const refreshPreviewTable = async () => {
     const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
       field_map: exportFieldMap,
-      filter: undefined,
+      filter: {
+        username: filterUsername,
+        m_nr: filterMnr,
+        role: filterRole,
+        department: filterDepartment,
+        employment_start_date: filterEmploymentStartDate,
+        employment_end_date: filterEmploymentEndDate,
+        salary_type: filterSalaryType,
+        hourly_rate: filterHourlyRate,
+        hours_worked: filterHoursWorked,
+        points_earned: filterPointsEeaned,
+        salary: filterSalary,
+        bonus: filterBonus,
+        deduction: filterDeduction,
+      },
     });
     if (response) {
       response.total_rows;
@@ -102,6 +146,7 @@ export default function PayrollExportPage() {
       setPreviewRows(response.preview_content);
     }
   }
+
   const theme = useMemo<Theme | "legacy">(() => {
     return myTheme();
   }, []);
@@ -135,7 +180,7 @@ export default function PayrollExportPage() {
 
         {/* Field Map */}
         <div className="col-span-1 border border-base-content/20 rounded-md p-4">
-          <div className="text-md font-medium text-base-content py-2 flex justify-between">
+          <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Field Map
             <button
               className="btn btn-sm btn-primary btn-outline"
@@ -177,15 +222,31 @@ export default function PayrollExportPage() {
 
         {/* Filter */}
         <div className="col-span-1 border border-base-content/20 rounded-md p-4">
-          <p className="text-md font-medium text-base-content">Filter</p>
-          <div className="bg-gray-300">
-            fff
+          <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
+            Filter
+          </div>
+          <div className="flex flex-col gap-2 max-h-64 border border-base-content/20 rounded-md p-4 overflow-auto">
+            <Filter label="Username" setValue={setFilterUsername} />
+            <Filter label="M-Nr" setValue={setFilterMnr} />
+            <Filter label="Role" setValue={setFilterRole} />
+            <Filter label="Department" setValue={setFilterDepartment} />
+            <Filter label="Employment Start Date" setValue={setFilterEmploymentStartDate} />
+            <Filter label="Employment End Date" setValue={setFilterEmploymentEndDate} />
+            <Filter label="Salary Type" setValue={setFilterSalaryType} />
+            <Filter label="Hourly Rate" setValue={setFilterHourlyRate} />
+            <Filter label="Hours Worked" setValue={setFilterHoursWorked} />
+            <Filter label="Points Earned" setValue={setFilterPointsEeaned} />
+            <Filter label="Salary" setValue={setFilterSalary} />
+            <Filter label="Bonus" setValue={setFilterBonus} />
+            <Filter label="Deduction" setValue={setFilterDeduction} />
           </div>
         </div>
 
         {/* Rule */}
         <div className="col-span-1 border border-base-content/20 rounded-md p-4">
-          <p className="text-md font-medium text-base-content">Rule</p>
+          <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
+            Rule
+          </div>
           <div className="bg-gray-300">
             fff
           </div>
@@ -193,7 +254,7 @@ export default function PayrollExportPage() {
 
         {/* Preview */}
         <div className="col-span-1 sm:col-span-3 border border-base-content/20 rounded-md p-4">
-          <div className="text-md font-medium text-base-content py-2 flex justify-between">
+          <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Preview
             <button
               className="btn btn-sm btn-info btn-outline"

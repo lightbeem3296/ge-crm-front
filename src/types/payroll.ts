@@ -1,4 +1,5 @@
 import { extractKeys } from "@/utils/record";
+import { ComparableFilterField, StringFilterField, ValueFilterField } from "./filter";
 
 export interface FieldMapItem {
   field: string,
@@ -6,7 +7,19 @@ export interface FieldMapItem {
 }
 
 export interface PayrollExportFilter {
-
+  username?: StringFilterField,
+  m_nr?: ValueFilterField<number>,
+  role?: ValueFilterField<string>,
+  department?: StringFilterField,
+  employment_start_date?: ComparableFilterField<string>,
+  employment_end_date?: ComparableFilterField<string>,
+  salary_type?: ValueFilterField<string>,
+  hourly_rate?: ComparableFilterField<number>,
+  hours_worked?: ComparableFilterField<number>,
+  points_earned?: ComparableFilterField<number>,
+  salary?: ComparableFilterField<number>,
+  bonus?: ComparableFilterField<number>,
+  deduction?: ComparableFilterField<number>,
 }
 
 export interface PayrollExportRequest extends PayrollExportPreviewRequest {
