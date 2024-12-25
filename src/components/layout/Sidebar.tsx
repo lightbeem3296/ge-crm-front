@@ -23,27 +23,27 @@ const sideBarMenuItems = [
   },
   {
     name: 'Employee',
-    href: '/dashboard/employee',
+    href: '/dashboard/data/employee',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Rule',
-    href: '/dashboard/rule',
+    href: '/dashboard/data/rule',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Tag',
-    href: '/dashboard/tag',
+    href: '/dashboard/data/tag',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Role',
-    href: '/dashboard/role',
+    href: '/dashboard/data/role',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Salary Type',
-    href: '/dashboard/salary-type',
+    href: '/dashboard/data/salary-type',
     type: SidebarMenuItemType.MenuItem,
   },
   {

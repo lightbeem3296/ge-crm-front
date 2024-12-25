@@ -62,11 +62,11 @@ export default function RuleEditPage() {
 
   // UI Handlers
   const handleClickBack = () => {
-    router.push("/dashboard/rule");
+    router.push("/dashboard/data/rule");
   }
 
   const handleClickViewEdit = () => {
-    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${id}`);
+    router.push(`/dashboard/data/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${id}`);
   }
 
   const handleChangeRuleName = (value: string) => {
@@ -295,7 +295,7 @@ export default function RuleEditPage() {
           ...rule,
           _id: response.detail.object_id,
         });
-        router.push("/dashboard/rule");
+        router.push("/dashboard/data/rule");
       }
     } else if (formMode === RuleEditPageMode.EDIT) {
       const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule, "Are you sure want to save?");
