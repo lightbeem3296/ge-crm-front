@@ -1,5 +1,4 @@
 import { axiosHelper } from "@/lib/axios";
-import axios from "axios";
 
 interface RowData {
   _id: string,

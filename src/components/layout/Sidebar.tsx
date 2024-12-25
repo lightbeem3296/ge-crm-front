@@ -51,6 +51,11 @@ const sideBarMenuItems = [
     href: '#',
     type: SidebarMenuItemType.Title,
   },
+  {
+    name: 'Export',
+    href: '/dashboard/payroll/export',
+    type: SidebarMenuItemType.MenuItem,
+  },
 ]
 
 interface SidebarProps {
