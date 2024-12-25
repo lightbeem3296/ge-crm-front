@@ -15,9 +15,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const ruleMappings = await getRuleMappings();
-const ruleCodes = extractKeys(ruleMappings);
-
 export default function PayrollExportPage() {
   // State variables
   const [exportFileName, setExportFileName] = useState("payroll.csv");
@@ -46,6 +43,9 @@ export default function PayrollExportPage() {
   const gridRef = useRef<AgGridReact>(null);
   const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
+
+  const [ruleMappings, setRuleMappins] = useState<Record<string, string>>();
+  const [ruleCodes, setRuleCodes] = useState<string[]>();
 
   // Hooks
   useEffect(() => {
@@ -81,6 +81,15 @@ export default function PayrollExportPage() {
     }
     updateRuleDisplay();
   }, [exportRule]);
+
+  useEffect(() => {
+    const fetchRuleMappings = async () => {
+      const resp = await getRuleMappings();
+      setRuleMappins(resp);
+      setRuleCodes(extractKeys(resp));
+    }
+    fetchRuleMappings();
+  }, []);
 
   // UI Handlers
   const handleChangeExportFileName = (fileName: string) => {
@@ -362,7 +371,7 @@ export default function PayrollExportPage() {
               onChange={(e) => setExportRule(e.target.value)}
             >
               <option value="">Not Selected</option>
-              {ruleCodes.map((key) => (
+              {ruleCodes?.map((key) => (
                 <option key={key} value={key}>{lookupValue(ruleMappings, key)}</option>
               ))}
             </select>

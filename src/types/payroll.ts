@@ -2,8 +2,8 @@ import { extractKeys } from "@/utils/record";
 import { ComparableFilterField, StringFilterField, ObjectFilterField } from "./filter";
 
 export interface FieldMapItem {
-  field: string,
-  title: string,
+  field?: string,
+  title?: string,
 }
 
 export enum PayrollExportFilterField {
