@@ -1,40 +1,36 @@
 "use client";
 
-import { extractKeys, lookupValue } from "@/utils/record";
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { myTheme } from "@/components/ui/theme/agGrid";
+import { axiosHelper } from "@/lib/axios";
+import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportPreviewRequest, PayrollExportPreviewResponse } from "@/types/payroll";
+import { lookupValue } from "@/utils/record";
+import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { AllCommunityModule, ColDef, ModuleRegistry, Theme } from "ag-grid-community";
+import { AgGridReact } from "ag-grid-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-interface FieldMapItem {
-  field: string;
-  title: string;
-}
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function PayrollExportPage() {
-  const [fieldMap, setFieldMap] = useState<FieldMapItem[]>([{
-    field: "username",
-    title: "Username",
-  }]);
+  const [fieldMap, setFieldMap] = useState<FieldMapItem[]>(fieldMapCodes.map((key) => ({
+    field: key,
+    title: lookupValue(fieldMapMapping, key),
+  })));
+  const gridRef = useRef<AgGridReact>(null);
+  const [previewRows, setPreviewRows] = useState<Record<string, string>[]>([]);
+  const [colDefs, setColDefs] = useState<ColDef[]>([]);
 
-  const fieldMapMapping: Record<string, string> = {
-    "username": "Username",
-    "m_nr": "M-Nr",
-    "role": "Role",
-    "department": "Department",
-    "employment_start_date": "Employment Start Date",
-    "employment_end_date": "Employment End Date",
-    "salary_type": "Salary Type",
-    "hourly_rate": "Hourly Rate",
-    "hours_worked": "Hours Worked",
-    "points_earned": "Points Earned",
-    "salary": "Salary",
-    "bonus": "Bonus",
-    "deduction": "Deduction",
-    "tags": "Tags",
-  }
-  const fieldMapCodes = extractKeys(fieldMapMapping);
+  // Hooks
+  useEffect(() => {
+    refreshPreviewTable();
+  }, [fieldMap]);
 
   // UI Handlers
+  const handleClickExport = () => {
+    alert("export");
+  }
+
   const handleClickAddFieldMapItem = () => {
     setFieldMap([
       ...fieldMap,
@@ -58,7 +54,7 @@ export default function PayrollExportPage() {
             title: lookupValue(fieldMapMapping, value),
           }
           : item))
-    )
+    );
   }
 
   const handleChangeFieldMapTitle = (change_index: number, value: string) => {
@@ -70,8 +66,39 @@ export default function PayrollExportPage() {
             title: value,
           }
           : item))
-    )
+    );
   }
+
+  const handleClickPreviewRefresh = async () => {
+    await refreshPreviewTable();
+  }
+
+  // Table Functions
+  const refreshPreviewTable = async () => {
+    const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
+      field_map: fieldMap,
+      filter: undefined,
+    });
+    if (response) {
+      response.total_rows;
+      response.preview_content;
+      setColDefs(fieldMap.map((item) => (
+        {
+          headerName: item.title,
+          field: item.title,
+        }
+      )));
+      setPreviewRows(response.preview_content);
+    }
+  }
+  const theme = useMemo<Theme | "legacy">(() => {
+    return myTheme();
+  }, []);
+
+  const defaultColDef: ColDef = {
+    filter: false,
+    sortable: false,
+  };
 
   return (
     <div>
@@ -79,6 +106,12 @@ export default function PayrollExportPage() {
         <p className="text-lg font-medium text-base-content/80">
           Payroll Export
         </p>
+        <button
+          className="btn btn-sm btn-info"
+          onClick={() => handleClickExport()}
+        >
+          <FontAwesomeIcon icon={faDownload} width={12} />Export
+        </button>
       </div>
       <div className="overflow-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
 
@@ -93,7 +126,7 @@ export default function PayrollExportPage() {
               <FontAwesomeIcon icon={faPlus} width={12} />Add
             </button>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 max-h-64 border border-base-content/20 rounded-md p-4 overflow-auto">
             {fieldMap.map((fieldMapItem, item_index) => (
               <div key={item_index} className="grid grid-cols-5 gap-2">
                 <select
@@ -142,9 +175,28 @@ export default function PayrollExportPage() {
 
         {/* Preview */}
         <div className="col-span-1 sm:col-span-3 border border-base-content/20 rounded-md p-4">
-          <p className="text-md font-medium text-base-content">Preview</p>
-          <div className="bg-gray-300">
-            fff
+          <div className="text-md font-medium text-base-content py-2 flex justify-between">
+            Preview
+            <button
+              className="btn btn-sm btn-info btn-outline"
+              onClick={() => handleClickPreviewRefresh()}
+            >
+              <FontAwesomeIcon icon={faRefresh} width={12} />Refresh
+            </button>
+          </div>
+          <div className="overflow-auto">
+            <div className="h-[20rem] min-w-[600px] min-h-[450px]">
+              <AgGridReact
+                ref={gridRef}
+                columnDefs={colDefs}
+                rowData={previewRows}
+                theme={theme}
+                defaultColDef={defaultColDef}
+                pagination={true}
+                paginationPageSize={10}
+                paginationPageSizeSelector={[10, 25, 50]}
+              />
+            </div>
           </div>
         </div>
       </div>
