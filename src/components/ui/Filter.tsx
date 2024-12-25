@@ -1,15 +1,15 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
-import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, ObjectFilterCondition, objectFilterConditionCodes, objectFilterConditionMappings, StringFilterCondition, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
+import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings, } from "@/types/filter";
 import { PayrollExportFilterField } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dispatch, SetStateAction, useState } from "react";
 
-interface FilterProps {
+interface FilterComponentProps {
   field: PayrollExportFilterField
   label: string,
   type: FilterType,
-  setValue: Dispatch<SetStateAction<any>>
+  setFilterField: Dispatch<SetStateAction<any>>
 }
 
 const roleMappings = await getRoleMappings();
@@ -18,7 +18,7 @@ const roleCodes = extractKeys(roleMappings);
 const salaryTypeMappings = await getSalaryTypeMappings();
 const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
-export default function Filter({ field, label, type, setValue }: FilterProps) {
+export default function FilterComponent({ field, label, type, setFilterField: setValue }: FilterComponentProps) {
   const [filterValue, setFilterValue] = useState<string | [string, string]>("");
   const [filterCondition, setFilterCondition] = useState<string>("");
   const [caseSensitive, setCaseSensitive] = useState<boolean>();
