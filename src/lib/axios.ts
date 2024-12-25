@@ -51,6 +51,44 @@ export class AxiosHelper {
     }
   }
 
+  // Generic POST Download request
+  async download_post<T>(
+    endpoint: string,
+    data: T,
+  ) {
+    try {
+      const response = await this.axiosInstance.post<BlobPart>(
+        endpoint,
+        data,
+        {
+          responseType: "blob",
+        }
+      );
+
+      // Extract the filename from the response headers
+      const contentDisposition = response.headers["content-disposition"];
+      const filename = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "downloaded-file";
+
+      // Create a URL for the downloaded blob
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create an anchor element and trigger a download
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error: unknown) {
+      this.handleError(error);
+    }
+  }
+
   // Generic PUT request
   async put<T, R>(
     endpoint: string,
@@ -120,4 +158,4 @@ export class AxiosHelper {
 }
 
 // Instance
-export const axiosHelper = new AxiosHelper(process.env.NEXT_PUBLIC_API_BASE_URL || "");
+export const axiosHelper = new AxiosHelper(process.env.NEXT_PUBLIC_FRONTEND_API_BASE_URL || "");

@@ -53,6 +53,7 @@ export default function RuleEditPage() {
     const response = await axiosHelper.get<RuleRowData>(`/rule/${id}`);
     if (response) {
       setRule(response);
+      setActionValues(response.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
     } else {
       alert("fetch error");
     }
@@ -62,11 +63,11 @@ export default function RuleEditPage() {
 
   // UI Handlers
   const handleClickBack = () => {
-    router.push("/dashboard/rule");
+    router.push("/dashboard/data/rule");
   }
 
   const handleClickViewEdit = () => {
-    router.push(`/dashboard/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${id}`);
+    router.push(`/dashboard/data/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${id}`);
   }
 
   const handleChangeRuleName = (value: string) => {
@@ -295,7 +296,7 @@ export default function RuleEditPage() {
           ...rule,
           _id: response.detail.object_id,
         });
-        router.push("/dashboard/rule");
+        router.push("/dashboard/data/rule");
       }
     } else if (formMode === RuleEditPageMode.EDIT) {
       const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule, "Are you sure want to save?");
@@ -338,7 +339,6 @@ export default function RuleEditPage() {
     if (formMode !== RuleEditPageMode.CREATE) {
       fetchRule();
     }
-    setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
   }, []);
 
   useEffect(() => {
@@ -660,7 +660,7 @@ export default function RuleEditPage() {
             <label htmlFor="display" className="block text-sm font-medium text-base-content">Display</label>
             <textarea
               name="display"
-              className="textarea textarea-bordered w-full text-sm font-mono font-medium mt-2 h-80 md:h-[calc(100%-2.5rem)] resize-none"
+              className="textarea textarea-bordered w-full text-xs font-mono font-medium mt-2 h-80 md:h-[calc(100%-2.5rem)] resize-none"
               value={display}
               readOnly />
           </div>

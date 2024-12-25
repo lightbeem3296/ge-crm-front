@@ -23,33 +23,38 @@ const sideBarMenuItems = [
   },
   {
     name: 'Employee',
-    href: '/dashboard/employee',
+    href: '/dashboard/data/employee',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Rule',
-    href: '/dashboard/rule',
+    href: '/dashboard/data/rule',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Tag',
-    href: '/dashboard/tag',
+    href: '/dashboard/data/tag',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Role',
-    href: '/dashboard/role',
+    href: '/dashboard/data/role',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Salary Type',
-    href: '/dashboard/salary-type',
+    href: '/dashboard/data/salary-type',
     type: SidebarMenuItemType.MenuItem,
   },
   {
     name: 'Payroll',
     href: '#',
     type: SidebarMenuItemType.Title,
+  },
+  {
+    name: 'Export',
+    href: '/dashboard/payroll/export',
+    type: SidebarMenuItemType.MenuItem,
   },
 ]
 
@@ -62,7 +67,7 @@ interface SidebarProps {
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
   const pathname = usePathname();
   return (
-    <div className="w-72 h-full hidden lg:flex flex-col bg-neutral-900 p-8 z-10 fixed">
+    <div className="w-60 h-full hidden lg:flex flex-col bg-neutral-900 p-8 z-10 fixed">
       <div className='grow-0 py-4 border-b border-gray-600'>
         <p className='text-md text-gray-200 font-medium uppercase'>Admin Panel</p>
         <p className='text-sm text-gray-400'>Employee & Payroll</p>
@@ -124,7 +129,7 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
                     key={menuItem.name}
                     href={menuItem.href}
                   >
-                    <li className={`px-4 py-2 rounded-md border border-transparent hover:text-blue-600 hover:border-gray-800 ${pathname == menuItem.href
+                    <li className={`px-4 py-2 rounded-md border border-transparent hover:text-blue-600 hover:border-gray-800 ${pathname.startsWith(menuItem.href)
                       ? "font-semibold text-blue-500 bg-gray-900 border-gray-800"
                       : "font-normal text-gray-300"
                       }`}>

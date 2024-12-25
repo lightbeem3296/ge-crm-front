@@ -18,11 +18,7 @@ import { myTheme } from "@/components/ui/theme/agGrid";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const roleMappings = await getRoleMappings();
-const roleCodes = extractKeys(roleMappings);
-
 const salaryTypeMappings = await getSalaryTypeMappings();
-const salaryTypeCodes = extractKeys(salaryTypeMappings);
-
 const tagMappings = await getTagMappings();
 
 export default function EmployeePage() {
@@ -87,8 +83,8 @@ export default function EmployeePage() {
           value=""
         >
           <option disabled value="">Select a tag to add ...</option>
-          {Object.entries(tagMappings).map(([key, value], index) => (
-            tags?.includes(key) ? null : <option key={index} value={key}>{value}</option>
+          {extractKeys(tagMappings).map((key) => (
+            tags?.includes(key) ? null : <option key={key} value={key}>{lookupValue(tagMappings, key)}</option>
           ))}
         </select>
       </div>
@@ -184,13 +180,13 @@ export default function EmployeePage() {
       width: 180,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: roleCodes,
+        values: extractKeys(roleMappings),
       },
       valueGetter: (params: ValueGetterParams) => {
         return lookupValue(roleMappings, params.data.role) || params.data.role;
       },
       valueFormatter: (params: ValueFormatterParams) => {
-        return lookupValue(roleMappings, params.value);
+        return lookupValue(roleMappings, params.value) || params.value;
       },
     },
     {
@@ -227,13 +223,13 @@ export default function EmployeePage() {
       width: 160,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: salaryTypeCodes,
+        values: extractKeys(salaryTypeMappings),
       },
       valueGetter: (params: ValueGetterParams) => {
         return lookupValue(salaryTypeMappings, params.data.salary_type);
       },
       valueFormatter: (params: ValueFormatterParams) => {
-        return lookupValue(salaryTypeMappings, params.value);
+        return lookupValue(salaryTypeMappings, params.value) || params.value;
       },
     },
     {
