@@ -53,6 +53,7 @@ export default function RuleEditPage() {
     const response = await axiosHelper.get<RuleRowData>(`/rule/${id}`);
     if (response) {
       setRule(response);
+      setActionValues(response.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
     } else {
       alert("fetch error");
     }
@@ -338,7 +339,6 @@ export default function RuleEditPage() {
     if (formMode !== RuleEditPageMode.CREATE) {
       fetchRule();
     }
-    setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
   }, []);
 
   useEffect(() => {
