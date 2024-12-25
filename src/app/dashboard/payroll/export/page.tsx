@@ -175,15 +175,19 @@ export default function PayrollExportPage() {
       rule: exportRule || undefined,
     });
     if (response) {
-      response.total_rows;
-      response.preview_content;
-      setColDefs(exportFieldMap.map((item) => (
-        {
-          headerName: item.title,
-          field: item.title,
-        }
-      )));
-      setPreviewRows(response.preview_content);
+      if (response.preview_content.length > 0) {
+        const headers = extractKeys(response.preview_content[0]);
+        setColDefs(headers.map((header) => (
+          {
+            headerName: header,
+            field: header,
+          }
+        )));
+        setPreviewRows(response.preview_content);
+      } else {
+        setColDefs([]);
+        setPreviewRows([]);
+      }
     }
   }
 
@@ -192,8 +196,7 @@ export default function PayrollExportPage() {
   }, []);
 
   const defaultColDef: ColDef = {
-    filter: false,
-    sortable: false,
+    filter: true,
   };
 
   return (
