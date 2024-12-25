@@ -3,7 +3,7 @@
 import FilterComponent from "@/components/ui/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
-import { getRuleDescription, getRuleMappings } from "@/services/ruleService";
+import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
 import { ComparableFilterField, StringFilterField, ObjectFilterField, FilterType } from "@/types/filter";
 import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
@@ -71,7 +71,7 @@ export default function PayrollExportPage() {
   useEffect(() => {
     const updateRuleDisplay = async () => {
       if (exportRule != "") {
-        const ruleDisplay = await getRuleDescription(exportRule);
+        const ruleDisplay = await getRuleDisplay(exportRule);
         if (ruleDisplay) {
           setExportRuleDisplay(ruleDisplay);
         }

@@ -28,7 +28,6 @@ export async function getRuleMappings(skip: number = 0, limit: number = 0) {
   return all_rules;
 }
 
-
-export async function getRuleDescription(ruleId: string): Promise<string | undefined> {
+export async function getRuleDisplay(ruleId: string): Promise<string | undefined> {
   return await axiosHelper.get<string>(`/rule/display/${ruleId}`);
 }
