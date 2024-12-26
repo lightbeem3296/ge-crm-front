@@ -20,7 +20,7 @@ export class AxiosHelper {
       const response = await this.axiosInstance.get<T>(endpoint, config);
       return response.data;
     } catch (error: unknown) {
-      this.handleError(error);
+      await this.handleError(error);
     }
   }
 
@@ -38,7 +38,7 @@ export class AxiosHelper {
       );
       return response.data;
     } catch (error: unknown) {
-      this.handleError(error);
+      await this.handleError(error);
     }
   }
 
@@ -76,7 +76,7 @@ export class AxiosHelper {
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error: unknown) {
-      this.handleError(error);
+      await this.handleError(error);
     }
   }
 
@@ -89,7 +89,7 @@ export class AxiosHelper {
       const response = await this.axiosInstance.put<R>(endpoint, data);
       return response.data;
     } catch (error: unknown) {
-      this.handleError(error);
+      await this.handleError(error);
     }
   }
 
@@ -102,7 +102,7 @@ export class AxiosHelper {
       const response = await this.axiosInstance.patch<R>(endpoint, data);
       return response.data;
     } catch (error: unknown) {
-      this.handleError(error);
+      await this.handleError(error);
     }
   }
 
@@ -114,18 +114,29 @@ export class AxiosHelper {
       const response = await this.axiosInstance.delete<R>(endpoint);
       return response.data;
     } catch (error: unknown) {
-      this.handleError(error);
+      await this.handleError(error);
     }
   }
 
   // Centralized error handler
-  private handleError(error: unknown) {
+  private async handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
       // console.error("Axios error:", error.response?.data || error.message);
       if (error.response?.status === 422) {
-        const details = Array.isArray(error.response.data.detail)
-          ? error.response.data.detail
-          : undefined;
+        let details = undefined;
+
+        const data = error.response.data;
+        if (data instanceof Blob) {
+          const jsonData = JSON.parse(await data.text());
+          console.log(jsonData);
+          details = Array.isArray(jsonData.detail)
+            ? jsonData.detail
+            : undefined;
+        } else {
+          details = Array.isArray(error.response.data.detail)
+            ? error.response.data.detail
+            : undefined;
+        }
 
         const title = "Validation Error";
         let message = "";
