@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
 import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
@@ -22,7 +23,7 @@ export default function RuleEditPage() {
   const [currentRuleIndex, setCurrentRuleIndex] = useState<number>(0);
   const [actionValues, setActionValues] = useState<string[]>([]);
 
-  const formMode = searchParams.get("mode") || RuleEditPageMode.EDIT;
+  const pageMode = searchParams.get("mode") || RuleEditPageMode.EDIT;
   const id = searchParams.get("id");
 
   const [rule, setRule] = useState<RuleRowData>({
@@ -54,8 +55,6 @@ export default function RuleEditPage() {
     if (response) {
       setRule(response);
       setActionValues(response.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
-    } else {
-      alert("fetch error");
     }
   }
 
@@ -289,21 +288,34 @@ export default function RuleEditPage() {
   }
 
   const handleSave = async () => {
-    if (formMode === RuleEditPageMode.CREATE) {
-      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined, "Are you sure want to save?");
+    if (pageMode === RuleEditPageMode.CREATE) {
+      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined);
       if (response) {
         setRule({
           ...rule,
           _id: response.detail.object_id,
         });
         router.push("/dashboard/data/rule");
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Created successfully.",
+        });
       }
-    } else if (formMode === RuleEditPageMode.EDIT) {
-      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule, "Are you sure want to save?");
+    } else if (pageMode === RuleEditPageMode.EDIT) {
+      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule);
       if (response) {
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Updated successfully.",
+        });
       }
     } else {
-      alert(`Unhandled form mode: ${formMode}`);
+      customAlert({
+        type: CustomAlertType.ERROR,
+        title: "URL Error",
+        message: `Unhandled mode: ${pageMode}`,
+      });
     }
   }
 
@@ -336,7 +348,7 @@ export default function RuleEditPage() {
 
   // Hooks
   useEffect(() => {
-    if (formMode !== RuleEditPageMode.CREATE) {
+    if (pageMode !== RuleEditPageMode.CREATE) {
       fetchRule();
     }
   }, []);
@@ -376,9 +388,9 @@ export default function RuleEditPage() {
       <div className="flex justify-between px-2 py-4">
         <p className="text-lg font-medium text-base-content/80">
           {
-            formMode === RuleEditPageMode.CREATE
+            pageMode === RuleEditPageMode.CREATE
               ? "Create New Rule"
-              : formMode === RuleEditPageMode.EDIT
+              : pageMode === RuleEditPageMode.EDIT
                 ? "Edit Rule"
                 : "View Rule"
           }

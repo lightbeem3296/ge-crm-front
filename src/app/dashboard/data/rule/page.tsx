@@ -10,6 +10,7 @@ import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { myTheme } from "@/components/ui/theme/agGrid";
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -41,8 +42,15 @@ export default function RulePage() {
   const onDelete = async (obj: RuleRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/rule/${obj._id}`, "Are you sure want to delete?");
-      needRedraw = response !== undefined;
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/rule/${obj._id}`);
+      if (response) {
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Deleted successfully.",
+        });
+      } else {
+        needRedraw = false;
+      }
     }
     if (needRedraw) {
       const newRowData: RuleRowData[] = [];

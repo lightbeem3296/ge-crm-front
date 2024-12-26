@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
-import { AllCommunityModule, ModuleRegistry, themeQuartz } from "ag-grid-community";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
 import { getRoleMappings } from "@/services/roleService";
@@ -14,6 +14,7 @@ import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { ActionCellRenderParams } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { myTheme } from "@/components/ui/theme/agGrid";
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -130,16 +131,26 @@ export default function EmployeePage() {
 
   const onSave = async (obj: EmployeeRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<EmployeeRowData, ApiCrudResponse>(`/employee`, obj, undefined, "Are you sure want to save?");
+      const response = await axiosHelper.post<EmployeeRowData, ApiCrudResponse>(`/employee`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
         obj._is_created = false;
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Created successfully.",
+        });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<EmployeeRowData, ApiCrudResponse>(`/employee/${obj._id}`, obj, "Are you sure want to save?");
+      const response = await axiosHelper.put<EmployeeRowData, ApiCrudResponse>(`/employee/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Updated successfully.",
+        });
       }
     }
     gridRef.current?.api.redrawRows();
@@ -148,8 +159,15 @@ export default function EmployeePage() {
   const onDelete = async (obj: EmployeeRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/employee/${obj._id}`, "Are you sure want to delete?");
-      needRedraw = response !== undefined;
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/employee/${obj._id}`);
+      if (response) {
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Deleted successfully.",
+        });
+      } else {
+        needRedraw = false;
+      }
     }
     if (needRedraw) {
       const newRowData: EmployeeRowData[] = [];

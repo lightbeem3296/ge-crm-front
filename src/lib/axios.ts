@@ -1,4 +1,5 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import axios, { AxiosRequestConfig, AxiosInstance } from "axios";
 
 export class AxiosHelper {
   private axiosInstance: AxiosInstance;
@@ -14,12 +15,7 @@ export class AxiosHelper {
   async get<T>(
     endpoint: string,
     config?: AxiosRequestConfig,
-    confirmationMessage?: string,
   ): Promise<T | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
     try {
       const response = await this.axiosInstance.get<T>(endpoint, config);
       return response.data;
@@ -33,12 +29,7 @@ export class AxiosHelper {
     endpoint: string,
     data: T,
     config?: AxiosRequestConfig,
-    confirmationMessage?: string,
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
     try {
       const response = await this.axiosInstance.post<R>(
         endpoint,
@@ -93,13 +84,7 @@ export class AxiosHelper {
   async put<T, R>(
     endpoint: string,
     data: T,
-    confirmationMessage?: string
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
-
     try {
       const response = await this.axiosInstance.put<R>(endpoint, data);
       return response.data;
@@ -112,13 +97,7 @@ export class AxiosHelper {
   async patch<T, R>(
     endpoint: string,
     data: T,
-    confirmationMessage?: string
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
-
     try {
       const response = await this.axiosInstance.patch<R>(endpoint, data);
       return response.data;
@@ -130,13 +109,7 @@ export class AxiosHelper {
   // Generic DELETE request
   async delete<R>(
     endpoint: string,
-    confirmationMessage?: string
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
-
     try {
       const response = await this.axiosInstance.delete<R>(endpoint);
       return response.data;
@@ -148,11 +121,56 @@ export class AxiosHelper {
   // Centralized error handler
   private handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
-      console.error("Axios error:", error.response?.data || error.message);
-      alert(error.response?.data || error.message);
+      // console.error("Axios error:", error.response?.data || error.message);
+      if (error.response?.status === 422) {
+        const details = Array.isArray(error.response.data.detail)
+          ? error.response.data.detail
+          : undefined;
+
+        const title = "Validation Error";
+        let message = "";
+        let alertDetail: Record<string, string> | undefined = undefined;
+        if (details) {
+          alertDetail = {}
+          for (let i = 0; i < details.length; i++) {
+            const detail = details[i];
+            const detail_type = detail.type;
+            let detail_loc = "";
+            for (let j = 0; j < detail.loc.length; j++) {
+              detail_loc += j === 0 ? detail.loc[j] : " > " + detail.loc[j];
+            }
+            const detail_message = detail.msg;
+            const detail_input = JSON.stringify(detail.input, null, 2);
+
+            alertDetail["Type"] = detail_type;
+            alertDetail["Location"] = detail_loc;
+            alertDetail["Message"] = detail_message;
+            alertDetail["Input"] = detail_input;
+          }
+        } else {
+          message = JSON.stringify(error.response.data, null, 2);
+        }
+
+        customAlert({
+          type: CustomAlertType.ERROR,
+          title: title,
+          message: message,
+          detail: alertDetail,
+        });
+      } else {
+        customAlert({
+          type: CustomAlertType.ERROR,
+          title: "Axios Error",
+          message: JSON.stringify(error.response?.data, null, 2) || error.message,
+        });
+      }
     } else {
       console.error("Unexpected error:", error);
-      alert("An unexpected error occurred. Please try again.");
+      customAlert({
+        type: CustomAlertType.ERROR,
+        title: "Unexpected Error",
+        message: "An unexpected error occurred. Please try again.",
+      });
     }
   }
 }
