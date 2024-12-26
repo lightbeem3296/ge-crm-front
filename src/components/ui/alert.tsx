@@ -63,7 +63,7 @@ export const customAlert = ({ type, title, message, detail }: CustomAlertProps) 
     pauseOnHover: true,
     draggable: false,
     progress: undefined,
-    theme: localStorage?.getItem("theme") || "light",
+    theme: "colored",
     transition: Bounce,
   };
 
