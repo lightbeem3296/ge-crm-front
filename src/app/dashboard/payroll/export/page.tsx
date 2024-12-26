@@ -1,5 +1,6 @@
 "use client";
 
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import FilterComponent from "@/components/ui/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
@@ -98,7 +99,11 @@ export default function PayrollExportPage() {
 
   const handleClickExport = async () => {
     if (!exportFileName) {
-      alert("Export filename is invalid.");
+      customAlert({
+        type: CustomAlertType.ERROR,
+        title: "Input Error",
+        message: "Export filename is invalid.",
+      });
       return;
     }
 
