@@ -50,26 +50,6 @@ export default function PayrollExportPage() {
 
   // Hooks
   useEffect(() => {
-    refreshPreviewTable();
-  }, [
-    exportFieldMap,
-    filterUsername,
-    filterMnr,
-    filterRole,
-    filterDepartment,
-    filterEmploymentStartDate,
-    filterEmploymentEndDate,
-    filterSalaryType,
-    filterHourlyRate,
-    filterHoursWorked,
-    filterPointsEeaned,
-    filterSalary,
-    filterBonus,
-    filterDeduction,
-    exportRule,
-  ]);
-
-  useEffect(() => {
     const updateRuleDisplay = async () => {
       if (exportRule != "") {
         const ruleDisplay = await getRuleDisplay(exportRule);
