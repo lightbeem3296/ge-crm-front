@@ -230,7 +230,7 @@ export default function EmployeePage() {
           width: 130,
           cellDataType: "dateString",
           valueFormatter: (params) => {
-            return params.value.split("T")[0];
+            return params.value ? params.value.split("T")[0] : "";
           }
         },
       ],
