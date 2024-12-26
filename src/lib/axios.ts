@@ -15,12 +15,7 @@ export class AxiosHelper {
   async get<T>(
     endpoint: string,
     config?: AxiosRequestConfig,
-    confirmationMessage?: string,
   ): Promise<T | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
     try {
       const response = await this.axiosInstance.get<T>(endpoint, config);
       return response.data;
@@ -34,12 +29,7 @@ export class AxiosHelper {
     endpoint: string,
     data: T,
     config?: AxiosRequestConfig,
-    confirmationMessage?: string,
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
     try {
       const response = await this.axiosInstance.post<R>(
         endpoint,
@@ -94,13 +84,7 @@ export class AxiosHelper {
   async put<T, R>(
     endpoint: string,
     data: T,
-    confirmationMessage?: string
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
-
     try {
       const response = await this.axiosInstance.put<R>(endpoint, data);
       return response.data;
@@ -113,13 +97,7 @@ export class AxiosHelper {
   async patch<T, R>(
     endpoint: string,
     data: T,
-    confirmationMessage?: string
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
-
     try {
       const response = await this.axiosInstance.patch<R>(endpoint, data);
       return response.data;
@@ -131,13 +109,7 @@ export class AxiosHelper {
   // Generic DELETE request
   async delete<R>(
     endpoint: string,
-    confirmationMessage?: string
   ): Promise<R | undefined> {
-    if (confirmationMessage) {
-      const isConfirmed = confirm(confirmationMessage);
-      if (!isConfirmed) return;
-    }
-
     try {
       const response = await this.axiosInstance.delete<R>(endpoint);
       return response.data;

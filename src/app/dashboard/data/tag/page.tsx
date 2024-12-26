@@ -9,6 +9,7 @@ import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, TagRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -43,16 +44,26 @@ export default function TagPage() {
 
   const onSave = async (obj: TagRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<TagRowData, ApiCrudResponse>(`/tag`, obj, undefined, "Are you sure want to save?");
+      const response = await axiosHelper.post<TagRowData, ApiCrudResponse>(`/tag`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
         obj._is_created = false;
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Created successfully.",
+        });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<TagRowData, ApiCrudResponse>(`/tag/${obj._id}`, obj, "Are you sure want to save?");
+      const response = await axiosHelper.put<TagRowData, ApiCrudResponse>(`/tag/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Updated successfully.",
+        });
       }
     }
     gridRef.current?.api.redrawRows();
@@ -61,8 +72,15 @@ export default function TagPage() {
   const onDelete = async (obj: TagRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/tag/${obj._id}`, "Are you sure want to delete?");
-      needRedraw = response !== undefined;
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/tag/${obj._id}`);
+      if (response) {
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Deleted successfully.",
+        });
+      } else {
+        needRedraw = false;
+      }
     }
     if (needRedraw) {
       const newRowData: TagRowData[] = [];

@@ -16,6 +16,25 @@ interface CustomAlertProps {
 }
 
 export const customAlert = ({ type, title, message, detail }: CustomAlertProps) => {
+  if (!title) {
+    switch (type) {
+      case CustomAlertType.INFO:
+        title = "Info";
+        break;
+      case CustomAlertType.SUCCESS:
+        title = "Success";
+        break;
+      case CustomAlertType.WARNING:
+        title = "Warning";
+        break;
+      case CustomAlertType.ERROR:
+        title = "Error";
+        break;
+      default:
+        title = "Alert";
+    }
+  }
+
   const content = (
     <div className="flex flex-col">
       <h1 className="font-medium py-2">
@@ -38,7 +57,7 @@ export const customAlert = ({ type, title, message, detail }: CustomAlertProps) 
   );
   const alertOptions: ToastOptions = {
     position: "top-right",
-    autoClose: false,
+    autoClose: 10000,
     hideProgressBar: false,
     closeOnClick: false,
     pauseOnHover: true,

@@ -289,17 +289,26 @@ export default function RuleEditPage() {
 
   const handleSave = async () => {
     if (pageMode === RuleEditPageMode.CREATE) {
-      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined, "Are you sure want to save?");
+      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined);
       if (response) {
         setRule({
           ...rule,
           _id: response.detail.object_id,
         });
         router.push("/dashboard/data/rule");
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Created successfully.",
+        });
       }
     } else if (pageMode === RuleEditPageMode.EDIT) {
-      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule, "Are you sure want to save?");
+      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule);
       if (response) {
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Updated successfully.",
+        });
       }
     } else {
       customAlert({
