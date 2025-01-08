@@ -11,13 +11,9 @@ import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { RuleEditPageMode } from "@/types/rule/edit";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
-
-export enum RuleEditPageMode {
-  EDIT = "edit",
-  CREATE = "create",
-}
 
 export default function RulePage() {
   const router = useRouter();

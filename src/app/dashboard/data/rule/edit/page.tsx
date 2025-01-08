@@ -1,9 +1,8 @@
 "use client";
 
 import { RuleRowData } from "@/types/datatable";
-import { RuleEditPageMode } from "../page";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { axiosHelper } from "@/lib/axios";
 import { ApiCrudResponse } from "@/types/api";
 import { extractKeys, lookupValue } from "@/utils/record";
@@ -13,18 +12,20 @@ import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-sv
 import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
 import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { RuleEditPageMode } from "@/types/rule/edit";
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
 
-export default function RuleEditPage() {
+function RuleEditPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentRuleIndex, setCurrentRuleIndex] = useState<number>(0);
   const [actionValues, setActionValues] = useState<string[]>([]);
 
-  const pageMode = searchParams.get("mode") || RuleEditPageMode.EDIT;
-  const id = searchParams.get("id");
+  const modeFromParams = searchParams?.get("mode");
+  const pageMode = Object.values(RuleEditPageMode).includes(modeFromParams as RuleEditPageMode) ? modeFromParams : RuleEditPageMode.EDIT;
+  const id = searchParams?.get("id");
 
   const [rule, setRule] = useState<RuleRowData>({
     rule_name: "New Rule",
@@ -684,4 +685,12 @@ export default function RuleEditPage() {
       </div>
     </div >
   )
+}
+
+export default function RuleEditPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RuleEditPageContent/>
+    </Suspense>
+  );
 }
