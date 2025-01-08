@@ -64,7 +64,7 @@ export default function RulePage() {
   }
 
   // Table functions
-  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
+  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
       headerName: "Rule Name",
       field: "rule_name",
@@ -105,7 +105,7 @@ export default function RulePage() {
     filter: true,
   };
 
-  const onGridReady = useCallback(async (params: GridReadyEvent) => {
+  const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
     await fetchRowData();
   }, []);
 

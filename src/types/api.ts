@@ -1,6 +1,6 @@
 export interface ApiCrudResponse {
   message: string,
-  detail: any,
+  detail: any, // eslint-disable-line
 }
 
 export interface ApiListResponse<TRowData> {

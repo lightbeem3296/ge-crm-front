@@ -14,7 +14,7 @@ interface ServerResponse {
 }
 
 export async function getRuleMappings(skip: number = 0, limit: number = 0) {
-  let all_rules: Record<string, string> = {};
+  const all_rules: Record<string, string> = {};
   const resp = await axiosHelper.get<ServerResponse>(
     "/rule",
     {

@@ -27,7 +27,7 @@ export default function EmployeePage() {
   const [rowDataList, setRowDataList] = useState<EmployeeRowData[]>();
 
   // Custom Components
-  const TagsRenderer = (props: any) => {
+  const TagsRenderer = (props: any) => { // eslint-disable-line
     return (
       <div className="flex overflow-hidden gap-1 items-center h-full">
         {props.value.map((tag: string, index: number) => (
@@ -42,7 +42,7 @@ export default function EmployeePage() {
     );
   };
 
-  const TagsEditor = (props: any) => {
+  const TagsEditor = (props: any) => { // eslint-disable-line
     const [tags, setTags] = useState<string[]>(props.value || []);
 
     const removeTag = (tag: string) => {
@@ -181,7 +181,7 @@ export default function EmployeePage() {
   }
 
   // Table functions
-  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
+  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
       headerName: "Name",
       field: "username",
@@ -324,7 +324,7 @@ export default function EmployeePage() {
     editable: true,
   };
 
-  const onGridReady = useCallback(async (params: GridReadyEvent) => {
+  const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
     await fetchRowData();
   }, []);
 

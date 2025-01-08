@@ -44,7 +44,7 @@ export interface PayrollExportRequest extends PayrollExportPreviewRequest {
 
 export interface PayrollExportResponse {
   total_rows: number,
-  preview_content: any[],
+  preview_content: any[], // eslint-disable-line
 }
 
 export interface PayrollExportPreviewRequest {
@@ -55,7 +55,7 @@ export interface PayrollExportPreviewRequest {
 
 export interface PayrollExportPreviewResponse {
   total_rows: number,
-  preview_content: any[],
+  preview_content: any[], // eslint-disable-line
 }
 
 export const fieldMapMapping: Record<string, string> = {

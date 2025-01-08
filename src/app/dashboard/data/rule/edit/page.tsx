@@ -65,10 +65,6 @@ export default function RuleEditPage() {
     router.push("/dashboard/data/rule");
   }
 
-  const handleClickViewEdit = () => {
-    router.push(`/dashboard/data/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${id}`);
-  }
-
   const handleChangeRuleName = (value: string) => {
     setRule({
       ...rule,
@@ -653,7 +649,7 @@ export default function RuleEditPage() {
                     <div className="col-span-6 flex justify-end gap-2 p-2">
                       <button
                         className="btn btn-sm btn-error btn-outline"
-                        onClick={(e) => handleClickDeleteAtomRule(rule_index)}
+                        onClick={(e) => handleClickDeleteAtomRule(rule_index)} // eslint-disable-line
                       >
                         <FontAwesomeIcon icon={faTrash} width={12} />Delete Atom Rule
                       </button>

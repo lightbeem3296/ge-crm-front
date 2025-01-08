@@ -1,4 +1,4 @@
-import { faEdit, faEye, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { faEdit, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface ButtonProps {

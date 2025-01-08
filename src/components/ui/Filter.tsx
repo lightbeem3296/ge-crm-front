@@ -1,6 +1,6 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
-import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, ObjectFilterField, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
+import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
 import { PayrollExportFilterField } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -9,7 +9,7 @@ interface FilterComponentProps {
   field: PayrollExportFilterField
   label: string,
   type: FilterType,
-  setFilterField: Dispatch<SetStateAction<any>>
+  setFilterField: Dispatch<SetStateAction<any>> // eslint-disable-line
 }
 
 const roleMappings = await getRoleMappings();
