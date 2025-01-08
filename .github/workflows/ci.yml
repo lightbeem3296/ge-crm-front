@@ -1,0 +1,25 @@
+name: GitHub CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'  # Specify the version of Node.js you are using
+
+      - name: Install dependencies
+        run: npm install  # Installs project dependencies
+
+      - name: Run Lint
+        run: npm run lint  # Runs the lint script from package.json
