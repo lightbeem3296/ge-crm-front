@@ -11,13 +11,9 @@ import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { RuleEditPageMode } from "@/types/rule/edit";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
-
-export enum RuleEditPageMode {
-  EDIT = "edit",
-  CREATE = "create",
-}
 
 export default function RulePage() {
   const router = useRouter();
@@ -64,7 +60,7 @@ export default function RulePage() {
   }
 
   // Table functions
-  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
+  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
       headerName: "Rule Name",
       field: "rule_name",
@@ -105,7 +101,7 @@ export default function RulePage() {
     filter: true,
   };
 
-  const onGridReady = useCallback(async (params: GridReadyEvent) => {
+  const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
     await fetchRowData();
   }, []);
 

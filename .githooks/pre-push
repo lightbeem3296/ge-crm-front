@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Starting pre-push checks..."
+
+# Run npm run lint
+echo "Running 'npm run lint' on the codebase..."
+npm run lint
+if [ $? -ne 0 ]; then
+    echo "ERROR: 'npm run lint' failed. Please fix the issues before pushing."
+    exit 1
+else
+    echo "'npm run lint' completed successfully."
+fi
+
+echo "All checks passed successfully. Proceeding with push."
+exit 0

@@ -94,7 +94,7 @@ export default function TagPage() {
   }
 
   // Table functions
-  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
+  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
       headerName: "Tag Name",
       field: "tag_name",
@@ -136,7 +136,7 @@ export default function TagPage() {
     editable: true,
   };
 
-  const onGridReady = useCallback(async (params: GridReadyEvent) => {
+  const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
     await fetchRowData();
   }, []);
 

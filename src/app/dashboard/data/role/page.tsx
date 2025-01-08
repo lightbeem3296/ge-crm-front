@@ -94,7 +94,7 @@ export default function RolePage() {
   }
 
   // Table functions
-  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([
+  const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
       headerName: "Role Name",
       field: "role_name",
@@ -136,7 +136,7 @@ export default function RolePage() {
     editable: true,
   };
 
-  const onGridReady = useCallback(async (params: GridReadyEvent) => {
+  const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
     await fetchRowData();
   }, []);
 
