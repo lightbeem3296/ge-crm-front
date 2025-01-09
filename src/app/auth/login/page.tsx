@@ -1,6 +1,7 @@
 "use client"
 
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { isAuthenticated } from "@/services/authService";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -54,6 +55,16 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  const checkAuthentication = async () => {
+    if (await isAuthenticated()) {
+      router.push("/dashboard");
+    }
+  }
+
+  useEffect(() => {
+    checkAuthentication();
+  }, []);
 
   return (
     <form
