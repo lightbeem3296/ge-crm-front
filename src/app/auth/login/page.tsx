@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 
 interface LoginFormInputs {
@@ -25,7 +25,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const router = useRouter();
 
-  // UI Handlers
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   }
@@ -37,13 +37,13 @@ export default function LoginPage() {
       formData.append("username", data.username);
       formData.append("password", data.password);
 
-      const response = await axios.post("/api/auth/login", formData, {
+      const response = await axios.post("/api/auth/token", formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
       localStorage.setItem("accessToken", response.data.access_token);
-      router.push("/dashboard/data/employee");
+      router.push("/dashboard");
     } catch (error: any) {
       customAlert({
         type: CustomAlertType.ERROR,
