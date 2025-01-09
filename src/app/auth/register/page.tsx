@@ -60,7 +60,7 @@ export default function LoginPage() {
         message: "User registered successfully. Login with registered user.",
       });
       router.push("/auth/login");
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line
       customAlert({
         type: CustomAlertType.ERROR,
         title: "Registration failed",

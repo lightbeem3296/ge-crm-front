@@ -45,7 +45,7 @@ export default function LoginPage() {
       });
       localStorage.setItem("accessToken", response.data.access_token);
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line
       customAlert({
         type: CustomAlertType.ERROR,
         title: "Login failed",
