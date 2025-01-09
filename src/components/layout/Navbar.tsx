@@ -3,6 +3,9 @@
 import { Bars3Icon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { Dispatch, SetStateAction } from 'react'
 import ThemeController from '../ui/theme/ThemeController';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignOut } from '@fortawesome/free-solid-svg-icons';
+import Link from 'next/link';
 
 interface HeaderProps {
   setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>;
@@ -22,9 +25,21 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
       </div>
       <div className="flex gap-1 items-center">
         <ThemeController />
-        <button className="btn btn-sm btn-ghost">
-          <Squares2X2Icon aria-hidden="true" className="size-5" />
-        </button>
+
+        <div className="dropdown dropdown-end">
+          <button className="btn btn-sm btn-ghost">
+            <Squares2X2Icon aria-hidden="true" className="size-5" />
+          </button>
+          <ul
+            tabIndex={0}
+            className="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
+            <li>
+              <Link href="/auth/logout">
+                <FontAwesomeIcon icon={faSignOut} width={12} /> Log out
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   )

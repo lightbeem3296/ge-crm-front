@@ -16,7 +16,7 @@ interface ServerResponse {
 export async function getRuleMappings(skip: number = 0, limit: number = 0) {
   const all_rules: Record<string, string> = {};
   const resp = await axiosHelper.get<ServerResponse>(
-    "/rule",
+    "/rule/list",
     {
       params: {
         skip: skip,

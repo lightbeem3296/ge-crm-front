@@ -52,7 +52,7 @@ function RuleEditPageContent() {
   });
 
   const fetchRule = async () => {
-    const response = await axiosHelper.get<RuleRowData>(`/rule/${id}`);
+    const response = await axiosHelper.get<RuleRowData>(`/rule/get/${id}`);
     if (response) {
       setRule(response);
       setActionValues(response.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
@@ -286,7 +286,7 @@ function RuleEditPageContent() {
 
   const handleSave = async () => {
     if (pageMode === RuleEditPageMode.CREATE) {
-      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule`, rule, undefined);
+      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule/create`, rule, undefined);
       if (response) {
         setRule({
           ...rule,
@@ -300,7 +300,7 @@ function RuleEditPageContent() {
         });
       }
     } else if (pageMode === RuleEditPageMode.EDIT) {
-      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/${rule._id}`, rule);
+      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/update/${rule._id}`, rule);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

@@ -31,14 +31,14 @@ export default function RulePage() {
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const resp = await axiosHelper.get<ApiListResponse<RuleRowData>>("/rule");
-    setRowDataList(resp?.items);
+    const response = await axiosHelper.get<ApiListResponse<RuleRowData>>("/rule/list");
+    setRowDataList(response?.items);
   }
 
   const onDelete = async (obj: RuleRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/rule/${obj._id}`);
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/rule/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

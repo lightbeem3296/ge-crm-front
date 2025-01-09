@@ -38,13 +38,13 @@ export default function RolePage() {
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const resp = await axiosHelper.get<ApiListResponse<RoleRowData>>("/role");
-    setRowDataList(resp?.items);
+    const response = await axiosHelper.get<ApiListResponse<RoleRowData>>("/role/list");
+    setRowDataList(response?.items);
   }
 
   const onSave = async (obj: RoleRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<RoleRowData, ApiCrudResponse>(`/role`, obj, undefined);
+      const response = await axiosHelper.post<RoleRowData, ApiCrudResponse>(`/role/create`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
@@ -56,7 +56,7 @@ export default function RolePage() {
         });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<RoleRowData, ApiCrudResponse>(`/role/${obj._id}`, obj);
+      const response = await axiosHelper.put<RoleRowData, ApiCrudResponse>(`/role/update/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
 
@@ -72,7 +72,7 @@ export default function RolePage() {
   const onDelete = async (obj: RoleRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/role/${obj._id}`);
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/role/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
