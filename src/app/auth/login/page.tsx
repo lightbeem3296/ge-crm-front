@@ -42,7 +42,7 @@ export default function LoginPage() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-      localStorage.setItem("access_token", response.data.access_token);
+      localStorage.setItem("accessToken", response.data.access_token);
       router.push("/dashboard/data/employee");
     } catch (error: any) {
       customAlert({

@@ -9,6 +9,17 @@ export class AxiosHelper {
     this.axiosInstance = axios.create({
       baseURL: baseUrl,
     });
+
+    this.axiosInstance.interceptors.request.use(
+      (config) => {
+        const accessToken = localStorage.getItem("accessToken");
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
+        return config;
+      },
+      (err) => {
+        Promise.reject(err);
+      }
+    );
   }
 
   // Generic GET request
@@ -168,6 +179,8 @@ export class AxiosHelper {
           message: message,
           detail: alertDetail,
         });
+      } else if (error.response?.status === 401) {
+        window.location.href = "/auth/login";
       } else {
         customAlert({
           type: CustomAlertType.ERROR,
