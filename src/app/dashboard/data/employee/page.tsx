@@ -125,13 +125,13 @@ export default function EmployeePage() {
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const response = await axiosHelper.get<ApiListResponse<EmployeeRowData>>("/employee");
+    const response = await axiosHelper.get<ApiListResponse<EmployeeRowData>>("/employee/list");
     setRowDataList(response?.items);
   }
 
   const onSave = async (obj: EmployeeRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<EmployeeRowData, ApiCrudResponse>(`/employee`, obj, undefined);
+      const response = await axiosHelper.post<EmployeeRowData, ApiCrudResponse>(`/employee/create`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
@@ -143,7 +143,7 @@ export default function EmployeePage() {
         });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<EmployeeRowData, ApiCrudResponse>(`/employee/${obj._id}`, obj);
+      const response = await axiosHelper.put<EmployeeRowData, ApiCrudResponse>(`/employee/update/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
 
@@ -159,7 +159,7 @@ export default function EmployeePage() {
   const onDelete = async (obj: EmployeeRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/employee/${obj._id}`);
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/employee/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

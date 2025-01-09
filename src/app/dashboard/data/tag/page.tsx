@@ -38,13 +38,13 @@ export default function TagPage() {
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const response = await axiosHelper.get<ApiListResponse<TagRowData>>("/tag");
+    const response = await axiosHelper.get<ApiListResponse<TagRowData>>("/tag/list");
     setRowDataList(response?.items);
   }
 
   const onSave = async (obj: TagRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<TagRowData, ApiCrudResponse>(`/tag`, obj, undefined);
+      const response = await axiosHelper.post<TagRowData, ApiCrudResponse>(`/tag/create`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
@@ -56,7 +56,7 @@ export default function TagPage() {
         });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<TagRowData, ApiCrudResponse>(`/tag/${obj._id}`, obj);
+      const response = await axiosHelper.put<TagRowData, ApiCrudResponse>(`/tag/update/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
 
@@ -72,7 +72,7 @@ export default function TagPage() {
   const onDelete = async (obj: TagRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/tag/${obj._id}`);
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/tag/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

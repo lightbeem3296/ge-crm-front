@@ -16,7 +16,7 @@ interface ServerResponse {
 export async function getTagMappings(skip: number = 0, limit: number = 0) {
   const all_tags: Record<string, string> = {};
   const resp = await axiosHelper.get<ServerResponse>(
-    "/tag",
+    "/tag/list",
     {
       params: {
         skip: skip,

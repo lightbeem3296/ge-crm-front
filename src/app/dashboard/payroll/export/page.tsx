@@ -87,7 +87,7 @@ export default function PayrollExportPage() {
       return;
     }
 
-    await axiosHelper.download_post<PayrollExportRequest>("/payroll/export",
+    await axiosHelper.download_post<PayrollExportRequest>("/payroll/export/download",
       {
         filename: exportFileName,
         field_map: exportFieldMap,

@@ -16,7 +16,7 @@ interface ServerResponse {
 export async function getRoleMappings(skip: number = 0, limit: number = 0) {
   const all_roles: Record<string, string> = {};
   const resp = await axiosHelper.get<ServerResponse>(
-    "/role",
+    "/role/list",
     {
       params: {
         skip: skip,
