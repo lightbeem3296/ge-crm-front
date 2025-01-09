@@ -79,7 +79,7 @@ export default function LoginPage() {
 
       {/* Username field */}
       <div className="flex flex-col">
-        <label className="input input-bordered flex items-center gap-2">
+        <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -93,6 +93,7 @@ export default function LoginPage() {
             id="username"
             className="grow"
             placeholder="Username"
+            disabled={loading}
             {...register("username", { required: "Username is required" })}
           />
         </label>
@@ -103,7 +104,7 @@ export default function LoginPage() {
 
       {/* Password field */}
       <div className="flex flex-col">
-        <label className="input input-bordered flex items-center gap-2">
+        <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -119,6 +120,7 @@ export default function LoginPage() {
             id="password"
             className="grow"
             placeholder="Password"
+            disabled={loading}
             {...register("password", { required: "Password is required" })}
           />
           <button
@@ -138,12 +140,16 @@ export default function LoginPage() {
       <button
         type="submit"
         className="btn btn-info"
+        disabled={loading}
       >
+        {loading
+          ? <span className="loading loading-spinner loading-xs"></span>
+          : null}
         Login
       </button>
       <div className="flex gap-2">
         <span>
-          Don't have account?
+          Don&apos;t have account?
         </span>
         <Link
           href="/auth/register"
