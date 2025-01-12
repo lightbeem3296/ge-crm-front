@@ -69,7 +69,7 @@ export default function LoginPage() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-4 max-w-96 mx-auto border px-8 py-16 rounded-md mt-20"
+      className="flex flex-col gap-4 max-w-96 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
     >
       <div className="flex justify-center mb-8">
         <span className="font-sans font-medium text-xl">
