@@ -146,7 +146,14 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
 
             <ul className="text-sm mt-4 px-4">
               {sideBarMenuItems.map((menuItem) => (
-                menuItem.type === SidebarMenuItemType.MenuItem ? (
+                menuItem.type === SidebarMenuItemType.MenuItem
+                  && (
+                    menuItem.role === UserRole.USER
+                    || (
+                      menuItem.role === UserRole.ADMIN
+                      && currentUser?.role === UserRole.ADMIN
+                    )
+                  ) ? (
                   <Link
                     key={menuItem.name}
                     href={menuItem.href}
