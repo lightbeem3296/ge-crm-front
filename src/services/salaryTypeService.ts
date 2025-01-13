@@ -16,7 +16,7 @@ interface ServerResponse {
 export async function getSalaryTypeMappings(skip: number = 0, limit: number = 0) {
   const all_objs: Record<string, string> = {};
   const resp = await axiosHelper.get<ServerResponse>(
-    "/salary_type/list",
+    "/salary-type/list",
     {
       params: {
         skip: skip,
