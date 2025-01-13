@@ -19,6 +19,17 @@ enum SidebarMenuItemType {
 
 const sideBarMenuItems = [
   {
+    name: 'Main',
+    href: '#',
+    type: SidebarMenuItemType.Title,
+  },
+  {
+    name: 'Dashboard',
+    href: '/dashboard/home',
+    type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
+  },
+  {
     name: 'Data',
     href: '#',
     type: SidebarMenuItemType.Title,
