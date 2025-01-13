@@ -16,3 +16,10 @@ export interface User {
   username: string
   role: UserRole
 }
+
+export interface UserCount {
+  total: number
+  admin: number
+  user: number
+  inactive: number
+}

@@ -38,13 +38,13 @@ export default function SalaryTypePage() {
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const resp = await axiosHelper.get<ApiListResponse<SalaryTypeRowData>>("/salary_type/list");
+    const resp = await axiosHelper.get<ApiListResponse<SalaryTypeRowData>>("/salary-type/list");
     setRowDataList(resp?.items);
   }
 
   const onSave = async (obj: SalaryTypeRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<SalaryTypeRowData, ApiCrudResponse>(`/salary_type/create`, obj, undefined);
+      const response = await axiosHelper.post<SalaryTypeRowData, ApiCrudResponse>(`/salary-type/create`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
@@ -56,7 +56,7 @@ export default function SalaryTypePage() {
         });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<SalaryTypeRowData, ApiCrudResponse>(`/salary_type/update/${obj._id}`, obj);
+      const response = await axiosHelper.put<SalaryTypeRowData, ApiCrudResponse>(`/salary-type/update/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
 
@@ -72,7 +72,7 @@ export default function SalaryTypePage() {
   const onDelete = async (obj: SalaryTypeRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/salary_type/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiCrudResponse>(`/salary-type/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
