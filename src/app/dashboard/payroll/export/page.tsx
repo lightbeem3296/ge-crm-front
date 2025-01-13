@@ -8,7 +8,7 @@ import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
 import { ComparableFilterField, StringFilterField, ObjectFilterField, FilterType } from "@/types/filter";
 import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
-import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AllCommunityModule, ColDef, ModuleRegistry, Theme } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
@@ -47,6 +47,8 @@ export default function PayrollExportPage() {
 
   const [ruleMappings, setRuleMappins] = useState<Record<string, string>>();
   const [ruleCodes, setRuleCodes] = useState<string[]>();
+
+  const [previewLoading, setPreviewLoading] = useState<boolean>(false);
 
   // Hooks
   useEffect(() => {
@@ -154,39 +156,44 @@ export default function PayrollExportPage() {
 
   // Table Functions
   const refreshPreviewTable = async () => {
-    const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
-      field_map: exportFieldMap,
-      filter: {
-        username: filterUsername,
-        m_nr: filterMnr,
-        role: filterRole,
-        department: filterDepartment,
-        employment_start_date: filterEmploymentStartDate,
-        employment_end_date: filterEmploymentEndDate,
-        salary_type: filterSalaryType,
-        hourly_rate: filterHourlyRate,
-        hours_worked: filterHoursWorked,
-        points_earned: filterPointsEeaned,
-        salary: filterSalary,
-        bonus: filterBonus,
-        deduction: filterDeduction,
-      },
-      rule: exportRule || undefined,
-    });
-    if (response) {
-      if (response.preview_content.length > 0) {
-        const headers = extractKeys(response.preview_content[0]);
-        setColDefs(headers.map((header) => (
-          {
-            headerName: header,
-            field: header,
-          }
-        )));
-        setPreviewRows(response.preview_content);
-      } else {
-        setColDefs([]);
-        setPreviewRows([]);
+    try {
+      setPreviewLoading(true);
+      const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
+        field_map: exportFieldMap,
+        filter: {
+          username: filterUsername,
+          m_nr: filterMnr,
+          role: filterRole,
+          department: filterDepartment,
+          employment_start_date: filterEmploymentStartDate,
+          employment_end_date: filterEmploymentEndDate,
+          salary_type: filterSalaryType,
+          hourly_rate: filterHourlyRate,
+          hours_worked: filterHoursWorked,
+          points_earned: filterPointsEeaned,
+          salary: filterSalary,
+          bonus: filterBonus,
+          deduction: filterDeduction,
+        },
+        rule: exportRule || undefined,
+      });
+      if (response) {
+        if (response.preview_content.length > 0) {
+          const headers = extractKeys(response.preview_content[0]);
+          setColDefs(headers.map((header) => (
+            {
+              headerName: header,
+              field: header,
+            }
+          )));
+          setPreviewRows(response.preview_content);
+        } else {
+          setColDefs([]);
+          setPreviewRows([]);
+        }
       }
+    } finally {
+      setPreviewLoading(false);
     }
   }
 
@@ -383,7 +390,12 @@ export default function PayrollExportPage() {
               className="btn btn-sm btn-info btn-outline"
               onClick={() => handleClickPreviewRefresh()}
             >
-              <FontAwesomeIcon icon={faRefresh} width={12} />Refresh
+              {
+                previewLoading
+                  ? <span className="loading loading-spinner loading-xs"></span>
+                  : null
+              }
+              Refresh
             </button>
           </div>
           <div className="overflow-auto">
