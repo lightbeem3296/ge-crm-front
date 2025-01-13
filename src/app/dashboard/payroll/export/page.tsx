@@ -8,7 +8,7 @@ import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
 import { ComparableFilterField, StringFilterField, ObjectFilterField, FilterType } from "@/types/filter";
 import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
-import { faDownload, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AllCommunityModule, ColDef, ModuleRegistry, Theme } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
@@ -48,6 +48,7 @@ export default function PayrollExportPage() {
   const [ruleMappings, setRuleMappins] = useState<Record<string, string>>();
   const [ruleCodes, setRuleCodes] = useState<string[]>();
 
+  const [exportLoading, setExportLoading] = useState<boolean>(false);
   const [previewLoading, setPreviewLoading] = useState<boolean>(false);
 
   // Hooks
@@ -80,36 +81,42 @@ export default function PayrollExportPage() {
   }
 
   const handleClickExport = async () => {
-    if (!exportFileName) {
-      customAlert({
-        type: CustomAlertType.ERROR,
-        title: "Input Error",
-        message: "Export filename is invalid.",
-      });
-      return;
-    }
+    try {
+      setExportLoading(true);
 
-    await axiosHelper.download_post<PayrollExportRequest>("/payroll/export/download",
-      {
-        filename: exportFileName,
-        field_map: exportFieldMap,
-        filter: {
-          username: filterUsername,
-          m_nr: filterMnr,
-          role: filterRole,
-          department: filterDepartment,
-          employment_start_date: filterEmploymentStartDate,
-          employment_end_date: filterEmploymentEndDate,
-          salary_type: filterSalaryType,
-          hourly_rate: filterHourlyRate,
-          hours_worked: filterHoursWorked,
-          points_earned: filterPointsEeaned,
-          salary: filterSalary,
-          bonus: filterBonus,
-          deduction: filterDeduction,
-        },
-        rule: exportRule || undefined,
-      });
+      if (!exportFileName) {
+        customAlert({
+          type: CustomAlertType.ERROR,
+          title: "Input Error",
+          message: "Export filename is invalid.",
+        });
+        return;
+      }
+
+      await axiosHelper.download_post<PayrollExportRequest>("/payroll/export/download",
+        {
+          filename: exportFileName,
+          field_map: exportFieldMap,
+          filter: {
+            username: filterUsername,
+            m_nr: filterMnr,
+            role: filterRole,
+            department: filterDepartment,
+            employment_start_date: filterEmploymentStartDate,
+            employment_end_date: filterEmploymentEndDate,
+            salary_type: filterSalaryType,
+            hourly_rate: filterHourlyRate,
+            hours_worked: filterHoursWorked,
+            points_earned: filterPointsEeaned,
+            salary: filterSalary,
+            bonus: filterBonus,
+            deduction: filterDeduction,
+          },
+          rule: exportRule || undefined,
+        });
+    } finally {
+      setExportLoading(false);
+    }
   }
 
   const handleClickAddFieldMapItem = () => {
@@ -222,7 +229,11 @@ export default function PayrollExportPage() {
             className="btn btn-sm btn-info"
             onClick={() => handleClickExport()}
           >
-            <FontAwesomeIcon icon={faDownload} width={12} />Export
+            {exportLoading
+              ? <span className="loading loading-spinner loading-xs"></span>
+              : <FontAwesomeIcon icon={faDownload} width={12} />
+            }
+            Export
           </button>
         </div>
       </div>
@@ -393,7 +404,7 @@ export default function PayrollExportPage() {
               {
                 previewLoading
                   ? <span className="loading loading-spinner loading-xs"></span>
-                  : null
+                  : <FontAwesomeIcon icon={faRefresh} width={12} />
               }
               Refresh
             </button>
