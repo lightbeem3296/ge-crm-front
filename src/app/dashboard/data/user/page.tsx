@@ -89,6 +89,9 @@ export default function UserPage() {
       field: "password",
       flex: 1,
       minWidth: 200,
+      cellRenderer: (): string => {
+        return '********';
+      }
     },
     {
       headerName: "Actions",
