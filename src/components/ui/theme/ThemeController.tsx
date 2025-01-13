@@ -33,8 +33,8 @@ export default function ThemeController() {
   }
 
   return (
-    <div className="dropdown dropdown-left">
-      <div tabIndex={0} role="button" className="btn btn-sm">
+    <div className="dropdown dropdown-end">
+      <div tabIndex={0} role="button" className="btn btn-sm btn-ghost">
         Theme
         <FontAwesomeIcon icon={faAngleDown} width={12} />
       </div>

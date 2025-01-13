@@ -1,6 +1,6 @@
 'use client'
 
-import { Bars3Icon, Squares2X2Icon } from '@heroicons/react/20/solid'
+import { Bars3Icon } from '@heroicons/react/20/solid'
 import { Dispatch, SetStateAction } from 'react'
 import ThemeController from '../ui/theme/ThemeController';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,18 +24,18 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
         >
           <Bars3Icon aria-hidden="true" className="size-5" />
         </button>
-        <h1 className="text-md font-bold tracking-tight text-base-content/70">Navigation Bar</h1>
+        <h1 className="text-md font-bold tracking-tight text-base-content/70"></h1>
       </div>
       <div className="flex gap-1 items-center">
         <ThemeController />
 
         <div className="dropdown dropdown-end">
-          <button className="btn btn-sm btn-ghost">
+          <button className="btn btn-sm">
             <FontAwesomeIcon icon={faUser} width={12} />{currentUser?.username}
           </button>
           <ul
             tabIndex={0}
-            className="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
+            className="menu dropdown-content bg-base-300 rounded-box z-[1] mt-4 w-52 p-2 shadow">
             <li>
               <Link href="/auth/logout">
                 <FontAwesomeIcon icon={faSignOut} width={12} /> Log out
