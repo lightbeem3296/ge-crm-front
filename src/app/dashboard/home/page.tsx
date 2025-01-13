@@ -20,12 +20,6 @@ const HomePage = () => {
   const currentUser = loadCurrentUser();
 
   const fetchData = async () => {
-    setEmployeeCount(await axiosHelper.get<number>("/employee/count"));
-    setRuleCount(await axiosHelper.get<number>("/rule/count"));
-    setTagCount(await axiosHelper.get<number>("/tag/count"));
-    setRoleCount(await axiosHelper.get<number>("/role/count"));
-    setSalaryTypeCount(await axiosHelper.get<number>("/salary-type/count"));
-
     if (currentUser?.role === UserRole.ADMIN) {
       const response = await axiosHelper.get<UserCount>("/user/count");
       setUserTotalCount(response?.total)
@@ -33,6 +27,12 @@ const HomePage = () => {
       setUserUserCount(response?.user)
       setUserInactiveCount(response?.inactive)
     }
+
+    setEmployeeCount(await axiosHelper.get<number>("/employee/count"));
+    setRuleCount(await axiosHelper.get<number>("/rule/count"));
+    setTagCount(await axiosHelper.get<number>("/tag/count"));
+    setRoleCount(await axiosHelper.get<number>("/role/count"));
+    setSalaryTypeCount(await axiosHelper.get<number>("/salary-type/count"));
   }
 
   useEffect(() => {
