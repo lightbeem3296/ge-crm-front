@@ -1,6 +1,7 @@
 import { CustomCellRendererProps } from "ag-grid-react";
 import { RuleAction } from "./rule/action";
 import { RuleCondition } from "./rule/condition";
+import { UserRole } from "./user";
 
 export interface ActionCellRenderParams<TRowData> extends CustomCellRendererProps {
   onSave?: (obj: TRowData) => void;
@@ -66,4 +67,12 @@ export interface RuleRowData extends BaseRowData {
   atom_rules: AtomRule[];
 
   display?: string;
+}
+
+export interface UserRowData extends BaseRowData {
+  _id?: string;
+
+  username: string;
+  password: string | null;
+  role: UserRole;
 }
