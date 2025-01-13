@@ -4,14 +4,17 @@ import { Bars3Icon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import { Dispatch, SetStateAction } from 'react'
 import ThemeController from '../ui/theme/ThemeController';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { faSignOut, faUser } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
+import { loadCurrentUser } from '@/services/authService';
 
 interface HeaderProps {
   setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
+  const currentUser = loadCurrentUser();
+
   return (
     <div className="flex items-center justify-between border-b border-base-300 px-4 py-2 bg-base-100/80 sticky top-0 backdrop-blur-md z-10">
       <div className='flex items-center gap-x-2'>
@@ -28,7 +31,7 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
 
         <div className="dropdown dropdown-end">
           <button className="btn btn-sm btn-ghost">
-            <Squares2X2Icon aria-hidden="true" className="size-5" />
+            <FontAwesomeIcon icon={faUser} width={12} />{currentUser?.username}
           </button>
           <ul
             tabIndex={0}
