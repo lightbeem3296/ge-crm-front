@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { isAuthenticated } from '@/services/authService';
+import { fetchCurrentUser } from '@/services/authService';
+import { User } from '@/types/user';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -8,12 +9,12 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const checkAuthenticated = async () => {
-    const auth = await isAuthenticated();
-    setIsAuth(auth);
-    if (!auth) {
+    const currentUser = await fetchCurrentUser();
+    setCurrentUser(currentUser);
+    if (!currentUser) {
       router.push('/auth/login');
     }
   }
@@ -22,7 +23,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     checkAuthenticated();
   }, []);
 
-  return <>{isAuth ? children : null}</>;
+  return <>{currentUser ? children : null}</>;
 };
 
 export default ProtectedRoute;

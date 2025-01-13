@@ -6,7 +6,7 @@ import Sidebar from '@/components/layout/Sidebar'
 import Footer from '@/components/layout/Footer'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
-export default function Example({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   return (
