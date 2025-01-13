@@ -4,13 +4,13 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
+import { DeleteButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, UserRowData } from "@/types/datatable";
 import { ApiCrudResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { UserRole, userRoleFieldCodes, userRoleFieldMap } from "@/types/user";
+import { userRoleFieldCodes, userRoleFieldMap } from "@/types/user";
 import { lookupValue } from "@/utils/record";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
