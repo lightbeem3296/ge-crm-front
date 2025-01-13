@@ -1,17 +1,20 @@
 'use client'
 
-import { Bars3Icon, Squares2X2Icon } from '@heroicons/react/20/solid'
+import { Bars3Icon } from '@heroicons/react/20/solid'
 import { Dispatch, SetStateAction } from 'react'
 import ThemeController from '../ui/theme/ThemeController';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { faSignOut, faUser } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
+import { loadCurrentUser } from '@/services/authService';
 
 interface HeaderProps {
   setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
+  const currentUser = loadCurrentUser();
+
   return (
     <div className="flex items-center justify-between border-b border-base-300 px-4 py-2 bg-base-100/80 sticky top-0 backdrop-blur-md z-10">
       <div className='flex items-center gap-x-2'>
@@ -21,18 +24,18 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
         >
           <Bars3Icon aria-hidden="true" className="size-5" />
         </button>
-        <h1 className="text-md font-bold tracking-tight text-base-content/70">Navigation Bar</h1>
+        <h1 className="text-md font-bold tracking-tight text-base-content/70"></h1>
       </div>
       <div className="flex gap-1 items-center">
         <ThemeController />
 
         <div className="dropdown dropdown-end">
-          <button className="btn btn-sm btn-ghost">
-            <Squares2X2Icon aria-hidden="true" className="size-5" />
+          <button className="btn btn-sm">
+            <FontAwesomeIcon icon={faUser} width={12} />{currentUser?.username}
           </button>
           <ul
             tabIndex={0}
-            className="menu dropdown-content bg-base-100 rounded-box z-[1] mt-4 w-52 p-2 shadow">
+            className="menu dropdown-content bg-base-300 rounded-box z-[1] mt-4 w-52 p-2 shadow">
             <li>
               <Link href="/auth/logout">
                 <FontAwesomeIcon icon={faSignOut} width={12} /> Log out

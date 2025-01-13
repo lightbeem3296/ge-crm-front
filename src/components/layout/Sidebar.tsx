@@ -7,6 +7,8 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { Dispatch, SetStateAction } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { loadCurrentUser } from '@/services/authService'
+import { UserRole } from '@/types/user'
 
 
 enum SidebarMenuItemType {
@@ -25,26 +27,37 @@ const sideBarMenuItems = [
     name: 'Employee',
     href: '/dashboard/data/employee',
     type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
   },
   {
     name: 'Rule',
     href: '/dashboard/data/rule',
     type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
   },
   {
     name: 'Tag',
     href: '/dashboard/data/tag',
     type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
   },
   {
     name: 'Role',
     href: '/dashboard/data/role',
     type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
   },
   {
     name: 'Salary Type',
     href: '/dashboard/data/salary-type',
     type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
+  },
+  {
+    name: 'User',
+    href: '/dashboard/data/user',
+    type: SidebarMenuItemType.MenuItem,
+    role: UserRole.ADMIN
   },
   {
     name: 'Payroll',
@@ -55,6 +68,7 @@ const sideBarMenuItems = [
     name: 'Export',
     href: '/dashboard/payroll/export',
     type: SidebarMenuItemType.MenuItem,
+    role: UserRole.USER
   },
 ]
 
@@ -66,6 +80,7 @@ interface SidebarProps {
 
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
   const pathname = usePathname();
+  const currentUser = loadCurrentUser();
   return (
     <div className="w-60 h-full hidden lg:flex flex-col bg-neutral-900 p-8 z-10 fixed">
       <div className='grow-0 py-4 border-b border-gray-600'>
@@ -75,7 +90,14 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
       <div className='grow overflow-y-auto'>
         <ul className="text-sm mt-4">
           {sideBarMenuItems.map((menuItem) => (
-            menuItem.type === SidebarMenuItemType.MenuItem ? (
+            menuItem.type === SidebarMenuItemType.MenuItem
+              && (
+                menuItem.role === UserRole.USER
+                || (
+                  menuItem.role === UserRole.ADMIN
+                  && currentUser?.role === UserRole.ADMIN
+                )
+              ) ? (
               <Link
                 key={menuItem.name}
                 href={menuItem.href}

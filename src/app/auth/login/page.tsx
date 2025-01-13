@@ -1,7 +1,7 @@
 "use client"
 
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { isAuthenticated } from "@/services/authService";
+import { fetchCurrentUser } from "@/services/authService";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -57,7 +57,7 @@ export default function LoginPage() {
   };
 
   const checkAuthentication = async () => {
-    if (await isAuthenticated()) {
+    if (await fetchCurrentUser()) {
       router.push("/dashboard");
     }
   }
