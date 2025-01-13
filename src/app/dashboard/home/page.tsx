@@ -26,11 +26,13 @@ const HomePage = () => {
     setRoleCount(await axiosHelper.get<number>("/role/count"));
     setSalaryTypeCount(await axiosHelper.get<number>("/salary-type/count"));
 
-    const response = await axiosHelper.get<UserCount>("/user/count");
-    setUserTotalCount(response?.total)
-    setUserAdminCount(response?.admin)
-    setUserUserCount(response?.user)
-    setUserInactiveCount(response?.inactive)
+    if (currentUser?.role === UserRole.ADMIN) {
+      const response = await axiosHelper.get<UserCount>("/user/count");
+      setUserTotalCount(response?.total)
+      setUserAdminCount(response?.admin)
+      setUserUserCount(response?.user)
+      setUserInactiveCount(response?.inactive)
+    }
   }
 
   useEffect(() => {
@@ -38,7 +40,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 min-h-[calc(100vh-6.4rem)]">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {
           currentUser?.role === UserRole.ADMIN
