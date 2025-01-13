@@ -301,6 +301,7 @@ export default function EmployeePage() {
       pinned: "right",
       filter: false,
       editable: false,
+      sortable: false,
       cellRenderer: (params: ActionCellRenderParams<EmployeeRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={

@@ -84,6 +84,7 @@ export default function RulePage() {
       pinned: "right",
       filter: false,
       editable: false,
+      sortable: false,
       cellRenderer: (params: ActionCellRenderParams<RuleRowData>) => (
         <div className="h-full flex items-center gap-1">
           <EditButton onClick={() => params.onEdit ? params.onEdit(params.data) : alert("click")} />

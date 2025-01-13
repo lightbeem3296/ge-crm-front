@@ -113,6 +113,7 @@ export default function SalaryTypePage() {
       pinned: "right",
       filter: false,
       editable: false,
+      sortable: false,
       cellRenderer: (params: ActionCellRenderParams<SalaryTypeRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={

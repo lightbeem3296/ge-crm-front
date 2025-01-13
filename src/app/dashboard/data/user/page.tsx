@@ -91,7 +91,9 @@ export default function UserPage() {
       minWidth: 200,
       cellRenderer: (): string => {
         return '********';
-      }
+      },
+      filter: null,
+      sortable: false,
     },
     {
       headerName: "Actions",
@@ -100,6 +102,7 @@ export default function UserPage() {
       pinned: "right",
       filter: false,
       editable: false,
+      sortable: false,
       cellRenderer: (params: ActionCellRenderParams<UserRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={

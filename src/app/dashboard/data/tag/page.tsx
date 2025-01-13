@@ -113,6 +113,7 @@ export default function TagPage() {
       pinned: "right",
       filter: false,
       editable: false,
+      sortable: false,
       cellRenderer: (params: ActionCellRenderParams<TagRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={
