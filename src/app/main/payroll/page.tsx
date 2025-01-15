@@ -7,7 +7,7 @@ export default function LogoutPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/main');
+    router.push('/main/payroll/export');
   }, [router]);
 
   return null;

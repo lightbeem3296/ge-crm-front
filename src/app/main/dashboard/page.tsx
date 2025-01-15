@@ -58,7 +58,7 @@ const HomePage = () => {
                   </div>
                 </div>
                 <div className="card-actions justify-end">
-                  <Link href="/dashboard/data/user">
+                  <Link href="/main/data/user">
                     <button className="btn btn-ghost">
                       Manage
                     </button>
@@ -75,7 +75,7 @@ const HomePage = () => {
             <h2 className="card-title">Employees</h2>
             <p>Total: {employeeCount} Employees</p>
             <div className="card-actions justify-end">
-              <Link href="/dashboard/data/employee">
+              <Link href="/main/data/employee">
                 <button className="btn btn-ghost">
                   Manage
                 </button>
@@ -88,7 +88,7 @@ const HomePage = () => {
             <h2 className="card-title">Rules</h2>
             <p>Total: {ruleCount} Rules</p>
             <div className="card-actions justify-end">
-              <Link href="/dashboard/data/rule">
+              <Link href="/main/data/rule">
                 <button className="btn btn-ghost">
                   Manage
                 </button>
@@ -101,7 +101,7 @@ const HomePage = () => {
             <h2 className="card-title">Tags</h2>
             <p>Total: {tagCount} Tags</p>
             <div className="card-actions justify-end">
-              <Link href="/dashboard/data/tag">
+              <Link href="/main/data/tag">
                 <button className="btn btn-ghost">
                   Manage
                 </button>
@@ -114,7 +114,7 @@ const HomePage = () => {
             <h2 className="card-title">Roles</h2>
             <p>Total: {roleCount} Roles</p>
             <div className="card-actions justify-end">
-              <Link href="/dashboard/data/role">
+              <Link href="/main/data/role">
                 <button className="btn btn-ghost">
                   Manage
                 </button>
@@ -127,7 +127,7 @@ const HomePage = () => {
             <h2 className="card-title">Salary Types</h2>
             <p>Total: {salaryTypeCount} Salary Types</p>
             <div className="card-actions justify-end">
-              <Link href="/dashboard/data/salary-type">
+              <Link href="/main/data/salary-type">
                 <button className="btn btn-ghost">
                   Manage
                 </button>

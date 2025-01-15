@@ -63,7 +63,7 @@ function RuleEditPageContent() {
 
   // UI Handlers
   const handleClickBack = () => {
-    router.push("/dashboard/data/rule");
+    router.push("/main/data/rule");
   }
 
   const handleChangeRuleName = (value: string) => {
@@ -292,7 +292,7 @@ function RuleEditPageContent() {
           ...rule,
           _id: response.detail.object_id,
         });
-        router.push("/dashboard/data/rule");
+        router.push("/main/data/rule");
 
         customAlert({
           type: CustomAlertType.SUCCESS,

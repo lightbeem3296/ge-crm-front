@@ -22,11 +22,11 @@ export default function RulePage() {
 
   // UI Functions
   const onClickNewRow = async () => {
-    router.push(`/dashboard/data/rule/edit?mode=${RuleEditPageMode.CREATE}`);
+    router.push(`/main/data/rule/edit?mode=${RuleEditPageMode.CREATE}`);
   }
 
   const onEdit = async (obj: RuleRowData) => {
-    router.push(`/dashboard/data/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${obj._id}`);
+    router.push(`/main/data/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${obj._id}`);
   }
 
   // CRUD Functions

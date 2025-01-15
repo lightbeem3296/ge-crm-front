@@ -7,7 +7,7 @@ export default function LogoutPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/dashboard/home');
+    router.push('/main/settings/profile');
   }, [router]);
 
   return null;

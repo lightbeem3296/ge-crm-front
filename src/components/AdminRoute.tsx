@@ -17,7 +17,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
     if (!currentUser) {
       router.push('/auth/login');
     } else if (currentUser.role !== UserRole.ADMIN) {
-      router.push('/dashboard');
+      router.push('/main');
     }
   }
 

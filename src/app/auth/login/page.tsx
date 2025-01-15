@@ -44,7 +44,7 @@ export default function LoginPage() {
         },
       });
       localStorage.setItem("accessToken", response.data.access_token);
-      router.push("/dashboard");
+      router.push("/main");
     } catch (error: any) { // eslint-disable-line
       customAlert({
         type: CustomAlertType.ERROR,
@@ -58,7 +58,7 @@ export default function LoginPage() {
 
   const checkAuthentication = async () => {
     if (await fetchCurrentUser()) {
-      router.push("/dashboard");
+      router.push("/main");
     }
   }
 
