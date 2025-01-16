@@ -15,6 +15,8 @@ export const userRoleFieldCodes = extractKeys(userRoleFieldMap);
 export interface User {
   username: string
   role: UserRole
+  is_2fa: boolean
+  totp_secret: string | undefined
 }
 
 export interface UserCount {
@@ -26,4 +28,8 @@ export interface UserCount {
 
 export interface ChangePasswordRequest {
   password: string
+}
+
+export interface VerifyOTPRequest {
+  token: string
 }

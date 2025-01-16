@@ -4,17 +4,22 @@ import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { axiosHelper } from "@/lib/axios";
 import { loadCurrentUser } from "@/services/authService";
 import { ApiGeneralResponse } from "@/types/api";
-import { ChangePasswordRequest, userRoleFieldMap } from "@/types/user";
+import { ChangePasswordRequest, userRoleFieldMap, VerifyOTPRequest } from "@/types/user";
 import { lookupValue } from "@/utils/record";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { useQRCode } from "next-qrcode";
 
 export default function LogoutPage() {
   const currentUser = loadCurrentUser();
-
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [is2fa, setIs2FA] = useState<boolean | undefined>(currentUser?.is_2fa);
+  const [totpSecret, setTotpSecret] = useState<string | undefined>(currentUser?.totp_secret);
+  const [totp, setTotp] = useState<string>("");
+  const { Image } = useQRCode();
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   }
@@ -30,7 +35,6 @@ export default function LogoutPage() {
       });
       return;
     }
-
     const response = await axiosHelper.post<ChangePasswordRequest, ApiGeneralResponse>("/auth/change-password", {
       password: password
     });
@@ -39,6 +43,69 @@ export default function LogoutPage() {
         type: CustomAlertType.SUCCESS,
         message: response.message,
       });
+    }
+  }
+  const handleChangeTotp = (val: string) => {
+    setTotp(val);
+  }
+  const handleClickVerifyTotp = async () => {
+    const response = await axiosHelper.post<VerifyOTPRequest, ApiGeneralResponse>("/auth/verify-otp", {
+      token: totp,
+    });
+    if (response) {
+      customAlert({
+        type: CustomAlertType.SUCCESS,
+        title: "Success",
+        message: response.message,
+      });
+    }
+  }
+  const handleToggle2FA = async (checked: boolean) => {
+    if (checked) {
+      // Enable 2FA
+      setIs2FA(true);
+
+      try {
+        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/enable-2fa");
+        if (response) {
+          const totpSecret = response.detail.totp_secret;
+          setTotpSecret(totpSecret);
+          customAlert({
+            type: CustomAlertType.SUCCESS,
+            title: "Success",
+            message: "2FA is enabled",
+          });
+        } else {
+          customAlert({
+            type: CustomAlertType.ERROR,
+            title: "Error",
+            message: "Failed to enable 2FA",
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      // Disable 2FA
+      setIs2FA(false);
+      try {
+        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/disable-2fa");
+        if (response) {
+          customAlert({
+            type: CustomAlertType.SUCCESS,
+            title: "Success",
+            message: "2FA is disabled",
+          });
+        } else {
+          customAlert({
+            type: CustomAlertType.ERROR,
+            title: "Error",
+            message: "Failed to enable 2FA",
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 
@@ -99,8 +166,57 @@ export default function LogoutPage() {
           </div>
           {/* 2FA */}
           <div className="col-span-1 font-medium">2FA</div>
-          <div className="col-span-2 ml-2">
-            <input type="checkbox" className="toggle toggle-primary" defaultChecked />
+          <div className="col-span-2 ml-2 flex flex-col gap-4">
+            <input
+              type="checkbox"
+              className="toggle toggle-primary"
+              checked={is2fa}
+              onChange={(e) => handleToggle2FA(e.target.checked)}
+            />
+            <div className={`${is2fa ? "" : "hidden"} flex flex-col gap-4`}>
+              <div>
+                <p className="font-medium">Scan the QR Code</p>
+                <div className="w-60">
+                  <Image
+                    text={`otpauth://totp/MyApp:${currentUser?.username}?secret=${totpSecret}&issuer=Danløn`}
+                    options={{
+                      type: 'image/jpeg',
+                      quality: 0.5,
+                      errorCorrectionLevel: 'M',
+                      margin: 2,
+                      scale: 4,
+                      width: 200,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className={`${totpSecret ? "" : "hidden"}`}>
+                <p className="font-medium">Save this secret</p>
+                <p> {totpSecret}</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="col-span-1 font-medium">Verify OTP Code</div>
+                <div className="col-span-2">
+                  <div className="flex gap-2">
+                    <label className="input input-sm input-bordered flex items-center gap-2 w-60">
+                      <input
+                        type="text"
+                        className="grow"
+                        value={totp}
+                        placeholder="OTP Code"
+                        onChange={(e) => handleChangeTotp(e.target.value)}
+                      />
+                    </label>
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => handleClickVerifyTotp()}
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

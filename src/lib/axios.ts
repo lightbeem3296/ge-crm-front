@@ -181,6 +181,13 @@ export class AxiosHelper {
         });
       } else if (error.response?.status === 401) {
         window.location.href = "/auth/login";
+      } else if (error.response?.status === 400) {
+        console.log(error.response?.data.detail);
+        customAlert({
+          type: CustomAlertType.ERROR,
+          title: "Error",
+          message: error.response?.data.detail,
+        });
       } else {
         customAlert({
           type: CustomAlertType.ERROR,
