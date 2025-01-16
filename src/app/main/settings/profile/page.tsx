@@ -50,7 +50,7 @@ export default function LogoutPage() {
   }
   const handleClickVerifyTotp = async () => {
     const response = await axiosHelper.post<VerifyOTPRequest, ApiGeneralResponse>("/auth/verify-otp", {
-      token: totp,
+      otp: totp,
     });
     if (response) {
       customAlert({

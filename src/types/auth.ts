@@ -37,7 +37,7 @@ export interface ChangePasswordRequest {
 }
 
 export interface VerifyOTPRequest {
-  token: string
+  otp: string
 }
 
 export interface LoginOTPRequest{
