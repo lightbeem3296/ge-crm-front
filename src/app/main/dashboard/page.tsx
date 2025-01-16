@@ -2,7 +2,7 @@
 
 import { axiosHelper } from "@/lib/axios";
 import { loadCurrentUser } from "@/services/authService";
-import { UserCount, UserRole } from "@/types/user";
+import { UserCount, UserRole } from "@/types/auth";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 

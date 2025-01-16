@@ -4,7 +4,7 @@ import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { axiosHelper } from "@/lib/axios";
 import { loadCurrentUser } from "@/services/authService";
 import { ApiGeneralResponse } from "@/types/api";
-import { ChangePasswordRequest, userRoleFieldMap, VerifyOTPRequest } from "@/types/user";
+import { ChangePasswordRequest, TfaType, userRoleFieldMap, VerifyOTPRequest } from "@/types/auth";
 import { lookupValue } from "@/utils/record";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +15,7 @@ export default function LogoutPage() {
   const currentUser = loadCurrentUser();
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [is2fa, setIs2FA] = useState<boolean | undefined>(currentUser?.is_2fa);
+  const [isOtp, setIsOTP] = useState<boolean | undefined>(currentUser?.tfa_type === TfaType.otp);
   const [totpSecret, setTotpSecret] = useState<string | undefined>(currentUser?.totp_secret);
   const [totp, setTotp] = useState<string>("");
   const { Image } = useQRCode();
@@ -60,47 +60,47 @@ export default function LogoutPage() {
       });
     }
   }
-  const handleToggle2FA = async (checked: boolean) => {
+  const handleToggleOTP = async (checked: boolean) => {
     if (checked) {
-      // Enable 2FA
-      setIs2FA(true);
+      // Enable OTP
+      setIsOTP(true);
 
       try {
-        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/enable-2fa");
+        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/enable-otp");
         if (response) {
           const totpSecret = response.detail.totp_secret;
           setTotpSecret(totpSecret);
           customAlert({
             type: CustomAlertType.SUCCESS,
             title: "Success",
-            message: "2FA is enabled",
+            message: "OTP is enabled",
           });
         } else {
           customAlert({
             type: CustomAlertType.ERROR,
             title: "Error",
-            message: "Failed to enable 2FA",
+            message: "Failed to enable OTP",
           });
         }
       } catch (err) {
         console.error(err);
       }
     } else {
-      // Disable 2FA
-      setIs2FA(false);
+      // Disable OTP
+      setIsOTP(false);
       try {
-        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/disable-2fa");
+        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/disable-otp");
         if (response) {
           customAlert({
             type: CustomAlertType.SUCCESS,
             title: "Success",
-            message: "2FA is disabled",
+            message: "OTP is disabled",
           });
         } else {
           customAlert({
             type: CustomAlertType.ERROR,
             title: "Error",
-            message: "Failed to enable 2FA",
+            message: "Failed to enable OTP",
           });
         }
       } catch (err) {
@@ -164,16 +164,16 @@ export default function LogoutPage() {
               </button>
             </div>
           </div>
-          {/* 2FA */}
-          <div className="col-span-1 font-medium">2FA</div>
+          {/* OTP */}
+          <div className="col-span-1 font-medium">OTP</div>
           <div className="col-span-2 ml-2 flex flex-col gap-4">
             <input
               type="checkbox"
               className="toggle toggle-primary"
-              checked={is2fa}
-              onChange={(e) => handleToggle2FA(e.target.checked)}
+              checked={isOtp}
+              onChange={(e) => handleToggleOTP(e.target.checked)}
             />
-            <div className={`${is2fa ? "" : "hidden"} flex flex-col gap-4`}>
+            <div className={`${isOtp ? "" : "hidden"} flex flex-col gap-4`}>
               <div>
                 <p className="font-medium">Scan the QR Code</p>
                 <div className="w-60">

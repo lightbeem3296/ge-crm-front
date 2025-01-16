@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchCurrentUser } from '@/services/authService';
-import { User } from '@/types/user';
+import { User } from '@/types/auth';
 
 interface ProtectedRouteProps {
   children: ReactNode;

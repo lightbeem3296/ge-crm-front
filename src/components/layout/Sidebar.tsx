@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { loadCurrentUser } from '@/services/authService'
-import { UserRole } from '@/types/user'
+import { UserRole } from '@/types/auth'
 
 
 enum SidebarMenuItemType {

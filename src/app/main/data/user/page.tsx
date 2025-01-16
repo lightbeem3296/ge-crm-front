@@ -10,7 +10,7 @@ import { ActionCellRenderParams, UserRowData } from "@/types/datatable";
 import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { userRoleFieldCodes, userRoleFieldMap } from "@/types/user";
+import { userRoleFieldCodes, userRoleFieldMap } from "@/types/auth";
 import { lookupValue } from "@/utils/record";
 
 ModuleRegistry.registerModules([AllCommunityModule]);

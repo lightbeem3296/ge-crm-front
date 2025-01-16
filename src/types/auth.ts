@@ -12,10 +12,16 @@ export const userRoleFieldMap: Record<string, string> = {
 }
 export const userRoleFieldCodes = extractKeys(userRoleFieldMap);
 
+
+export enum TfaType {
+  otp = "otp",
+  sms = "sms",
+}
+
 export interface User {
   username: string
   role: UserRole
-  is_2fa: boolean
+  tfa_type: TfaType | undefined
   totp_secret: string | undefined
 }
 
@@ -32,4 +38,26 @@ export interface ChangePasswordRequest {
 
 export interface VerifyOTPRequest {
   token: string
+}
+
+export interface LoginOTPRequest{
+    username: string
+    password: string
+    otp: string
+}
+
+export enum AuthResult {
+  success = "success",
+  otp = "otp",
+  sms = "sms",
+}
+
+export interface Token {
+  access_token: string
+  token_type: string
+}
+
+export interface AuthResponse {
+  result: AuthResult
+  token: Token | null
 }

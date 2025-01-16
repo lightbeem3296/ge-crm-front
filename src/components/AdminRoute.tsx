@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loadCurrentUser } from '@/services/authService';
-import { User, UserRole } from '@/types/user';
+import { User, UserRole } from '@/types/auth';
 
 interface AdminRouteProps {
   children: ReactNode;
