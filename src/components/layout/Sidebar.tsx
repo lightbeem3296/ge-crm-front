@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { loadCurrentUser } from '@/services/authService'
-import { UserRole } from '@/types/user'
+import { UserRole } from '@/types/auth'
 
 
 enum SidebarMenuItemType {
@@ -25,7 +25,7 @@ const sideBarMenuItems = [
   },
   {
     name: 'Dashboard',
-    href: '/dashboard/home',
+    href: '/main/dashboard',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
   },
@@ -35,40 +35,40 @@ const sideBarMenuItems = [
     type: SidebarMenuItemType.Title,
   },
   {
+    name: 'User',
+    href: '/main/data/user',
+    type: SidebarMenuItemType.MenuItem,
+    role: UserRole.ADMIN
+  },
+  {
     name: 'Employee',
-    href: '/dashboard/data/employee',
+    href: '/main/data/employee',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
   },
   {
     name: 'Rule',
-    href: '/dashboard/data/rule',
+    href: '/main/data/rule',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
   },
   {
     name: 'Tag',
-    href: '/dashboard/data/tag',
+    href: '/main/data/tag',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
   },
   {
     name: 'Role',
-    href: '/dashboard/data/role',
+    href: '/main/data/role',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
   },
   {
     name: 'Salary Type',
-    href: '/dashboard/data/salary-type',
+    href: '/main/data/salary-type',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
-  },
-  {
-    name: 'User',
-    href: '/dashboard/data/user',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.ADMIN
   },
   {
     name: 'Payroll',
@@ -77,7 +77,7 @@ const sideBarMenuItems = [
   },
   {
     name: 'Export',
-    href: '/dashboard/payroll/export',
+    href: '/main/payroll/export',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
   },

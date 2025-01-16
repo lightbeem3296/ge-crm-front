@@ -37,6 +37,9 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
             tabIndex={0}
             className="menu dropdown-content bg-base-300 rounded-box z-[1] mt-4 w-52 p-2 shadow">
             <li>
+              <Link href="/main/settings">
+                <FontAwesomeIcon icon={faUser} width={12} /> Profile
+              </Link>
               <Link href="/auth/logout">
                 <FontAwesomeIcon icon={faSignOut} width={12} /> Log out
               </Link>

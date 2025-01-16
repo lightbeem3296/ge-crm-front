@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loadCurrentUser } from '@/services/authService';
-import { User, UserRole } from '@/types/user';
+import { User, UserRole } from '@/types/auth';
 
 interface AdminRouteProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
     if (!currentUser) {
       router.push('/auth/login');
     } else if (currentUser.role !== UserRole.ADMIN) {
-      router.push('/dashboard');
+      router.push('/main');
     }
   }
 

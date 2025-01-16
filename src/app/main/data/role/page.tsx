@@ -1,47 +1,78 @@
 'use client';
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { DeleteButton, SaveButton } from "@/components/ui/datatable/button";
+import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { ActionCellRenderParams, UserRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ActionCellRenderParams, RoleRowData } from "@/types/datatable";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { userRoleFieldCodes, userRoleFieldMap } from "@/types/user";
-import { lookupValue } from "@/utils/record";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export default function UserPage() {
+export default function RolePage() {
   const gridRef = useRef<AgGridReact>(null);
-  const [rowDataList, setRowDataList] = useState<UserRowData[]>();
+  const [rowDataList, setRowDataList] = useState<RoleRowData[]>();
+
+  // UI Functions
+  const onClickNewRow = async () => {
+    const rowData: RoleRowData = {
+      role_name: "",
+      description: "",
+
+      _is_modified: true,
+      _is_created: true,
+    };
+    setRowDataList(rowDataList ? [rowData, ...rowDataList] : [rowData]);
+    setTimeout(() => {
+      gridRef.current?.api.paginationGoToPage(0);
+      gridRef.current?.api.startEditingCell({
+        rowIndex: 0,
+        colKey: "role_name",
+      });
+    }, 0);
+  }
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const response = await axiosHelper.get<ApiListResponse<UserRowData>>("/user/list");
+    const response = await axiosHelper.get<ApiListResponse<RoleRowData>>("/role/list");
     setRowDataList(response?.items);
   }
 
-  const onSave = async (obj: UserRowData) => {
-    const response = await axiosHelper.put<UserRowData, ApiCrudResponse>(`/user/update/${obj._id}`, obj);
-    if (response) {
-      obj._is_modified = false;
+  const onSave = async (obj: RoleRowData) => {
+    if (obj._is_created) {
+      const response = await axiosHelper.post<RoleRowData, ApiGeneralResponse>(`/role/create`, obj, undefined);
+      if (response) {
+        obj._id = response.detail.object_id
+        obj._is_modified = false;
+        obj._is_created = false;
 
-      customAlert({
-        type: CustomAlertType.SUCCESS,
-        message: "Updated successfully.",
-      });
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Created successfully.",
+        });
+      }
+    } else if (obj._is_modified) {
+      const response = await axiosHelper.put<RoleRowData, ApiGeneralResponse>(`/role/update/${obj._id}`, obj);
+      if (response) {
+        obj._is_modified = false;
+
+        customAlert({
+          type: CustomAlertType.SUCCESS,
+          message: "Updated successfully.",
+        });
+      }
     }
     gridRef.current?.api.redrawRows();
   }
 
-  const onDelete = async (obj: UserRowData) => {
+  const onDelete = async (obj: RoleRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/user/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/role/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
@@ -52,7 +83,7 @@ export default function UserPage() {
       }
     }
     if (needRedraw) {
-      const newRowData: UserRowData[] = [];
+      const newRowData: RoleRowData[] = [];
       gridRef.current?.api.forEachNode((node) => {
         if (node.data._id !== obj._id) {
           newRowData.push(node.data);
@@ -65,35 +96,15 @@ export default function UserPage() {
   // Table functions
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
-      headerName: "Username",
-      field: "username",
+      headerName: "Role Name",
+      field: "role_name",
       width: 200,
     },
     {
-      headerName: "User Role",
-      field: "role",
-      minWidth: 200,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: userRoleFieldCodes,
-      },
-      valueGetter: (params: ValueGetterParams) => {
-        return lookupValue(userRoleFieldMap, params.data.role);
-      },
-      valueFormatter: (params: ValueFormatterParams) => {
-        return lookupValue(userRoleFieldMap, params.value) || params.value;
-      }
-    },
-    {
-      headerName: "Password",
-      field: "password",
+      headerName: "Description",
+      field: "description",
       flex: 1,
       minWidth: 200,
-      cellRenderer: (): string => {
-        return '********';
-      },
-      filter: null,
-      sortable: false,
     },
     {
       headerName: "Actions",
@@ -103,7 +114,7 @@ export default function UserPage() {
       filter: false,
       editable: false,
       sortable: false,
-      cellRenderer: (params: ActionCellRenderParams<UserRowData>) => (
+      cellRenderer: (params: ActionCellRenderParams<RoleRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={
             (params.data._is_modified || params.data._is_created)
@@ -140,11 +151,12 @@ export default function UserPage() {
   }, []);
 
   return (
-    <>
+    <div>
       <div className="flex justify-between px-2 py-4">
         <p className="text-lg font-medium text-base-content/80">
-          User
+          Role
         </p>
+        <NewButton onClick={() => onClickNewRow()}>New Role</NewButton>
       </div>
       <div className="overflow-auto">
         <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">
@@ -162,6 +174,6 @@ export default function UserPage() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 };

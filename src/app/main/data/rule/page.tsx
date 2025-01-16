@@ -4,75 +4,41 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
+import { DeleteButton, EditButton, NewButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { ActionCellRenderParams, SalaryTypeRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
+import { useRouter } from "next/navigation";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { RuleEditPageMode } from "@/types/rule/edit";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export default function SalaryTypePage() {
+export default function RulePage() {
+  const router = useRouter();
   const gridRef = useRef<AgGridReact>(null);
-  const [rowDataList, setRowDataList] = useState<SalaryTypeRowData[]>();
+  const [rowDataList, setRowDataList] = useState<RuleRowData[]>();
 
   // UI Functions
   const onClickNewRow = async () => {
-    const rowData: SalaryTypeRowData = {
-      salary_type_name: "",
-      description: "",
+    router.push(`/main/data/rule/edit?mode=${RuleEditPageMode.CREATE}`);
+  }
 
-      _is_modified: true,
-      _is_created: true,
-    };
-    setRowDataList(rowDataList ? [rowData, ...rowDataList] : [rowData]);
-    setTimeout(() => {
-      gridRef.current?.api.paginationGoToPage(0);
-      gridRef.current?.api.startEditingCell({
-        rowIndex: 0,
-        colKey: "salary_type_name",
-      });
-    }, 0);
+  const onEdit = async (obj: RuleRowData) => {
+    router.push(`/main/data/rule/edit?mode=${RuleEditPageMode.EDIT}&id=${obj._id}`);
   }
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const resp = await axiosHelper.get<ApiListResponse<SalaryTypeRowData>>("/salary-type/list");
-    setRowDataList(resp?.items);
+    const response = await axiosHelper.get<ApiListResponse<RuleRowData>>("/rule/list");
+    setRowDataList(response?.items);
   }
 
-  const onSave = async (obj: SalaryTypeRowData) => {
-    if (obj._is_created) {
-      const response = await axiosHelper.post<SalaryTypeRowData, ApiCrudResponse>(`/salary-type/create`, obj, undefined);
-      if (response) {
-        obj._id = response.detail.object_id
-        obj._is_modified = false;
-        obj._is_created = false;
-
-        customAlert({
-          type: CustomAlertType.SUCCESS,
-          message: "Created successfully.",
-        });
-      }
-    } else if (obj._is_modified) {
-      const response = await axiosHelper.put<SalaryTypeRowData, ApiCrudResponse>(`/salary-type/update/${obj._id}`, obj);
-      if (response) {
-        obj._is_modified = false;
-
-        customAlert({
-          type: CustomAlertType.SUCCESS,
-          message: "Updated successfully.",
-        });
-      }
-    }
-    gridRef.current?.api.redrawRows();
-  }
-
-  const onDelete = async (obj: SalaryTypeRowData) => {
+  const onDelete = async (obj: RuleRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/salary-type/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/rule/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
@@ -83,7 +49,7 @@ export default function SalaryTypePage() {
       }
     }
     if (needRedraw) {
-      const newRowData: SalaryTypeRowData[] = [];
+      const newRowData: RuleRowData[] = [];
       gridRef.current?.api.forEachNode((node) => {
         if (node.data._id !== obj._id) {
           newRowData.push(node.data);
@@ -96,13 +62,18 @@ export default function SalaryTypePage() {
   // Table functions
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
-      headerName: "Salary Type Name",
-      field: "salary_type_name",
+      headerName: "Rule Name",
+      field: "rule_name",
       width: 200,
     },
     {
       headerName: "Description",
       field: "description",
+      minWidth: 200,
+    },
+    {
+      headerName: "Display",
+      field: "display",
       flex: 1,
       minWidth: 200,
     },
@@ -114,19 +85,14 @@ export default function SalaryTypePage() {
       filter: false,
       editable: false,
       sortable: false,
-      cellRenderer: (params: ActionCellRenderParams<SalaryTypeRowData>) => (
+      cellRenderer: (params: ActionCellRenderParams<RuleRowData>) => (
         <div className="h-full flex items-center gap-1">
-          <SaveButton disabled={
-            (params.data._is_modified || params.data._is_created)
-              ? false
-              : true}
-            onClick={() => params.onSave ? params.onSave(params.data) : alert("click")}
-          />
+          <EditButton onClick={() => params.onEdit ? params.onEdit(params.data) : alert("click")} />
           <DeleteButton onClick={() => params.onDelete ? params.onDelete(params.data) : alert("click")} />
         </div>
       ),
       cellRendererParams: {
-        onSave: onSave,
+        onEdit: onEdit,
         onDelete: onDelete,
       },
     },
@@ -134,7 +100,6 @@ export default function SalaryTypePage() {
 
   const defaultColDef: ColDef = {
     filter: true,
-    editable: true,
   };
 
   const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
@@ -154,9 +119,9 @@ export default function SalaryTypePage() {
     <div>
       <div className="flex justify-between px-2 py-4">
         <p className="text-lg font-medium text-base-content/80">
-          Salary Type
+          Rule
         </p>
-        <NewButton onClick={() => onClickNewRow()}>New Salary Type</NewButton>
+        <NewButton onClick={() => onClickNewRow()}>New Rule</NewButton>
       </div>
       <div className="overflow-auto">
         <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">

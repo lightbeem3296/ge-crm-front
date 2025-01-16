@@ -1,78 +1,47 @@
 'use client';
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
+import { DeleteButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { ActionCellRenderParams, TagRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ActionCellRenderParams, UserRowData } from "@/types/datatable";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { userRoleFieldCodes, userRoleFieldMap } from "@/types/auth";
+import { lookupValue } from "@/utils/record";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export default function TagPage() {
+export default function UserPage() {
   const gridRef = useRef<AgGridReact>(null);
-  const [rowDataList, setRowDataList] = useState<TagRowData[]>();
-
-  // UI Functions
-  const onClickNewRow = async () => {
-    const rowData: TagRowData = {
-      tag_name: "",
-      description: "",
-
-      _is_modified: true,
-      _is_created: true,
-    };
-    setRowDataList(rowDataList ? [rowData, ...rowDataList] : [rowData]);
-    setTimeout(() => {
-      gridRef.current?.api.paginationGoToPage(0);
-      gridRef.current?.api.startEditingCell({
-        rowIndex: 0,
-        colKey: "tag_name",
-      });
-    }, 0);
-  }
+  const [rowDataList, setRowDataList] = useState<UserRowData[]>();
 
   // CRUD Functions
   const fetchRowData = async () => {
-    const response = await axiosHelper.get<ApiListResponse<TagRowData>>("/tag/list");
+    const response = await axiosHelper.get<ApiListResponse<UserRowData>>("/user/list");
     setRowDataList(response?.items);
   }
 
-  const onSave = async (obj: TagRowData) => {
-    if (obj._is_created) {
-      const response = await axiosHelper.post<TagRowData, ApiCrudResponse>(`/tag/create`, obj, undefined);
-      if (response) {
-        obj._id = response.detail.object_id
-        obj._is_modified = false;
-        obj._is_created = false;
+  const onSave = async (obj: UserRowData) => {
+    const response = await axiosHelper.put<UserRowData, ApiGeneralResponse>(`/user/update/${obj._id}`, obj);
+    if (response) {
+      obj._is_modified = false;
 
-        customAlert({
-          type: CustomAlertType.SUCCESS,
-          message: "Created successfully.",
-        });
-      }
-    } else if (obj._is_modified) {
-      const response = await axiosHelper.put<TagRowData, ApiCrudResponse>(`/tag/update/${obj._id}`, obj);
-      if (response) {
-        obj._is_modified = false;
-
-        customAlert({
-          type: CustomAlertType.SUCCESS,
-          message: "Updated successfully.",
-        });
-      }
+      customAlert({
+        type: CustomAlertType.SUCCESS,
+        message: "Updated successfully.",
+      });
     }
     gridRef.current?.api.redrawRows();
   }
 
-  const onDelete = async (obj: TagRowData) => {
+  const onDelete = async (obj: UserRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/tag/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/user/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
@@ -83,7 +52,7 @@ export default function TagPage() {
       }
     }
     if (needRedraw) {
-      const newRowData: TagRowData[] = [];
+      const newRowData: UserRowData[] = [];
       gridRef.current?.api.forEachNode((node) => {
         if (node.data._id !== obj._id) {
           newRowData.push(node.data);
@@ -96,15 +65,35 @@ export default function TagPage() {
   // Table functions
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
-      headerName: "Tag Name",
-      field: "tag_name",
+      headerName: "Username",
+      field: "username",
       width: 200,
     },
     {
-      headerName: "Description",
-      field: "description",
+      headerName: "User Role",
+      field: "role",
+      minWidth: 200,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: userRoleFieldCodes,
+      },
+      valueGetter: (params: ValueGetterParams) => {
+        return lookupValue(userRoleFieldMap, params.data.role);
+      },
+      valueFormatter: (params: ValueFormatterParams) => {
+        return lookupValue(userRoleFieldMap, params.value) || params.value;
+      }
+    },
+    {
+      headerName: "Password",
+      field: "password",
       flex: 1,
       minWidth: 200,
+      cellRenderer: (): string => {
+        return '********';
+      },
+      filter: null,
+      sortable: false,
     },
     {
       headerName: "Actions",
@@ -114,7 +103,7 @@ export default function TagPage() {
       filter: false,
       editable: false,
       sortable: false,
-      cellRenderer: (params: ActionCellRenderParams<TagRowData>) => (
+      cellRenderer: (params: ActionCellRenderParams<UserRowData>) => (
         <div className="h-full flex items-center gap-1">
           <SaveButton disabled={
             (params.data._is_modified || params.data._is_created)
@@ -151,12 +140,11 @@ export default function TagPage() {
   }, []);
 
   return (
-    <div>
+    <>
       <div className="flex justify-between px-2 py-4">
         <p className="text-lg font-medium text-base-content/80">
-          Tag
+          User
         </p>
-        <NewButton onClick={() => onClickNewRow()}>New Tag</NewButton>
       </div>
       <div className="overflow-auto">
         <div className="h-[calc(100vh-10.6rem)] min-w-[600px] min-h-[450px]">
@@ -174,6 +162,6 @@ export default function TagPage() {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };

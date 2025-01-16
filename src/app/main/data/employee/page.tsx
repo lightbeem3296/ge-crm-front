@@ -10,7 +10,7 @@ import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/b
 import { axiosHelper } from "@/lib/axios";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
 import { EmployeeRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { ActionCellRenderParams } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { myTheme } from "@/components/ui/theme/agGrid";
@@ -131,7 +131,7 @@ export default function EmployeePage() {
 
   const onSave = async (obj: EmployeeRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<EmployeeRowData, ApiCrudResponse>(`/employee/create`, obj, undefined);
+      const response = await axiosHelper.post<EmployeeRowData, ApiGeneralResponse>(`/employee/create`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
@@ -143,7 +143,7 @@ export default function EmployeePage() {
         });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<EmployeeRowData, ApiCrudResponse>(`/employee/update/${obj._id}`, obj);
+      const response = await axiosHelper.put<EmployeeRowData, ApiGeneralResponse>(`/employee/update/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
 
@@ -159,7 +159,7 @@ export default function EmployeePage() {
   const onDelete = async (obj: EmployeeRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/employee/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/employee/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
