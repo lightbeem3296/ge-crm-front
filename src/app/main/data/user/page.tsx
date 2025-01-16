@@ -7,7 +7,7 @@ import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, UserRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { userRoleFieldCodes, userRoleFieldMap } from "@/types/user";
@@ -26,7 +26,7 @@ export default function UserPage() {
   }
 
   const onSave = async (obj: UserRowData) => {
-    const response = await axiosHelper.put<UserRowData, ApiCrudResponse>(`/user/update/${obj._id}`, obj);
+    const response = await axiosHelper.put<UserRowData, ApiGeneralResponse>(`/user/update/${obj._id}`, obj);
     if (response) {
       obj._is_modified = false;
 
@@ -41,7 +41,7 @@ export default function UserPage() {
   const onDelete = async (obj: UserRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/user/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/user/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

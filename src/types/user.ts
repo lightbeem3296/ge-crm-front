@@ -23,3 +23,7 @@ export interface UserCount {
   user: number
   inactive: number
 }
+
+export interface ChangePasswordRequest {
+  password: string
+}

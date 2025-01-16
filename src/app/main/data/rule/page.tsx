@@ -7,7 +7,7 @@ import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, EditButton, NewButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, RuleRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { useRouter } from "next/navigation";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
@@ -38,7 +38,7 @@ export default function RulePage() {
   const onDelete = async (obj: RuleRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/rule/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/rule/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

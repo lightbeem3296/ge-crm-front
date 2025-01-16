@@ -35,6 +35,12 @@ const sideBarMenuItems = [
     type: SidebarMenuItemType.Title,
   },
   {
+    name: 'User',
+    href: '/main/data/user',
+    type: SidebarMenuItemType.MenuItem,
+    role: UserRole.ADMIN
+  },
+  {
     name: 'Employee',
     href: '/main/data/employee',
     type: SidebarMenuItemType.MenuItem,
@@ -63,12 +69,6 @@ const sideBarMenuItems = [
     href: '/main/data/salary-type',
     type: SidebarMenuItemType.MenuItem,
     role: UserRole.USER
-  },
-  {
-    name: 'User',
-    href: '/main/data/user',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.ADMIN
   },
   {
     name: 'Payroll',

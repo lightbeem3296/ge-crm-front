@@ -4,7 +4,7 @@ import { RuleRowData } from "@/types/datatable";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { axiosHelper } from "@/lib/axios";
-import { ApiCrudResponse } from "@/types/api";
+import { ApiGeneralResponse } from "@/types/api";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { getRoleMappings } from "@/services/roleService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -286,7 +286,7 @@ function RuleEditPageContent() {
 
   const handleSave = async () => {
     if (pageMode === RuleEditPageMode.CREATE) {
-      const response = await axiosHelper.post<RuleRowData, ApiCrudResponse>(`/rule/create`, rule, undefined);
+      const response = await axiosHelper.post<RuleRowData, ApiGeneralResponse>(`/rule/create`, rule, undefined);
       if (response) {
         setRule({
           ...rule,
@@ -300,7 +300,7 @@ function RuleEditPageContent() {
         });
       }
     } else if (pageMode === RuleEditPageMode.EDIT) {
-      const response = await axiosHelper.put<RuleRowData, ApiCrudResponse>(`/rule/update/${rule._id}`, rule);
+      const response = await axiosHelper.put<RuleRowData, ApiGeneralResponse>(`/rule/update/${rule._id}`, rule);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,

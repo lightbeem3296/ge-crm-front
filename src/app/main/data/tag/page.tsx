@@ -7,7 +7,7 @@ import { AgGridReact } from "ag-grid-react";
 import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
 import { ActionCellRenderParams, TagRowData } from "@/types/datatable";
-import { ApiCrudResponse, ApiListResponse } from "@/types/api";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
 
@@ -44,7 +44,7 @@ export default function TagPage() {
 
   const onSave = async (obj: TagRowData) => {
     if (obj._is_created) {
-      const response = await axiosHelper.post<TagRowData, ApiCrudResponse>(`/tag/create`, obj, undefined);
+      const response = await axiosHelper.post<TagRowData, ApiGeneralResponse>(`/tag/create`, obj, undefined);
       if (response) {
         obj._id = response.detail.object_id
         obj._is_modified = false;
@@ -56,7 +56,7 @@ export default function TagPage() {
         });
       }
     } else if (obj._is_modified) {
-      const response = await axiosHelper.put<TagRowData, ApiCrudResponse>(`/tag/update/${obj._id}`, obj);
+      const response = await axiosHelper.put<TagRowData, ApiGeneralResponse>(`/tag/update/${obj._id}`, obj);
       if (response) {
         obj._is_modified = false;
 
@@ -72,7 +72,7 @@ export default function TagPage() {
   const onDelete = async (obj: TagRowData) => {
     let needRedraw = true;
     if (!obj._is_created) {
-      const response = await axiosHelper.delete<ApiCrudResponse>(`/tag/delete/${obj._id}`);
+      const response = await axiosHelper.delete<ApiGeneralResponse>(`/tag/delete/${obj._id}`);
       if (response) {
         customAlert({
           type: CustomAlertType.SUCCESS,
