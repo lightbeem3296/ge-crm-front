@@ -232,6 +232,10 @@ export default function LoginPage() {
                 </span>
               </div>
 
+              <div className="mx-auto font-bold">
+                {watch("username")}
+              </div>
+
               {/* OTP Code field */}
               <div className="flex flex-col">
                 <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
