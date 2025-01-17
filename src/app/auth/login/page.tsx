@@ -228,7 +228,7 @@ export default function LoginPage() {
             >
               <div className="flex justify-center mb-8">
                 <span className="font-sans font-medium text-xl">
-                  Verify OTP
+                  OTP Authentication
                 </span>
               </div>
 
@@ -238,7 +238,7 @@ export default function LoginPage() {
 
               {/* OTP Code field */}
               <div className="flex flex-col">
-                <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
+                <label className={`input input-sm input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
                   <input
                     type="text"
                     className="grow"
@@ -251,14 +251,14 @@ export default function LoginPage() {
               </div>
 
               <button
-                className="btn btn-info"
+                className="btn btn-sm btn-info"
                 disabled={loading}
                 onClick={() => handleClickSubmitOTP()}
               >
                 {loading
                   ? <span className="loading loading-spinner loading-xs"></span>
                   : null}
-                Submit
+                Verify
               </button>
             </form>
             : null
