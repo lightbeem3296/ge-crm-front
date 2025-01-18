@@ -4,9 +4,9 @@ import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { axiosHelper } from "@/lib/axios";
 import { loadCurrentUser } from "@/services/authService";
 import { ApiGeneralResponse } from "@/types/api";
-import { ChangePasswordRequest, TfaType, userRoleFieldMap, VerifyOTPRequest } from "@/types/auth";
+import { ChangePasswordRequest, EnableOTPRequest, GenerateOTPResponse, TfaType, userRoleFieldMap, VerifyOTPRequest } from "@/types/auth";
 import { lookupValue } from "@/utils/record";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCross, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useQRCode } from "next-qrcode";
@@ -18,6 +18,8 @@ export default function LogoutPage() {
   const [isOtp, setIsOTP] = useState<boolean | undefined>(currentUser?.tfa_type === TfaType.otp);
   const [totpSecret, setTotpSecret] = useState<string | undefined>(currentUser?.totp_secret);
   const [totp, setTotp] = useState<string>("");
+  const [isTotpValid, setIsTotpValid] = useState<boolean | undefined>();
+  const [isTotpProcessing, setIsTotpProcessing] = useState<boolean>(false);
   const { Image } = useQRCode();
 
   const handleClickShowPassword = () => {
@@ -45,35 +47,52 @@ export default function LogoutPage() {
       });
     }
   }
-  const handleChangeTotp = (val: string) => {
+  const handleChangeTotp = async (val: string) => {
     setTotp(val);
-  }
-  const handleClickVerifyTotp = async () => {
-    const response = await axiosHelper.post<VerifyOTPRequest, ApiGeneralResponse>("/auth/verify-otp", {
-      otp: totp,
-    });
-    if (response) {
-      customAlert({
-        type: CustomAlertType.SUCCESS,
-        title: "Success",
-        message: response.message,
-      });
+    setIsTotpValid(undefined);
+
+    if (totpSecret) {
+      if (val.length === 6) {
+        try {
+          setIsTotpProcessing(true);
+          const response = await axiosHelper.post<VerifyOTPRequest, ApiGeneralResponse>("/auth/otp/verify", {
+            totp_secret: totpSecret,
+            otp_code: val,
+          });
+          if (response) {
+            setIsTotpValid(true);
+          } else {
+            setIsTotpValid(false);
+          }
+        } finally {
+          setIsTotpProcessing(false);
+        }
+      }
     }
   }
   const handleToggleOTP = async (checked: boolean) => {
     if (checked) {
-      // Enable OTP
+      // Generate OTP
       setIsOTP(true);
-
       try {
-        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/enable-otp");
+        const response = await axiosHelper.get<GenerateOTPResponse>("/auth/otp/generate");
         if (response) {
-          const totpSecret = response.detail.totp_secret;
-          setTotpSecret(totpSecret);
+          console.log(response);
+          setTotpSecret(response.totp_secret);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      // Disable OTP
+      setIsOTP(false);
+      try {
+        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/otp/disable");
+        if (response) {
           customAlert({
             type: CustomAlertType.SUCCESS,
             title: "Success",
-            message: "OTP is enabled",
+            message: "OTP is disabled",
           });
         } else {
           customAlert({
@@ -85,16 +104,19 @@ export default function LogoutPage() {
       } catch (err) {
         console.error(err);
       }
-    } else {
-      // Disable OTP
-      setIsOTP(false);
+    }
+  }
+  const handleClickSaveOTPSettings = async () => {
+    if (totpSecret) {
       try {
-        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/disable-otp");
+        const response = await axiosHelper.post<EnableOTPRequest, ApiGeneralResponse>("/auth/otp/enable", {
+          totp_secret: totpSecret,
+        });
         if (response) {
           customAlert({
             type: CustomAlertType.SUCCESS,
             title: "Success",
-            message: "OTP is disabled",
+            message: "OTP is enabled",
           });
         } else {
           customAlert({
@@ -160,7 +182,7 @@ export default function LogoutPage() {
                 className="btn btn-sm btn-primary"
                 onClick={() => handleClickPasswordSubmit()}
               >
-                Submit
+                Change
               </button>
             </div>
           </div>
@@ -198,23 +220,35 @@ export default function LogoutPage() {
                 <div className="col-span-1 font-medium">Verify OTP Code</div>
                 <div className="col-span-2">
                   <div className="flex gap-2">
-                    <label className="input input-sm input-bordered flex items-center gap-2 w-60">
+                    <label className="input input-sm input-bordered flex items-center gap-2">
                       <input
                         type="text"
                         className="grow"
                         value={totp}
                         placeholder="OTP Code"
+                        disabled={isTotpProcessing}
                         onChange={(e) => handleChangeTotp(e.target.value)}
                       />
                     </label>
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() => handleClickVerifyTotp()}
-                    >
-                      Verify
-                    </button>
+                    <div className="flex items-center">
+                      {isTotpProcessing
+                        ? <span className="loading loading-spinner loading-xs"></span>
+                        : isTotpValid === true
+                          ? <FontAwesomeIcon icon={faCheck} width={16} className="text-success" />
+                          : isTotpValid === false
+                            ? <FontAwesomeIcon icon={faMultiply} width={16} className="text-error" />
+                            : null}
+                    </div>
                   </div>
                 </div>
+              </div>
+              <div className="flex">
+                <button
+                  className="btn btn-sm btn-primary w-60"
+                  onClick={() => handleClickSaveOTPSettings()}
+                >
+                  Save OTP Settings
+                </button>
               </div>
             </div>
           </div>

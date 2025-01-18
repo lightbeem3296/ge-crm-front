@@ -36,14 +36,23 @@ export interface ChangePasswordRequest {
   password: string
 }
 
-export interface VerifyOTPRequest {
-  otp: string
+export interface GenerateOTPResponse {
+  totp_secret: string
 }
 
-export interface LoginOTPRequest{
-    username: string
-    password: string
-    otp: string
+export interface VerifyOTPRequest {
+  totp_secret: string
+  otp_code: string
+}
+
+export interface EnableOTPRequest {
+  totp_secret: string
+}
+
+export interface LoginOTPRequest {
+  username: string
+  password: string
+  otp: string
 }
 
 export enum AuthResult {
