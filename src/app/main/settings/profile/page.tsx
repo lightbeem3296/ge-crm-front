@@ -8,20 +8,23 @@ import { ChangePasswordRequest, ChangePhoneNumberRequest, EnableOTPRequest, Gene
 import { lookupValue } from "@/utils/record";
 import { faCheck, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQRCode } from "next-qrcode";
 
 export default function LogoutPage() {
   const currentUser = loadCurrentUser();
+  // Password
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  // Phone number
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>(currentUser?.phone_number || "");
-  const [totpSecret, setTotpSecret] = useState<string | undefined>(currentUser?.totp_secret);
-  const [totp, setTotp] = useState<string>("");
-  const [isTotpValid, setIsTotpValid] = useState<boolean | undefined>();
-  const [isTotpProcessing, setIsTotpProcessing] = useState<boolean>(false);
-  const [isOtpChanged, setIsOtpChanged] = useState<boolean>(false);
+  // 2FA
   const [tfaType, setTfaType] = useState<TfaType | undefined>(currentUser?.tfa_type);
+  // OTP
+  const [otpSecret, setOtpSecret] = useState<string | undefined>(currentUser?.otp_secret);
+  const [otpCode, setOtpCode] = useState<string>("");
+  const [isOtpValid, setIsOtpValid] = useState<boolean | undefined>();
+  const [isOtpProcessing, setIsOtpProcessing] = useState<boolean>(false);
   const { Image } = useQRCode();
 
   // Password
@@ -88,7 +91,7 @@ export default function LogoutPage() {
           const response = await axiosHelper.get<GenerateOTPResponse>("/auth/otp/generate");
           if (response) {
             console.log(response);
-            setTotpSecret(response.totp_secret);
+            setOtpSecret(response.otp_secret);
           }
         } catch (err) {
           console.error(err);
@@ -104,10 +107,10 @@ export default function LogoutPage() {
   const handleClickSave2FASettings = async () => {
     switch (tfaType) {
       case TfaType.otp:
-        if (totpSecret) {
+        if (otpSecret) {
           try {
             const response = await axiosHelper.post<EnableOTPRequest, ApiGeneralResponse>("/auth/otp/enable", {
-              totp_secret: totpSecret,
+              otp_secret: otpSecret,
             });
             if (response) {
               customAlert({
@@ -126,7 +129,7 @@ export default function LogoutPage() {
             console.error(err);
           }
         } else {
-          console.error("totpSecret is undefined");
+          console.error("otpSecret is undefined");
         }
         break;
       case TfaType.sms:
@@ -149,35 +152,30 @@ export default function LogoutPage() {
     }
   }
   // OTP
-  const handleChangeTotp = async (val: string) => {
-    setTotp(val);
-    setIsTotpValid(undefined);
+  const handleChangeOtp = async (val: string) => {
+    setOtpCode(val);
+    setIsOtpValid(undefined);
 
-    if (totpSecret) {
+    if (otpSecret) {
       if (val.length === 6) {
         try {
-          setIsTotpProcessing(true);
+          setIsOtpProcessing(true);
           const response = await axiosHelper.post<VerifyOTPRequest, ApiGeneralResponse>("/auth/otp/verify", {
-            totp_secret: totpSecret,
+            otp_secret: otpSecret,
             otp_code: val,
           });
           if (response) {
-            setIsTotpValid(true);
+            setIsOtpValid(true);
           } else {
-            setIsTotpValid(false);
+            setIsOtpValid(false);
           }
         } finally {
-          setIsTotpProcessing(false);
+          setIsOtpProcessing(false);
         }
       }
     }
   }
   // SMS
-
-  // Hooks
-  useEffect(() => {
-    setIsOtpChanged(true);
-  }, [totpSecret]);
 
   return (
     <div>
@@ -270,7 +268,6 @@ export default function LogoutPage() {
             <div className="flex">
               <button
                 className="btn btn-sm btn-primary w-20"
-                disabled={!isOtpChanged}
                 onClick={() => handleClickSave2FASettings()}
               >
                 Save
@@ -287,7 +284,7 @@ export default function LogoutPage() {
                 <p className="font-medium">Scan the QR Code</p>
                 <div className="w-60">
                   <Image
-                    text={`otpauth://totp/MyApp:${currentUser?.username}?secret=${totpSecret}&issuer=Danløn`}
+                    text={`otpauth://totp/MyApp:${currentUser?.username}?secret=${otpSecret}&issuer=Danløn`}
                     options={{
                       type: 'image/jpeg',
                       quality: 0.5,
@@ -299,9 +296,9 @@ export default function LogoutPage() {
                   />
                 </div>
               </div>
-              <div className={`${totpSecret ? "" : "hidden"}`}>
+              <div className={`${otpSecret ? "" : "hidden"}`}>
                 <p className="font-medium">Save this secret</p>
-                <p> {totpSecret}</p>
+                <p> {otpSecret}</p>
               </div>
               <div className="flex flex-col gap-2">
                 <div className="col-span-1 font-medium">Verify OTP Code</div>
@@ -311,18 +308,18 @@ export default function LogoutPage() {
                       <input
                         type="text"
                         className="grow"
-                        value={totp}
+                        value={otpCode}
                         placeholder="OTP Code"
-                        disabled={isTotpProcessing}
-                        onChange={(e) => handleChangeTotp(e.target.value)}
+                        disabled={isOtpProcessing}
+                        onChange={(e) => handleChangeOtp(e.target.value)}
                       />
                     </label>
                     <div className="flex items-center">
-                      {isTotpProcessing
+                      {isOtpProcessing
                         ? <span className="loading loading-spinner loading-xs"></span>
-                        : isTotpValid === true
+                        : isOtpValid === true
                           ? <FontAwesomeIcon icon={faCheck} width={16} className="text-success" />
-                          : isTotpValid === false
+                          : isOtpValid === false
                             ? <FontAwesomeIcon icon={faMultiply} width={16} className="text-error" />
                             : null}
                     </div>
@@ -342,18 +339,18 @@ export default function LogoutPage() {
                       <input
                         type="text"
                         className="grow"
-                        value={totp}
+                        value={otpCode}
                         placeholder="SMS Code"
-                        disabled={isTotpProcessing}
-                        onChange={(e) => handleChangeTotp(e.target.value)}
+                        disabled={isOtpProcessing}
+                        onChange={(e) => handleChangeOtp(e.target.value)}
                       />
                     </label>
                     <div className="flex items-center">
-                      {isTotpProcessing
+                      {isOtpProcessing
                         ? <span className="loading loading-spinner loading-xs"></span>
-                        : isTotpValid === true
+                        : isOtpValid === true
                           ? <FontAwesomeIcon icon={faCheck} width={16} className="text-success" />
-                          : isTotpValid === false
+                          : isOtpValid === false
                             ? <FontAwesomeIcon icon={faMultiply} width={16} className="text-error" />
                             : null}
                     </div>

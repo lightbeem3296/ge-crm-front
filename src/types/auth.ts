@@ -22,7 +22,7 @@ export interface User {
   username: string
   role: UserRole
   tfa_type: TfaType | undefined
-  totp_secret: string | undefined
+  otp_secret: string | undefined
   phone_number: string | undefined
 }
 
@@ -42,16 +42,16 @@ export interface ChangePhoneNumberRequest {
 }
 
 export interface GenerateOTPResponse {
-  totp_secret: string
+  otp_secret: string
 }
 
 export interface VerifyOTPRequest {
-  totp_secret: string
+  otp_secret: string
   otp_code: string
 }
 
 export interface EnableOTPRequest {
-  totp_secret: string
+  otp_secret: string
 }
 
 export interface LoginOTPRequest {
