@@ -60,6 +60,10 @@ export interface LoginOTPRequest {
   otp: string
 }
 
+export interface VerifySMSRequest {
+  sms_code: string
+}
+
 export enum AuthResult {
   success = "success",
   otp = "otp",

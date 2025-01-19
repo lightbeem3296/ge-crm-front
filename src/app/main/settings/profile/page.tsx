@@ -4,7 +4,7 @@ import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { axiosHelper } from "@/lib/axios";
 import { loadCurrentUser } from "@/services/authService";
 import { ApiGeneralResponse } from "@/types/api";
-import { ChangePasswordRequest, ChangePhoneNumberRequest, EnableOTPRequest, GenerateOTPResponse, TfaType, userRoleFieldMap, VerifyOTPRequest } from "@/types/auth";
+import { ChangePasswordRequest, ChangePhoneNumberRequest, EnableOTPRequest, GenerateOTPResponse, TfaType, userRoleFieldMap, VerifyOTPRequest, VerifySMSRequest } from "@/types/auth";
 import { lookupValue } from "@/utils/record";
 import { faCheck, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,8 +24,13 @@ export default function LogoutPage() {
   const [otpSecret, setOtpSecret] = useState<string | undefined>(currentUser?.otp_secret);
   const [otpCode, setOtpCode] = useState<string>("");
   const [isOtpValid, setIsOtpValid] = useState<boolean | undefined>();
-  const [isOtpProcessing, setIsOtpProcessing] = useState<boolean>(false);
+  const [isOtpVerifying, setIsOtpVerifying] = useState<boolean>(false);
   const { Image } = useQRCode();
+  // SMS
+  const [smsCode, setSmsCode] = useState<string>("");
+  const [isSmsCodeValid, setIsSmsCodeValid] = useState<boolean | undefined>(undefined);
+  const [isSmsCodeVerifying, setIsSmsCodeVerifying] = useState<boolean>(false);
+  const [isSmsCodeSending, setIsSmsCodeSending] = useState<boolean>(false);
 
   // Password
   const handleClickShowPassword = () => {
@@ -133,6 +138,24 @@ export default function LogoutPage() {
         }
         break;
       case TfaType.sms:
+        try {
+          const response = await axiosHelper.get<ApiGeneralResponse>("/auth/sms/enable");
+          if (response) {
+            customAlert({
+              type: CustomAlertType.SUCCESS,
+              title: "Success",
+              message: "SMS is enabled",
+            });
+          } else {
+            customAlert({
+              type: CustomAlertType.ERROR,
+              title: "Error",
+              message: "Failed to enable SMS",
+            });
+          }
+        } catch (err) {
+          console.error(err);
+        }
         break;
       default:
         const response = await axiosHelper.get("/auth/2fa/disable");
@@ -159,7 +182,7 @@ export default function LogoutPage() {
     if (otpSecret) {
       if (val.length === 6) {
         try {
-          setIsOtpProcessing(true);
+          setIsOtpVerifying(true);
           const response = await axiosHelper.post<VerifyOTPRequest, ApiGeneralResponse>("/auth/otp/verify", {
             otp_secret: otpSecret,
             otp_code: val,
@@ -170,12 +193,43 @@ export default function LogoutPage() {
             setIsOtpValid(false);
           }
         } finally {
-          setIsOtpProcessing(false);
+          setIsOtpVerifying(false);
         }
       }
     }
   }
   // SMS
+  const handleChangeSmsCode = async (val: string) => {
+    setSmsCode(val);
+    setIsSmsCodeValid(undefined);
+
+    if (val.length === 6) {
+      try {
+        setIsSmsCodeVerifying(true);
+        const response = await axiosHelper.post<VerifySMSRequest, ApiGeneralResponse>("/auth/sms/verify", {
+          sms_code: val,
+        });
+        if (response) {
+          setIsSmsCodeValid(true);
+        } else {
+          setIsSmsCodeValid(false);
+        }
+      } finally {
+        setIsSmsCodeVerifying(false);
+      }
+    }
+  }
+  const handleResendSmsCodeClick = async () => {
+    try {
+      setIsSmsCodeSending(true);
+      const response = await axiosHelper.get<GenerateOTPResponse>("/auth/sms/send");
+      if (response) {
+        console.log(response);
+      }
+    } finally {
+      setIsSmsCodeSending(false);
+    }
+  }
 
   return (
     <div>
@@ -310,12 +364,12 @@ export default function LogoutPage() {
                         className="grow"
                         value={otpCode}
                         placeholder="OTP Code"
-                        disabled={isOtpProcessing}
+                        disabled={isOtpVerifying}
                         onChange={(e) => handleChangeOtp(e.target.value)}
                       />
                     </label>
                     <div className="flex items-center">
-                      {isOtpProcessing
+                      {isOtpVerifying
                         ? <span className="loading loading-spinner loading-xs"></span>
                         : isOtpValid === true
                           ? <FontAwesomeIcon icon={faCheck} width={16} className="text-success" />
@@ -333,28 +387,39 @@ export default function LogoutPage() {
               ${tfaType === TfaType.sms ? "" : "hidden"}`}>
               <div className="flex flex-col gap-2">
                 <div className="col-span-1 font-medium">Verify SMS Code</div>
-                <div className="col-span-2">
+                <div className="col-span-2 flex flex-col gap-2">
                   <div className="flex gap-2">
-                    <label className="input input-sm input-bordered flex items-center gap-2">
+                    <label className="input input-sm input-bordered flex items-center gap-2 w-60">
                       <input
                         type="text"
                         className="grow"
-                        value={otpCode}
+                        value={smsCode}
                         placeholder="SMS Code"
-                        disabled={isOtpProcessing}
-                        onChange={(e) => handleChangeOtp(e.target.value)}
+                        disabled={isSmsCodeVerifying}
+                        onChange={(e) => handleChangeSmsCode(e.target.value)}
                       />
                     </label>
                     <div className="flex items-center">
-                      {isOtpProcessing
+                      {isSmsCodeVerifying
                         ? <span className="loading loading-spinner loading-xs"></span>
-                        : isOtpValid === true
+                        : isSmsCodeValid === true
                           ? <FontAwesomeIcon icon={faCheck} width={16} className="text-success" />
-                          : isOtpValid === false
+                          : isSmsCodeValid === false
                             ? <FontAwesomeIcon icon={faMultiply} width={16} className="text-error" />
                             : null}
                     </div>
                   </div>
+                  <button
+                    className="btn btn-sm btn-info w-60"
+                    onClick={() => handleResendSmsCodeClick()}
+                    disabled={isSmsCodeSending}
+                  >
+                    Resend SMS Code
+                    {isSmsCodeSending
+                      ? <span className="loading loading-spinner loading-xs"></span>
+                      : null
+                    }
+                  </button>
                 </div>
               </div>
             </div>
