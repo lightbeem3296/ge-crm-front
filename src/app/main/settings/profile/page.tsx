@@ -4,24 +4,27 @@ import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { axiosHelper } from "@/lib/axios";
 import { loadCurrentUser } from "@/services/authService";
 import { ApiGeneralResponse } from "@/types/api";
-import { ChangePasswordRequest, EnableOTPRequest, GenerateOTPResponse, TfaType, userRoleFieldMap, VerifyOTPRequest } from "@/types/auth";
+import { ChangePasswordRequest, ChangePhoneNumberRequest, EnableOTPRequest, GenerateOTPResponse, TfaType, userRoleFieldMap, VerifyOTPRequest } from "@/types/auth";
 import { lookupValue } from "@/utils/record";
-import { faCheck, faCross, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQRCode } from "next-qrcode";
 
 export default function LogoutPage() {
   const currentUser = loadCurrentUser();
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isOtp, setIsOTP] = useState<boolean | undefined>(currentUser?.tfa_type === TfaType.otp);
+  const [phoneNumber, setPhoneNumber] = useState<string | undefined>(currentUser?.phone_number || "");
   const [totpSecret, setTotpSecret] = useState<string | undefined>(currentUser?.totp_secret);
   const [totp, setTotp] = useState<string>("");
   const [isTotpValid, setIsTotpValid] = useState<boolean | undefined>();
   const [isTotpProcessing, setIsTotpProcessing] = useState<boolean>(false);
+  const [isOtpChanged, setIsOtpChanged] = useState<boolean>(false);
+  const [tfaType, setTfaType] = useState<TfaType | undefined>(currentUser?.tfa_type);
   const { Image } = useQRCode();
 
+  // Password
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   }
@@ -47,6 +50,105 @@ export default function LogoutPage() {
       });
     }
   }
+  // Phone number
+  const handleChangePhoneNumber = (value: string) => {
+    setPhoneNumber(value);
+  }
+  const handleClickPhoneNumberSave = async () => {
+    if (!phoneNumber) {
+      customAlert({
+        type: CustomAlertType.ERROR,
+        title: "Error",
+        message: "Phone number is empty",
+      });
+      return;
+    }
+    const response = await axiosHelper.post<ChangePhoneNumberRequest, ApiGeneralResponse>("/auth/change-phone-number", {
+      phone_number: phoneNumber
+    });
+    if (response) {
+      customAlert({
+        type: CustomAlertType.SUCCESS,
+        message: response.message,
+      });
+    }
+  }
+  // 2FA
+  const handle2faTypeChanged = async (str_value: string) => {
+    const value = str_value === ""
+      ? undefined
+      : str_value as TfaType
+
+    setTfaType(value);
+
+    switch (value) {
+      case TfaType.otp:
+        // Generate OTP
+        try {
+          const response = await axiosHelper.get<GenerateOTPResponse>("/auth/otp/generate");
+          if (response) {
+            console.log(response);
+            setTotpSecret(response.totp_secret);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+        break;
+
+      case TfaType.sms:
+        break;
+
+      default:
+    }
+  }
+  const handleClickSave2FASettings = async () => {
+    switch (tfaType) {
+      case TfaType.otp:
+        if (totpSecret) {
+          try {
+            const response = await axiosHelper.post<EnableOTPRequest, ApiGeneralResponse>("/auth/otp/enable", {
+              totp_secret: totpSecret,
+            });
+            if (response) {
+              customAlert({
+                type: CustomAlertType.SUCCESS,
+                title: "Success",
+                message: "OTP is enabled",
+              });
+            } else {
+              customAlert({
+                type: CustomAlertType.ERROR,
+                title: "Error",
+                message: "Failed to enable OTP",
+              });
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          console.error("totpSecret is undefined");
+        }
+        break;
+      case TfaType.sms:
+        break;
+      default:
+        const response = await axiosHelper.get("/auth/2fa/disable");
+        if (response) {
+          customAlert({
+            type: CustomAlertType.SUCCESS,
+            title: "Success",
+            message: "2FA login is disabled",
+          });
+        } else {
+          customAlert({
+            type: CustomAlertType.ERROR,
+            title: "Error",
+            message: "Failed to disable 2FA login",
+          });
+        };
+    }
+  }
+  // OTP
   const handleChangeTotp = async (val: string) => {
     setTotp(val);
     setIsTotpValid(undefined);
@@ -70,66 +172,12 @@ export default function LogoutPage() {
       }
     }
   }
-  const handleToggleOTP = async (checked: boolean) => {
-    if (checked) {
-      // Generate OTP
-      setIsOTP(true);
-      try {
-        const response = await axiosHelper.get<GenerateOTPResponse>("/auth/otp/generate");
-        if (response) {
-          console.log(response);
-          setTotpSecret(response.totp_secret);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      // Disable OTP
-      setIsOTP(false);
-      try {
-        const response = await axiosHelper.get<ApiGeneralResponse>("/auth/otp/disable");
-        if (response) {
-          customAlert({
-            type: CustomAlertType.SUCCESS,
-            title: "Success",
-            message: "OTP is disabled",
-          });
-        } else {
-          customAlert({
-            type: CustomAlertType.ERROR,
-            title: "Error",
-            message: "Failed to enable OTP",
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  }
-  const handleClickSaveOTPSettings = async () => {
-    if (totpSecret) {
-      try {
-        const response = await axiosHelper.post<EnableOTPRequest, ApiGeneralResponse>("/auth/otp/enable", {
-          totp_secret: totpSecret,
-        });
-        if (response) {
-          customAlert({
-            type: CustomAlertType.SUCCESS,
-            title: "Success",
-            message: "OTP is enabled",
-          });
-        } else {
-          customAlert({
-            type: CustomAlertType.ERROR,
-            title: "Error",
-            message: "Failed to enable OTP",
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  }
+  // SMS
+
+  // Hooks
+  useEffect(() => {
+    setIsOtpChanged(true);
+  }, [totpSecret]);
 
   return (
     <div>
@@ -179,23 +227,62 @@ export default function LogoutPage() {
                 </button>
               </label>
               <button
-                className="btn btn-sm btn-primary"
+                className="btn btn-sm btn-primary w-20"
                 onClick={() => handleClickPasswordSubmit()}
               >
                 Change
               </button>
             </div>
           </div>
-          {/* OTP */}
-          <div className="col-span-1 font-medium">OTP</div>
-          <div className="col-span-2 ml-2 flex flex-col gap-4">
-            <input
-              type="checkbox"
-              className="toggle toggle-primary"
-              checked={isOtp}
-              onChange={(e) => handleToggleOTP(e.target.checked)}
-            />
-            <div className={`${isOtp ? "" : "hidden"} flex flex-col gap-4`}>
+          {/* Phone number */}
+          <div className="col-span-1 font-medium">Phone number</div>
+          <div className="col-span-2 ml-2">
+            <div className="flex gap-2">
+              <label className="input input-sm input-bordered flex items-center gap-2 w-60">
+                <input
+                  type="text"
+                  className="grow"
+                  value={phoneNumber}
+                  placeholder="Phone number"
+                  onChange={(e) => handleChangePhoneNumber(e.target.value)}
+                />
+              </label>
+              <button
+                className="btn btn-sm btn-primary w-20"
+                onClick={() => handleClickPhoneNumberSave()}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+
+          {/* 2FA */}
+          <div className="col-span-1 font-medium">2FA</div>
+          <div className="col-span-2 ml-2 flex gap-2">
+            <select className="select select-bordered select-sm w-60"
+              value={tfaType}
+              onChange={(e) => handle2faTypeChanged(e.target.value)}
+            >
+              <option value={""}>Not Enabled</option>
+              <option value={TfaType.otp}>OTP</option>
+              <option value={TfaType.sms}>SMS</option>
+            </select>
+            <div className="flex">
+              <button
+                className="btn btn-sm btn-primary w-20"
+                disabled={!isOtpChanged}
+                onClick={() => handleClickSave2FASettings()}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+
+          <div className="col-start-2 col-span-2 ml-2 flex flex-col gap-4">
+
+            {/* OTP */}
+            <div className={`flex flex-col gap-4
+              ${tfaType === TfaType.otp ? "" : "hidden"}`}>
               <div>
                 <p className="font-medium">Scan the QR Code</p>
                 <div className="w-60">
@@ -242,13 +329,36 @@ export default function LogoutPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex">
-                <button
-                  className="btn btn-sm btn-primary w-60"
-                  onClick={() => handleClickSaveOTPSettings()}
-                >
-                  Save OTP Settings
-                </button>
+            </div>
+
+            {/* SMS */}
+            <div className={`flex flex-col gap-4
+              ${tfaType === TfaType.sms ? "" : "hidden"}`}>
+              <div className="flex flex-col gap-2">
+                <div className="col-span-1 font-medium">Verify SMS Code</div>
+                <div className="col-span-2">
+                  <div className="flex gap-2">
+                    <label className="input input-sm input-bordered flex items-center gap-2">
+                      <input
+                        type="text"
+                        className="grow"
+                        value={totp}
+                        placeholder="SMS Code"
+                        disabled={isTotpProcessing}
+                        onChange={(e) => handleChangeTotp(e.target.value)}
+                      />
+                    </label>
+                    <div className="flex items-center">
+                      {isTotpProcessing
+                        ? <span className="loading loading-spinner loading-xs"></span>
+                        : isTotpValid === true
+                          ? <FontAwesomeIcon icon={faCheck} width={16} className="text-success" />
+                          : isTotpValid === false
+                            ? <FontAwesomeIcon icon={faMultiply} width={16} className="text-error" />
+                            : null}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

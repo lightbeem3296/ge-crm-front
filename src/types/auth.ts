@@ -23,6 +23,7 @@ export interface User {
   role: UserRole
   tfa_type: TfaType | undefined
   totp_secret: string | undefined
+  phone_number: string | undefined
 }
 
 export interface UserCount {
@@ -34,6 +35,10 @@ export interface UserCount {
 
 export interface ChangePasswordRequest {
   password: string
+}
+
+export interface ChangePhoneNumberRequest {
+  phone_number: string
 }
 
 export interface GenerateOTPResponse {

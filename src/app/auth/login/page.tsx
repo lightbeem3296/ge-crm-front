@@ -28,47 +28,50 @@ export default function LoginPage() {
   const [otpCode, setOtpCode] = useState<string>("");
   const router = useRouter();
   const [authType, setAuthType] = useState<string>("password");
+  const [isOtpValid, setIsOtpValid] = useState<boolean | undefined>(undefined);
 
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   }
 
-  const handleChangeOTPCode = (value: string) => {
+  const handleChangeOTPCode = async (value: string) => {
     setOtpCode(value);
-  }
-
-  const handleClickSubmitOTP = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post<AuthResponse>("/api/auth/login/otp", {
-        username: watch("username"),
-        password: watch("password"),
-        otp: otpCode,
-      });
-      switch (response.data.result) {
-        case AuthResult.success:
-          if (response.data.token) {
-            localStorage.setItem("accessToken", response.data.token.access_token);
-            router.push("/main");
-          } else {
-            customAlert({
-              type: CustomAlertType.ERROR,
-              title: "Error",
-              message: "Failed to fetch access token.",
-            });
-          }
-          break;
-        default:
-          router.push("/auth/login");
+    setIsOtpValid(undefined);
+    if (value.length === 6) {
+      setLoading(true);
+      try {
+        const response = await axios.post<AuthResponse>("/api/auth/login/otp", {
+          username: watch("username"),
+          password: watch("password"),
+          otp_code: value,
+        });
+        switch (response.data.result) {
+          case AuthResult.success:
+            if (response.data.token) {
+              localStorage.setItem("accessToken", response.data.token.access_token);
+              setIsOtpValid(true);
+              router.push("/main");
+            } else {
+              customAlert({
+                type: CustomAlertType.ERROR,
+                title: "Error",
+                message: "Failed to fetch access token.",
+              });
+            }
+            break;
+          default:
+            router.push("/auth/login");
+        }
+      } catch {
+        customAlert({
+          type: CustomAlertType.ERROR,
+          message: "OTP Verificatoin Failed",
+        });
+        setIsOtpValid(false);
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      customAlert({
-        type: CustomAlertType.ERROR,
-        message: "OTP Verificatoin Failed",
-      });
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -238,10 +241,19 @@ export default function LoginPage() {
 
               {/* OTP Code field */}
               <div className="flex flex-col">
-                <label className={`input input-sm input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
+                <label className={`input input-sm input-bordered flex items-center gap-2
+                 ${loading
+                    ? "input-disabled"
+                    : ""
+                  }
+                    ${isOtpValid === true
+                    ? "input-success"
+                    : isOtpValid === false
+                      ? "input-error"
+                      : null}`}>
                   <input
                     type="text"
-                    className="grow"
+                    className={`grow `}
                     placeholder="OTP Code"
                     disabled={loading}
                     value={otpCode}
@@ -249,17 +261,6 @@ export default function LoginPage() {
                   />
                 </label>
               </div>
-
-              <button
-                className="btn btn-sm btn-info"
-                disabled={loading}
-                onClick={() => handleClickSubmitOTP()}
-              >
-                {loading
-                  ? <span className="loading loading-spinner loading-xs"></span>
-                  : null}
-                Verify
-              </button>
             </form>
             : null
       }
