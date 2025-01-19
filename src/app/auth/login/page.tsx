@@ -17,6 +17,7 @@ interface LoginFormInputs {
 }
 
 export default function LoginPage() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -25,10 +26,11 @@ export default function LoginPage() {
   } = useForm<LoginFormInputs>();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [otpCode, setOtpCode] = useState<string>("");
-  const router = useRouter();
   const [authType, setAuthType] = useState<string>("password");
+  const [otpCode, setOtpCode] = useState<string>("");
   const [isOtpValid, setIsOtpValid] = useState<boolean | undefined>(undefined);
+  const [smsCode, setSmsCode] = useState<string>("");
+  const [isSmsValid, setIsSmsValid] = useState<boolean | undefined>(undefined);
 
 
   const handleClickShowPassword = () => {
@@ -75,6 +77,46 @@ export default function LoginPage() {
     }
   }
 
+  const handleChangeSmsCode = async (value: string) => {
+    setSmsCode(value);
+    setIsSmsValid(undefined);
+    if (value.length === 6) {
+      setLoading(true);
+      try {
+        const response = await axios.post<AuthResponse>("/api/auth/login/sms", {
+          username: watch("username"),
+          password: watch("password"),
+          sms_code: value,
+        });
+        switch (response.data.result) {
+          case AuthResult.success:
+            if (response.data.token) {
+              localStorage.setItem("accessToken", response.data.token.access_token);
+              setIsSmsValid(true);
+              router.push("/main");
+            } else {
+              customAlert({
+                type: CustomAlertType.ERROR,
+                title: "Error",
+                message: "Failed to fetch access token.",
+              });
+            }
+            break;
+          default:
+            router.push("/auth/login");
+        }
+      } catch {
+        customAlert({
+          type: CustomAlertType.ERROR,
+          message: "SMS Verificatoin Failed",
+        });
+        setIsSmsValid(false);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+
   const onSubmit = async (data: LoginFormInputs) => {
     setLoading(true);
     try {
@@ -103,6 +145,9 @@ export default function LoginPage() {
           break;
         case AuthResult.otp:
           setAuthType("otp");
+          break;
+        case AuthResult.sms:
+          setAuthType("sms");
           break;
         default:
           router.push("/auth/login");
@@ -262,7 +307,45 @@ export default function LoginPage() {
                 </label>
               </div>
             </form>
-            : null
+            : authType === "sms"
+              ? <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-4 max-w-96 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
+              >
+                <div className="flex justify-center mb-8">
+                  <span className="font-sans font-medium text-xl">
+                    SMS Authentication
+                  </span>
+                </div>
+
+                <div className="mx-auto font-bold">
+                  {watch("username")}
+                </div>
+
+                {/* SMS Code field */}
+                <div className="flex flex-col">
+                  <label className={`input input-sm input-bordered flex items-center gap-2
+                 ${loading
+                      ? "input-disabled"
+                      : ""
+                    }
+                    ${isSmsValid === true
+                      ? "input-success"
+                      : isSmsValid === false
+                        ? "input-error"
+                        : null}`}>
+                    <input
+                      type="text"
+                      className={`grow `}
+                      placeholder="SMS Code"
+                      disabled={loading}
+                      value={smsCode}
+                      onChange={(e) => handleChangeSmsCode(e.target.value)}
+                    />
+                  </label>
+                </div>
+              </form>
+              : null
       }
     </>
   )
