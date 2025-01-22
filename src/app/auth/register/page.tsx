@@ -142,6 +142,7 @@ export default function LoginPage() {
             type="button"
             className={!watch("password") ? "hidden" : ""}
             onClick={() => handleClickShowPassword()}
+            tabIndex={-1}
           >
             {showPassword
               ? <FontAwesomeIcon icon={faEyeSlash} width={12} />
@@ -179,6 +180,7 @@ export default function LoginPage() {
             type="button"
             className={!watch("passwordConfirm") ? "hidden" : ""}
             onClick={() => handleClickShowPasswordConfirm()}
+            tabIndex={-1}
           >
             {showPasswordConfirm
               ? <FontAwesomeIcon icon={faEyeSlash} width={12} />

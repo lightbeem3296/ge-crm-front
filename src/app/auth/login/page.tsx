@@ -189,6 +189,7 @@ export default function LoginPage() {
                   type="button"
                   className={!watch("password") ? "hidden" : ""}
                   onClick={() => handleClickShowPassword()}
+                  tabIndex={-1}
                 >
                   {showPassword
                     ? <FontAwesomeIcon icon={faEyeSlash} width={12} />
