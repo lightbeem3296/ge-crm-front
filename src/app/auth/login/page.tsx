@@ -3,7 +3,7 @@
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { fetchCurrentUser } from "@/services/authService";
 import { AuthResponse, AuthResult } from "@/types/auth";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faMobile, faMobilePhone, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import Link from "next/link";
@@ -37,43 +37,48 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   }
 
+  const verifyOTP = async (value: string | undefined = undefined) => {
+    value = value || otpCode;
+    setLoading(true);
+    try {
+      const response = await axios.post<AuthResponse>("/api/auth/login/otp", {
+        username: watch("username"),
+        password: watch("password"),
+        otp_code: value,
+      });
+      switch (response.data.result) {
+        case AuthResult.success:
+          if (response.data.token) {
+            localStorage.setItem("accessToken", response.data.token.access_token);
+            setIsOtpValid(true);
+            router.push("/main");
+          } else {
+            customAlert({
+              type: CustomAlertType.ERROR,
+              title: "Error",
+              message: "Failed to fetch access token.",
+            });
+          }
+          break;
+        default:
+          router.push("/auth/login");
+      }
+    } catch {
+      customAlert({
+        type: CustomAlertType.ERROR,
+        message: "OTP Verificatoin Failed",
+      });
+      setIsOtpValid(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleChangeOTPCode = async (value: string) => {
     setOtpCode(value);
     setIsOtpValid(undefined);
     if (value.length === 6) {
-      setLoading(true);
-      try {
-        const response = await axios.post<AuthResponse>("/api/auth/login/otp", {
-          username: watch("username"),
-          password: watch("password"),
-          otp_code: value,
-        });
-        switch (response.data.result) {
-          case AuthResult.success:
-            if (response.data.token) {
-              localStorage.setItem("accessToken", response.data.token.access_token);
-              setIsOtpValid(true);
-              router.push("/main");
-            } else {
-              customAlert({
-                type: CustomAlertType.ERROR,
-                title: "Error",
-                message: "Failed to fetch access token.",
-              });
-            }
-            break;
-          default:
-            router.push("/auth/login");
-        }
-      } catch {
-        customAlert({
-          type: CustomAlertType.ERROR,
-          message: "OTP Verificatoin Failed",
-        });
-        setIsOtpValid(false);
-      } finally {
-        setLoading(false);
-      }
+      await verifyOTP(value);
     }
   }
 
@@ -273,18 +278,17 @@ export default function LoginPage() {
           : authType === "otp"
             ? <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4 max-w-96 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
+              className="flex flex-col gap-4 max-w-80 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
             >
-              <div className="flex justify-center mb-8">
-                <span className="font-sans font-medium text-xl">
-                  OTP Authentication
-                </span>
+              <div className="mx-auto text-xl text-base-content/80">
+                <FontAwesomeIcon icon={faMobilePhone} />
               </div>
-
-              <div className="mx-auto font-bold">
-                {watch("username")}
+              <div className="mx-auto text-lg font-medium">
+                Authentication code
               </div>
-
+              <div className="mx-auto font-medium">
+                - {watch("username")} -
+              </div>
               {/* OTP Code field */}
               <div className="flex flex-col">
                 <label className={`input input-sm input-bordered flex items-center gap-2
@@ -296,22 +300,36 @@ export default function LoginPage() {
                     ? "input-success"
                     : isOtpValid === false
                       ? "input-error"
-                      : null}`}>
+                      : null}`}
+                >
                   <input
                     type="text"
                     className={`grow `}
-                    placeholder="OTP Code"
+                    placeholder="XXXXXX"
                     disabled={loading}
                     value={otpCode}
                     onChange={(e) => handleChangeOTPCode(e.target.value)}
                   />
                 </label>
               </div>
+              <button
+                className={`btn btn-sm btn-primary 
+                  ${loading
+                    ? "btn-disabled"
+                    : null
+                  }`}
+                onClick={() => verifyOTP()}
+              >
+                {loading ? "Verifying ..." : "Verify"}
+              </button>
+              <div className="text-sm">
+                Open your two-factor authenticator (TOTP) app or browser extension to view your authentication code.
+              </div>
             </form>
             : authType === "sms"
               ? <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-4 max-w-96 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
+                className="flex flex-col gap-4 max-w-80 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
               >
                 <div className="flex justify-center mb-8">
                   <span className="font-sans font-medium text-xl">
