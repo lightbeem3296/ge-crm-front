@@ -35,7 +35,7 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
           </button>
           <ul
             tabIndex={0}
-            className="menu dropdown-content bg-base-300 rounded-box z-[1] mt-4 w-52 p-2 shadow">
+            className="menu dropdown-content bg-base-300 rounded-box z-[10] mt-4 w-52 p-2 shadow">
             <li>
               <Link href="/main/settings">
                 <FontAwesomeIcon icon={faUser} width={12} /> Profile
