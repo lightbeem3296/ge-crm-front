@@ -22,7 +22,8 @@ export interface User {
   username: string
   role: UserRole
   tfa_type: TfaType | undefined
-  totp_secret: string | undefined
+  otp_secret: string | undefined
+  phone_number: string | undefined
 }
 
 export interface UserCount {
@@ -36,14 +37,31 @@ export interface ChangePasswordRequest {
   password: string
 }
 
+export interface ChangePhoneNumberRequest {
+  phone_number: string
+}
+
+export interface GenerateOTPResponse {
+  otp_secret: string
+}
+
 export interface VerifyOTPRequest {
+  otp_secret: string
+  otp_code: string
+}
+
+export interface EnableOTPRequest {
+  otp_secret: string
+}
+
+export interface LoginOTPRequest {
+  username: string
+  password: string
   otp: string
 }
 
-export interface LoginOTPRequest{
-    username: string
-    password: string
-    otp: string
+export interface VerifySMSRequest {
+  sms_code: string
 }
 
 export enum AuthResult {
