@@ -312,7 +312,7 @@ export default function LogoutPage() {
           <div className="col-span-1 font-medium">2FA</div>
           <div className="col-span-2 ml-2 flex gap-2">
             <select className="select select-bordered select-sm w-60"
-              value={tfaType}
+              value={tfaType || ""}
               onChange={(e) => handle2faTypeChanged(e.target.value)}
             >
               <option value={""}>Not Enabled</option>
