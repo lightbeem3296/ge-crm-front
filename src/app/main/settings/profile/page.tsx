@@ -63,16 +63,8 @@ export default function LogoutPage() {
     setPhoneNumber(value);
   }
   const handleClickPhoneNumberSave = async () => {
-    if (!phoneNumber) {
-      customAlert({
-        type: CustomAlertType.ERROR,
-        title: "Error",
-        message: "Phone number is empty",
-      });
-      return;
-    }
     const response = await axiosHelper.post<ChangePhoneNumberRequest, ApiGeneralResponse>("/auth/change-phone-number", {
-      phone_number: phoneNumber
+      phone_number: phoneNumber || ""
     });
     if (response) {
       customAlert({
