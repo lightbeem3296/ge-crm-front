@@ -26,7 +26,7 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
         </button>
         <h1 className="text-md font-bold tracking-tight text-base-content/70"></h1>
       </div>
-      <div className="flex gap-1 items-center">
+      <div className="flex gap-2 items-center">
         <ThemeController />
 
         <div className="dropdown dropdown-end">
