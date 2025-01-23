@@ -206,12 +206,12 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="mx-auto">
+    <div className="w-full flex">
       {
         authType === "password"
           ? <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4 max-w-96 mx-auto px-8 py-16 rounded-md mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
+            className="flex flex-col gap-4 w-full sm:w-96 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
           >
             <div className="flex justify-center mb-8">
               <span className="font-sans font-medium text-xl">
@@ -305,7 +305,7 @@ export default function LoginPage() {
           : authType === "otp"
             ? <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4 max-w-80 mx-auto px-8 py-16 rounded-md mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
+              className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
             >
               <div className="mx-auto text-xl text-base-content/80">
                 <FontAwesomeIcon icon={faMobilePhone} />
@@ -356,7 +356,7 @@ export default function LoginPage() {
             : authType === "sms"
               ? <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-4 max-w-80 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20 bg-gradient-to-tl from-base-100 via-primary/10 to-base-100"
+                className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
               >
                 <div className="mx-auto text-xl text-base-content/80">
                   <FontAwesomeIcon icon={faMobilePhone} />

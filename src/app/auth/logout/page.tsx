@@ -12,7 +12,7 @@ export default function LogoutPage() {
   }, [router]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="mx-auto flex justify-center items-center h-screen">
       <h2 className="text-2xl font-bold">Logging out...</h2>
     </div>
   );

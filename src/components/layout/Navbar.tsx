@@ -16,7 +16,7 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
   const currentUser = loadCurrentUser();
 
   return (
-    <div className="flex items-center justify-between border-b border-base-300 px-4 py-2 bg-base-100">
+    <div className="flex items-center justify-between border-b border-base-300 px-4 py-2 bg-primary/10">
       <div className='flex items-center gap-x-2'>
         <button
           onClick={() => setMobileFiltersOpen(true)}
