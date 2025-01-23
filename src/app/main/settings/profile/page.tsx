@@ -375,7 +375,7 @@ export default function LogoutPage() {
                         type="text"
                         className="grow"
                         value={otpCode}
-                        placeholder="OTP Code"
+                        placeholder="XXXXXX"
                         disabled={isOtpVerifying}
                         onChange={(e) => handleChangeOtp(e.target.value)}
                       />
