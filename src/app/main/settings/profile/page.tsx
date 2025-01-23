@@ -321,7 +321,7 @@ export default function LogoutPage() {
             </div>
           </div>
 
-          <div className="col-start-2 col-span-2 ml-2 flex flex-col gap-4">
+          <div className="md:col-start-2 col-span-2 ml-2 flex flex-col gap-4">
 
             {/* OTP */}
             <div className={`flex flex-col gap-4
