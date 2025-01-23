@@ -57,7 +57,7 @@ export const customAlert = ({ type, title, message, detail }: CustomAlertProps) 
   );
   const alertOptions: ToastOptions = {
     position: "bottom-right",
-    autoClose: 5000,
+    autoClose: 3000,
     hideProgressBar: false,
     closeOnClick: false,
     pauseOnHover: true,

@@ -82,43 +82,70 @@ export default function LoginPage() {
     }
   }
 
+  const verifySMS = async (value: string | undefined = undefined) => {
+    value = value || smsCode;
+    setLoading(true);
+    try {
+      const response = await axios.post<AuthResponse>("/api/auth/login/sms", {
+        username: watch("username"),
+        password: watch("password"),
+        sms_code: value,
+      });
+      switch (response.data.result) {
+        case AuthResult.success:
+          if (response.data.token) {
+            localStorage.setItem("accessToken", response.data.token.access_token);
+            setIsSmsValid(true);
+            router.push("/main");
+          } else {
+            customAlert({
+              type: CustomAlertType.ERROR,
+              title: "Error",
+              message: "Failed to fetch access token.",
+            });
+          }
+          break;
+        default:
+          router.push("/auth/login");
+      }
+    } catch {
+      customAlert({
+        type: CustomAlertType.ERROR,
+        message: "SMS Verificatoin Failed",
+      });
+      setIsSmsValid(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleChangeSmsCode = async (value: string) => {
     setSmsCode(value);
     setIsSmsValid(undefined);
     if (value.length === 6) {
-      setLoading(true);
-      try {
-        const response = await axios.post<AuthResponse>("/api/auth/login/sms", {
-          username: watch("username"),
-          password: watch("password"),
-          sms_code: value,
-        });
-        switch (response.data.result) {
-          case AuthResult.success:
-            if (response.data.token) {
-              localStorage.setItem("accessToken", response.data.token.access_token);
-              setIsSmsValid(true);
-              router.push("/main");
-            } else {
-              customAlert({
-                type: CustomAlertType.ERROR,
-                title: "Error",
-                message: "Failed to fetch access token.",
-              });
-            }
-            break;
-          default:
-            router.push("/auth/login");
-        }
-      } catch {
-        customAlert({
-          type: CustomAlertType.ERROR,
-          message: "SMS Verificatoin Failed",
-        });
-        setIsSmsValid(false);
-      } finally {
-        setLoading(false);
-      }
+      await verifySMS(value);
+    }
+  }
+
+  const handleClickResendSMS = async () => {
+    setLoading(true);
+    try {
+      await axios.post<AuthResponse>("/api/auth/login/sms/resend", {
+        username: watch("username"),
+        password: watch("password"),
+      });
+      customAlert({
+        type: CustomAlertType.INFO,
+        message: "SMS has been sent again",
+      });
+    } catch {
+      customAlert({
+        type: CustomAlertType.ERROR,
+        message: "SMS Verificatoin Failed",
+      });
+      setIsSmsValid(false);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -284,7 +311,7 @@ export default function LoginPage() {
                 <FontAwesomeIcon icon={faMobilePhone} />
               </div>
               <div className="mx-auto text-lg font-medium">
-                Authentication code
+                TOTP Authentication
               </div>
               <div className="mx-auto font-medium">
                 - {watch("username")} -
@@ -331,16 +358,15 @@ export default function LoginPage() {
                 onSubmit={handleSubmit(onSubmit)}
                 className="flex flex-col gap-4 max-w-80 mx-auto border border-base-content/20 px-8 py-16 rounded-md mt-20"
               >
-                <div className="flex justify-center mb-8">
-                  <span className="font-sans font-medium text-xl">
-                    SMS Authentication
-                  </span>
+                <div className="mx-auto text-xl text-base-content/80">
+                  <FontAwesomeIcon icon={faMobilePhone} />
                 </div>
-
-                <div className="mx-auto font-bold">
-                  {watch("username")}
+                <div className="mx-auto text-lg font-medium">
+                  SMS Authentication
                 </div>
-
+                <div className="mx-auto font-medium">
+                  - {watch("username")} -
+                </div>
                 {/* SMS Code field */}
                 <div className="flex flex-col">
                   <label className={`input input-sm input-bordered flex items-center gap-2
@@ -356,12 +382,32 @@ export default function LoginPage() {
                     <input
                       type="text"
                       className={`grow `}
-                      placeholder="SMS Code"
+                      placeholder="XXXXXX"
                       disabled={loading}
                       value={smsCode}
                       onChange={(e) => handleChangeSmsCode(e.target.value)}
                     />
                   </label>
+                </div>
+                <button
+                  className={`btn btn-sm btn-primary 
+                  ${loading
+                      ? "btn-disabled"
+                      : null
+                    }`}
+                  onClick={() => verifySMS()}
+                >
+                  {loading ? "Verifying ..." : "Verify"}
+                </button>
+                <div className="text-sm">
+                  You will get OTP via SMS.<br />
+                  Didn't receive authentication code?<br />
+                  <button
+                    className="link-info"
+                    onClick={() => handleClickResendSMS()}
+                  >
+                    Resend SMS
+                  </button>
                 </div>
               </form>
               : null
