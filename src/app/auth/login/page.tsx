@@ -3,7 +3,7 @@
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { fetchCurrentUser } from "@/services/authService";
 import { AuthResponse, AuthResult } from "@/types/auth";
-import { faEye, faEyeSlash, faMobile, faMobilePhone, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faMobilePhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import Link from "next/link";
@@ -401,7 +401,7 @@ export default function LoginPage() {
                 </button>
                 <div className="text-sm">
                   You will get OTP via SMS.<br />
-                  Didn't receive authentication code?<br />
+                  Didn&apos;t receive authentication code?<br />
                   <button
                     className="link-info"
                     onClick={() => handleClickResendSMS()}
