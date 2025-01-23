@@ -40,6 +40,9 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
               <Link href="/main/settings">
                 <FontAwesomeIcon icon={faUser} width={12} /> Profile
               </Link>
+            </li>
+            <li className='divider-primary'></li>
+            <li>
               <Link href="/auth/logout">
                 <FontAwesomeIcon icon={faSignOut} width={12} /> Log out
               </Link>
