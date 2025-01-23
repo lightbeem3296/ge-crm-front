@@ -10,6 +10,7 @@ import { faCheck, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useQRCode } from "next-qrcode";
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 export default function LogoutPage() {
   const currentUser = loadCurrentUser();
@@ -18,6 +19,7 @@ export default function LogoutPage() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   // Phone number
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>(currentUser?.phone_number || "");
+  const [isPhoneNumberValid, setIsPhoneNumberValid] = useState<boolean | undefined>(undefined);
   // 2FA
   const [tfaType, setTfaType] = useState<TfaType | undefined>(currentUser?.tfa_type);
   // OTP
@@ -61,8 +63,20 @@ export default function LogoutPage() {
   // Phone number
   const handleChangePhoneNumber = (value: string) => {
     setPhoneNumber(value);
+    if (value) {
+      setIsPhoneNumberValid(isValidPhoneNumber(value));
+    } else {
+      setIsPhoneNumberValid(undefined);
+    }
   }
   const handleClickPhoneNumberSave = async () => {
+    if (phoneNumber && !isValidPhoneNumber(phoneNumber)){
+      customAlert({
+        type: CustomAlertType.ERROR,
+        message: "Phone number is invalid.",
+      });
+      return;
+    }
     const response = await axiosHelper.post<ChangePhoneNumberRequest, ApiGeneralResponse>("/auth/change-phone-number", {
       phone_number: phoneNumber || ""
     });
@@ -282,12 +296,18 @@ export default function LogoutPage() {
           <div className="col-span-1 font-medium">Phone number</div>
           <div className="col-span-2 ml-2">
             <div className="flex gap-2">
-              <label className="input input-sm input-bordered flex items-center gap-2 w-60">
+              <label className={`input input-sm input-bordered flex items-center gap-2 w-60 
+                ${isPhoneNumberValid === true
+                  ? "input-success"
+                  : isPhoneNumberValid === false
+                    ? "input-error"
+                    : null}`}
+              >
                 <input
                   type="text"
                   className="grow"
                   value={phoneNumber}
-                  placeholder="Phone number"
+                  placeholder="+12345678901"
                   onChange={(e) => handleChangePhoneNumber(e.target.value)}
                 />
               </label>

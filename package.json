@@ -16,6 +16,7 @@
     "@hookform/resolvers": "^3.10.0",
     "ag-grid-react": "^33.0.2",
     "axios": "^1.7.9",
+    "libphonenumber-js": "^1.11.18",
     "next": "15.1.0",
     "next-qrcode": "^2.5.1",
     "react": "^19.0.0",
