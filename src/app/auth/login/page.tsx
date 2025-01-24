@@ -282,7 +282,7 @@ export default function LoginPage() {
             </div>
             <button
               type="submit"
-              className="btn btn-info"
+              className="btn btn-primary text-gray-100"
               disabled={loading}
             >
               {loading
@@ -340,7 +340,7 @@ export default function LoginPage() {
                 </label>
               </div>
               <button
-                className={`btn btn-sm btn-primary 
+                className={`btn btn-sm btn-primary text-gray-100
                   ${loading
                     ? "btn-disabled"
                     : null
@@ -390,7 +390,7 @@ export default function LoginPage() {
                   </label>
                 </div>
                 <button
-                  className={`btn btn-sm btn-primary 
+                  className={`btn btn-sm btn-primary text-gray-100
                   ${loading
                       ? "btn-disabled"
                       : null

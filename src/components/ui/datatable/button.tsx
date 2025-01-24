@@ -10,7 +10,7 @@ interface ButtonProps {
 export function NewButton({ onClick, children }: ButtonProps) {
   return (
     <button
-      className="btn btn-primary btn-sm text-white"
+      className="btn btn-primary btn-sm text-gray-100"
       onClick={onClick}
     >
       <FontAwesomeIcon icon={faPlus} width={12} />{children}
@@ -21,7 +21,7 @@ export function NewButton({ onClick, children }: ButtonProps) {
 export function SaveButton({ disabled = false, onClick }: ButtonProps) {
   return (
     <button
-      className="btn btn-primary btn-sm btn-outline"
+      className="btn btn-primary btn-sm btn-outline text-gray-100"
       disabled={disabled}
       onClick={onClick}
     >
@@ -33,7 +33,7 @@ export function SaveButton({ disabled = false, onClick }: ButtonProps) {
 export function EditButton({ onClick }: ButtonProps) {
   return (
     <button
-      className="btn btn-primary btn-sm btn-outline"
+      className="btn btn-primary btn-sm btn-outline text-gray-100"
       onClick={onClick}
     >
       <FontAwesomeIcon icon={faEdit} />

@@ -285,7 +285,7 @@ export default function LogoutPage() {
                 </button>
               </label>
               <button
-                className="btn btn-sm btn-primary w-20"
+                className="btn btn-sm btn-primary text-gray-100 w-20"
                 onClick={() => handleClickPasswordSubmit()}
               >
                 Change
@@ -312,7 +312,7 @@ export default function LogoutPage() {
                 />
               </label>
               <button
-                className="btn btn-sm btn-primary w-20"
+                className="btn btn-sm btn-primary text-gray-100 w-20"
                 onClick={() => handleClickPhoneNumberSave()}
               >
                 Save
@@ -333,7 +333,7 @@ export default function LogoutPage() {
             </select>
             <div className="flex">
               <button
-                className="btn btn-sm btn-primary w-20"
+                className="btn btn-sm btn-primary text-gray-100 w-20"
                 onClick={() => handleClickSave2FASettings()}
               >
                 Save
@@ -406,7 +406,7 @@ export default function LogoutPage() {
                         type="text"
                         className="grow"
                         value={smsCode}
-                        placeholder="SMS Code"
+                        placeholder="XXXXXX"
                         disabled={isSmsCodeVerifying}
                         onChange={(e) => handleChangeSmsCode(e.target.value)}
                       />
@@ -422,7 +422,7 @@ export default function LogoutPage() {
                     </div>
                   </div>
                   <button
-                    className="btn btn-sm btn-info w-60"
+                    className="btn btn-sm btn-primary text-gray-100 w-60"
                     onClick={() => handleResendSmsCodeClick()}
                     disabled={isSmsCodeSending}
                   >

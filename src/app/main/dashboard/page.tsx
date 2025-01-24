@@ -44,7 +44,7 @@ const HomePage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {
           currentUser?.role === UserRole.ADMIN
-            ? <div className="card bg-error text-white col-span-1 shadow-lg">
+            ? <div className="card bg-error text-gray-100 col-span-1 shadow-lg">
               <div className="card-body">
                 <h2 className="card-title">Users</h2>
                 <div className="grid grid-cols-2">
@@ -70,7 +70,7 @@ const HomePage = () => {
         }
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div className="card bg-primary text-white col-span-1 shadow-lg">
+        <div className="card bg-primary text-gray-100 col-span-1 shadow-lg">
           <div className="card-body">
             <h2 className="card-title">Employees</h2>
             <p>Total: {employeeCount} Employees</p>
@@ -83,7 +83,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className="card bg-success text-white col-span-1 shadow-lg">
+        <div className="card bg-success text-gray-100 col-span-1 shadow-lg">
           <div className="card-body">
             <h2 className="card-title">Rules</h2>
             <p>Total: {ruleCount} Rules</p>
@@ -96,7 +96,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className="card bg-info text-white col-span-1 shadow-lg">
+        <div className="card bg-info text-gray-100 col-span-1 shadow-lg">
           <div className="card-body">
             <h2 className="card-title">Tags</h2>
             <p>Total: {tagCount} Tags</p>
@@ -109,7 +109,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className="card bg-warning text-white col-span-1 shadow-lg">
+        <div className="card bg-warning text-gray-100 col-span-1 shadow-lg">
           <div className="card-body">
             <h2 className="card-title">Roles</h2>
             <p>Total: {roleCount} Roles</p>
@@ -122,7 +122,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className="card bg-secondary text-white col-span-1 shadow-lg">
+        <div className="card bg-secondary text-gray-100 col-span-1 shadow-lg">
           <div className="card-body">
             <h2 className="card-title">Salary Types</h2>
             <p>Total: {salaryTypeCount} Salary Types</p>

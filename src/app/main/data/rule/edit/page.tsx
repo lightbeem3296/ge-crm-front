@@ -437,7 +437,7 @@ function RuleEditPageContent() {
           {/* New Atom Rule Button */}
           <div className="mt-4">
             <button
-              className="btn btn-primary btn-sm btn-outline"
+              className="btn btn-primary text-gray-100 btn-sm btn-outline"
               onClick={() => handleClickNewAtomRule()}
             >
               <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Rule
@@ -482,7 +482,7 @@ function RuleEditPageContent() {
                         {/* New Atom Condition Button */}
                         <div className="flex place-items-end mt-4">
                           <button
-                            className="btn btn-sm btn-primary btn-outline"
+                            className="btn btn-sm btn-primary btn-outline text-gray-100"
                             onClick={() => handleClickNewAtomCondition(rule_index)}
                           >
                             <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Condition
@@ -675,7 +675,7 @@ function RuleEditPageContent() {
           </div>
           <div className="mt-4 flex justify-end gap-x-2">
             <button
-              className="btn btn-primary px-8"
+              className="btn btn-primary text-gray-100 px-8"
               onClick={handleSave}
             >
               <FontAwesomeIcon icon={faSave} width={12} /> Save

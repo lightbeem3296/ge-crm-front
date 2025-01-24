@@ -198,7 +198,7 @@ export default function LoginPage() {
         {/* Submit button */}
         <button
           type="submit"
-          className="btn btn-info"
+          className="btn btn-primary text-gray-100"
           disabled={loading}
         >
           {loading
