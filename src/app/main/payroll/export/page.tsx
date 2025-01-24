@@ -226,7 +226,7 @@ export default function PayrollExportPage() {
             onChange={(e) => handleChangeExportFileName(e.target.value)}
           />
           <button
-            className="btn btn-sm btn-info"
+            className="btn btn-sm btn-info text-gray-100"
             onClick={() => handleClickExport()}
           >
             {exportLoading

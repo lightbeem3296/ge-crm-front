@@ -394,7 +394,7 @@ function RuleEditPageContent() {
         </p>
         <div className="flex justify-end gap-2">
           <button
-            className="btn btn-accent btn-sm"
+            className="btn btn-info btn-sm text-gray-100"
             onClick={() => handleClickBack()}
           >
             <FontAwesomeIcon icon={faArrowLeft} width={12} /> Back to Rules
