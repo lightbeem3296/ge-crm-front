@@ -24,6 +24,7 @@ export interface User {
   tfa_type: TfaType | undefined
   otp_secret: string | undefined
   phone_number: string | undefined
+  employee_filter: string | undefined
 }
 
 export interface UserCount {
