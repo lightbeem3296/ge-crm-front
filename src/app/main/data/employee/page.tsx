@@ -15,6 +15,8 @@ import { ActionCellRenderParams } from "@/types/datatable";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { SetTableFilterRequest } from "@/types/user";
+import { loadCurrentUser } from "@/services/authService";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -23,6 +25,7 @@ const salaryTypeMappings = await getSalaryTypeMappings();
 const tagMappings = await getTagMappings();
 
 export default function EmployeePage() {
+  const currentUser = loadCurrentUser();
   const gridRef = useRef<AgGridReact>(null);
   const [rowDataList, setRowDataList] = useState<EmployeeRowData[]>();
 
@@ -180,6 +183,16 @@ export default function EmployeePage() {
     }
   }
 
+  const onFilterChanged = () => {
+    const filterModel = gridRef.current?.api.getFilterModel();
+    if (filterModel) {
+      const filter = JSON.stringify(filterModel);
+      axiosHelper.post<SetTableFilterRequest, ApiGeneralResponse>(`/user/set-filter/employee`, {
+        filter: filter,
+      });
+    }
+  }
+
   // Table functions
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
@@ -327,6 +340,14 @@ export default function EmployeePage() {
 
   const onGridReady = useCallback(async (params: GridReadyEvent) => { // eslint-disable-line
     await fetchRowData();
+    if (currentUser?.employee_filter) {
+      try {
+        const filter = JSON.parse(currentUser?.employee_filter);
+        gridRef.current?.api.setFilterModel(filter);
+      } catch {
+        gridRef.current?.api.setFilterModel({});
+      }
+    }
   }, []);
 
   const onCellValueChanged = (event: CellValueChangedEvent) => {
@@ -359,6 +380,7 @@ export default function EmployeePage() {
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 25, 50]}
+            onFilterChanged={() => onFilterChanged()}
           />
         </div>
       </div>
