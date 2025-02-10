@@ -127,7 +127,6 @@ export default function EmployeePage() {
       points_total: null,
       points_bonus: null,
       total_kr: null,
-      total_salary: null,
       available_on_account: null,
       lunch_standard: null,
       m_nr_aq: null,
@@ -382,12 +381,6 @@ export default function EmployeePage() {
     {
       headerName: "Total KR",
       field: "total_kr",
-      width: 140,
-      editable: false,
-    },
-    {
-      headerName: "Totak Salary",
-      field: "total_salary",
       width: 140,
       editable: false,
     },

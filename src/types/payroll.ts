@@ -33,7 +33,6 @@ export enum PayrollExportFilterField {
   POINTS_TOTAL = "points_total",
   POINTS_BONUS = "points_bonus",
   TOTAL_KR = "total_kr",
-  TOTAL_SALARY = "total_salary",
   AVAILABLE_ON_ACCOUNT = "available_on_account",
   PAYROLL_CODE = "payroll_code",
   AUTO_COMMENTS = "auto_comments",
@@ -67,7 +66,6 @@ export interface PayrollExportFilter {
   points_total?: ComparableFilterField
   points_bonus?: ComparableFilterField
   total_kr?: ComparableFilterField
-  total_salary?: ComparableFilterField
   available_on_account?: ComparableFilterField
   payroll_code?: StringFilterField
   auto_comments?: StringFilterField
@@ -121,7 +119,6 @@ export const fieldMapMapping: Record<string, string> = {
   "points_total": "Points Total",
   "points_bonus": "Points Bonus",
   "total_kr": "Total KR",
-  "total_salary": "Total Salary",
   "available_on_account": "Available on Account",
   "payroll_code": "Payroll Code",
   "auto_comments": "Auto Comments",

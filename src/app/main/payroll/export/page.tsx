@@ -50,7 +50,6 @@ export default function PayrollExportPage() {
   const [filterPointsTotal, setFilterPointsTotal] = useState<ComparableFilterField>();
   const [filterPointsBonus, setFilterPointsBonus] = useState<ComparableFilterField>();
   const [filterTotalKr, setFilterTotalKr] = useState<ComparableFilterField>();
-  const [filterTotalSalary, setFilterTotalSalary] = useState<ComparableFilterField>();
   const [filterAvailableOnAccount, setFilterAvailableOnAccount] = useState<ComparableFilterField>();
   const [filterPayrollCode, setFilterPayrollCode] = useState<StringFilterField>();
   const [filterAutoComments, setFilterAutoComments] = useState<StringFilterField>();
@@ -142,7 +141,6 @@ export default function PayrollExportPage() {
             points_total: filterPointsTotal,
             points_bonus: filterPointsBonus,
             total_kr: filterTotalKr,
-            total_salary: filterTotalSalary,
             available_on_account: filterAvailableOnAccount,
             payroll_code: filterPayrollCode,
             auto_comments: filterAutoComments,
@@ -230,7 +228,6 @@ export default function PayrollExportPage() {
           points_total: filterPointsTotal,
           points_bonus: filterPointsBonus,
           total_kr: filterTotalKr,
-          total_salary: filterTotalSalary,
           available_on_account: filterAvailableOnAccount,
           payroll_code: filterPayrollCode,
           auto_comments: filterAutoComments,
@@ -496,12 +493,6 @@ export default function PayrollExportPage() {
               label="Total KR"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterTotalKr}
-            />
-            <FilterComponent
-              field={PayrollExportFilterField.TOTAL_SALARY}
-              label="Total Salary"
-              type={FilterType.COMPARIBLE_FILTER}
-              setFilterField={setFilterTotalSalary}
             />
             <FilterComponent
               field={PayrollExportFilterField.AVAILABLE_ON_ACCOUNT}

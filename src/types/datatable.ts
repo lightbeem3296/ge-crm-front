@@ -47,7 +47,6 @@ export interface EmployeeRowData extends BaseRowData {
   points_total: number | null,
   points_bonus: number | null,
   total_kr: number | null,
-  total_salary: number | null,
   available_on_account: string | null,
   lunch_standard: string | null,
   m_nr_aq: number | null,
