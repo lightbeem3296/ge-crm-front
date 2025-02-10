@@ -21,7 +21,7 @@ export interface EmployeeRowData extends BaseRowData {
   m_nr: number,
   employment_type: string,
   comment: string,
-  mileasge_allowance: string,
+  mileage_allowance: string,
   lunch: string,
   department: string,
   tax_deduction_card: string,

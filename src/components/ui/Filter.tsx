@@ -1,5 +1,6 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
+import { employmentTypeCodes, lunchCodes, taxDeductionCardCodes } from "@/types/employee";
 import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
 import { PayrollExportFilterField } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
@@ -24,7 +25,11 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
   const [filterCondition, setFilterCondition] = useState<string>("");
   const [filterCaseSensitive, setFilterCaseSensitive] = useState<boolean>(false);
 
-  const isDateField = field === PayrollExportFilterField.EMPLOYMENT_START_DATE || field === PayrollExportFilterField.EMPLOYMENT_END_DATE;
+  const isDateField = field === PayrollExportFilterField.FIRST_WORK_DATE
+    || field === PayrollExportFilterField.LAST_WORK_DATE
+    || field === PayrollExportFilterField.START_PAY_PERIOD
+    || field === PayrollExportFilterField.END_PAY_PERIOD
+    || field === PayrollExportFilterField.AVAILABLE_ON_ACCOUNT;
   const is2values = () => {
     return [
       ComparableFilterCondition.GTE_LT.toString(),
@@ -172,38 +177,77 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
               // Object Filter
               : type === FilterType.OBJECT_FILTER
 
-                // Role Filter
-                ? field === PayrollExportFilterField.ROLE
+                // Employment Type Filter
+                ? field === PayrollExportFilterField.EMPLOYMENT_TYPE
                   ? <select
                     className="select select-bordered select-sm"
                     value={filterValue}
                     onChange={(e) => handleChangeFilterValue(e.target.value)}
                   >
                     <option value="">Not Selected</option>
-                    {roleCodes.map((key) => (
-                      <option key={key} value={key}>{lookupValue(roleMappings, key)}</option>
+                    {employmentTypeCodes.map((key) => (
+                      <option key={key} value={key}>{key}</option>
                     ))}
                   </select>
 
-                  // Salary Type Filter
-                  : field === PayrollExportFilterField.SALARY_TYPE
+                  // Lunch Filter
+                  : field === PayrollExportFilterField.LUNCH
                     ? <select
                       className="select select-bordered select-sm"
                       value={filterValue}
                       onChange={(e) => handleChangeFilterValue(e.target.value)}
                     >
                       <option value="">Not Selected</option>
-                      {salaryTypeCodes.map((key) => (
-                        <option key={key} value={key}>{lookupValue(salaryTypeMappings, key)}</option>
+                      {lunchCodes.map((key) => (
+                        <option key={key} value={key}>{key}</option>
                       ))}
                     </select>
 
-                    // General String Object Filter
-                    : <input
-                      type="text"
-                      className="input input-sm input-bordered w-full"
-                      onChange={(e) => handleChangeFilterValue(e.target.value)}
-                    />
+                    // Tax Deduction Card Filter
+                    : field === PayrollExportFilterField.TAX_DEDUCTION_CARD
+                      ? <select
+                        className="select select-bordered select-sm"
+                        value={filterValue}
+                        onChange={(e) => handleChangeFilterValue(e.target.value)}
+                      >
+                        <option value="">Not Selected</option>
+                        {taxDeductionCardCodes.map((key) => (
+                          <option key={key} value={key}>{key}</option>
+                        ))}
+                      </select>
+
+                      // Role Filter
+                      : field === PayrollExportFilterField.ROLE
+                        ? <select
+                          className="select select-bordered select-sm"
+                          value={filterValue}
+                          onChange={(e) => handleChangeFilterValue(e.target.value)}
+                        >
+                          <option value="">Not Selected</option>
+                          {roleCodes.map((key) => (
+                            <option key={key} value={key}>{lookupValue(roleMappings, key)}</option>
+                          ))}
+                        </select>
+
+                        // Salary Type Filter
+                        : field === PayrollExportFilterField.SALARY_TYPE
+                          ? <select
+                            className="select select-bordered select-sm"
+                            value={filterValue}
+                            onChange={(e) => handleChangeFilterValue(e.target.value)}
+                          >
+                            <option value="">Not Selected</option>
+                            {salaryTypeCodes.map((key) => (
+                              <option key={key} value={key}>{lookupValue(salaryTypeMappings, key)}</option>
+                            ))}
+                          </select>
+
+                          // General String Object Filter
+                          : <input
+                            type="text"
+                            className="input input-sm input-bordered w-full"
+                            onChange={(e) => handleChangeFilterValue(e.target.value)}
+                          />
 
                 // Comparable Filter
                 : type === FilterType.COMPARIBLE_FILTER

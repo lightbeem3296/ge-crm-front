@@ -101,7 +101,7 @@ export default function EmployeePage() {
       m_nr: 0,
       employment_type: "",
       comment: "",
-      mileasge_allowance: "",
+      mileage_allowance: "",
       lunch: "FROKOST NEJ",
       department: "Grøn Elforsyning A/S",
       tax_deduction_card: "",
@@ -244,8 +244,8 @@ export default function EmployeePage() {
       width: 160,
     },
     {
-      headerName: "Mileasge Allowance",
-      field: "mileasge_allowance",
+      headerName: "mileage Allowance",
+      field: "mileage_allowance",
       width: 170,
     },
     {
