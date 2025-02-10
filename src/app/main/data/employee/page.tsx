@@ -17,6 +17,7 @@ import { myTheme } from "@/components/ui/theme/agGrid";
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
 import { SetTableFilterRequest } from "@/types/user";
 import { loadCurrentUser } from "@/services/authService";
+import { employmentTypeCodes, lunchCodes, taxDeductionCardCodes } from "@/types/employee";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -98,20 +99,45 @@ export default function EmployeePage() {
   // UI Functions
   const onClickNewRow = async () => {
     const rowData: EmployeeRowData = {
-      username: "",
+      name: "",
       m_nr: 0,
-      role: "",
-      department: "",
-      employment_start_date: "",
-      employment_end_date: "",
-      salary_type: "",
-      hourly_rate: 0,
-      hours_worked: 0,
-      points_earned: 0,
-      salary: 0,
-      bonus: 0,
-      deduction: 0,
+      employment_type: "",
+      comment: "",
+      mileasge_allowance: "",
+      lunch: "FROKOST NEJ",
+      department: "Grøn Elforsyning A/S",
+      tax_deduction_card: "",
+      applicable_rate: 40.0,
+      points_earned: 0.0,
+      points_earned_extra: 0.0,
+      points_deduction: 0.0,
+      fixed_salary_bonus_kr: 0.0,
+      first_work_date: "2024-10-01T00:00:00",
+      last_work_date: null,
+      holiday_settlement: "VIA BORGER",
+      earned_points_auto_generated: 0.0,
+      salary_type: null,
+      role: null,
       tags: [],
+      name_q: null,
+      employment_type_r: null,
+      start_pay_period: null,
+      end_pay_period: null,
+      comment_w: null,
+      lunch_code: null,
+      lunch_code_justification: null,
+      points_total: null,
+      points_bonus: null,
+      total_kr: null,
+      total_salary: null,
+      available_on_account: null,
+      lunch_standard: null,
+      m_nr_aq: null,
+      payroll_code: null,
+      danlon_file_payroll: null,
+      auto_comments: null,
+      calculated_norm_hours: null,
+      department_az: null,
 
       _is_modified: true,
       _is_created: true,
@@ -197,8 +223,8 @@ export default function EmployeePage() {
   const [colDefs, setColDefs] = useState<(ColDef | ColGroupDef)[]>([ // eslint-disable-line
     {
       headerName: "Name",
-      field: "username",
-      width: 140,
+      field: "name",
+      width: 160,
     },
     {
       headerName: "M-Nr",
@@ -206,19 +232,32 @@ export default function EmployeePage() {
       width: 100,
     },
     {
-      headerName: "Role",
-      field: "role",
-      width: 180,
+      headerName: "Employment Type",
+      field: "employment_type",
+      width: 160,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: extractKeys(roleMappings),
-      },
-      valueGetter: (params: ValueGetterParams) => {
-        return lookupValue(roleMappings, params.data.role) || params.data.role;
-      },
-      valueFormatter: (params: ValueFormatterParams) => {
-        return lookupValue(roleMappings, params.value) || params.value;
-      },
+        values: employmentTypeCodes,
+      }
+    },
+    {
+      headerName: "Comment",
+      field: "comment",
+      width: 160,
+    },
+    {
+      headerName: "Mileasge Allowance",
+      field: "mileasge_allowance",
+      width: 170,
+    },
+    {
+      headerName: "Lunch",
+      field: "lunch",
+      width: 160,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: lunchCodes,
+      }
     },
     {
       headerName: "Department",
@@ -226,11 +265,46 @@ export default function EmployeePage() {
       width: 180,
     },
     {
-      headerName: "Employment Date",
+      headerName: "Tax Card",
+      field: "tax_deduction_card",
+      width: 120,
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: taxDeductionCardCodes,
+      }
+    },
+    {
+      headerName: "Applicable Rate",
+      field: "applicable_rate",
+      width: 160,
+    },
+    {
+      headerName: "Points Earned",
+      field: "points_earned",
+      width: 140,
+    },
+    {
+      headerName: "Points Earned Extra",
+      field: "points_earned_extra",
+      width: 170,
+    },
+    {
+      headerName: "Points Deduction",
+      field: "points_deduction",
+      width: 160,
+    },
+    {
+      headerName: "Fixed Salary Bonus",
+      field: "fixed_salary_bonus_kr",
+      width: 180,
+      cellRenderer: (params: ValueGetterParams) => `${params.data.fixed_salary_bonus_kr} kr`,
+    },
+    {
+      headerName: "Work Date",
       children: [
         {
-          headerName: "Start Date",
-          field: "employment_start_date",
+          headerName: "First Date",
+          field: "first_work_date",
           width: 130,
           cellDataType: "dateString",
           valueFormatter: (params) => {
@@ -238,8 +312,8 @@ export default function EmployeePage() {
           }
         },
         {
-          headerName: "End Date",
-          field: "employment_end_date",
+          headerName: "Last Date",
+          field: "last_work_date",
           width: 130,
           cellDataType: "dateString",
           valueFormatter: (params) => {
@@ -249,64 +323,148 @@ export default function EmployeePage() {
       ],
     },
     {
-      headerName: "Salary Type",
-      field: "salary_type",
+      headerName: "Holiday Settlement",
+      field: "holiday_settlement",
+      width: 180,
+    },
+    {
+      headerName: "Earned Points Autogenerated",
+      field: "earned_points_auto_generated",
+      width: 240,
+    },
+    {
+      headerName: "Pay Period",
+      children: [
+        {
+          headerName: "Start Date",
+          field: "start_pay_period",
+          width: 130,
+          cellDataType: "dateString",
+          editable: false,
+          valueFormatter: (params) => {
+            return params.value.split("T")[0];
+          }
+        },
+        {
+          headerName: "End Date",
+          field: "end_pay_period",
+          width: 130,
+          cellDataType: "dateString",
+          editable: false,
+          valueFormatter: (params) => {
+            return params.value ? params.value.split("T")[0] : "";
+          }
+        },
+      ],
+    },
+    {
+      headerName: "Lunch Code",
+      field: "lunch_code",
       width: 160,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: extractKeys(salaryTypeMappings),
-      },
-      valueGetter: (params: ValueGetterParams) => {
-        return lookupValue(salaryTypeMappings, params.data.salary_type);
-      },
-      valueFormatter: (params: ValueFormatterParams) => {
-        return lookupValue(salaryTypeMappings, params.value) || params.value;
-      },
+      editable: false,
     },
     {
-      headerName: "Hourly Rate",
-      field: "hourly_rate",
+      headerName: "Lunch Code Justification",
+      field: "lunch_code_justification",
+      width: 240,
+      editable: false,
+    },
+    {
+      headerName: "Points Total",
+      field: "points_total",
+      width: 160,
+      editable: false,
+    },
+    {
+      headerName: "Points Bonus",
+      field: "points_bonus",
+      width: 160,
+      editable: false,
+    },
+    {
+      headerName: "Totak KR",
+      field: "total_kr",
       width: 140,
+      editable: false,
     },
     {
-      headerName: "Hours Worked",
-      field: "hours_worked",
-      width: 150,
+      headerName: "Totak Salary",
+      field: "total_salary",
+      width: 140,
+      editable: false,
     },
     {
-      headerName: "Points Earned",
-      field: "points_earned",
-      width: 150,
+      headerName: "Available on Account",
+      field: "available_on_account",
+      width: 180,
+      cellDataType: "dateString",
+      editable: false,
+      valueFormatter: (params) => {
+        return params.value ? params.value.split("T")[0] : "";
+      }
     },
     {
-      headerName: "Salary",
-      field: "salary",
-      width: 100,
+      headerName: "Payroll Code",
+      field: "payroll_code",
+      width: 140,
+      editable: false,
     },
     {
-      headerName: "Bonus",
-      field: "bonus",
-      width: 100,
+      headerName: "Auto Comments",
+      field: "auto_comments",
+      width: 240,
+      editable: false,
     },
     {
-      headerName: "Deduction",
-      field: "deduction",
-      width: 120,
+      headerName: "Calculated Norm Hours",
+      field: "calculated_norm_hours",
+      width: 200,
+      editable: false,
     },
-    {
-      headerName: "Tags",
-      field: "tags",
-      width: 400,
-      cellRenderer: TagsRenderer,
-      cellEditor: TagsEditor,
-      valueFormatter: (params: ValueFormatterParams) => {
-        let str = "";
-        params.value.map((tag_id: string) => {
-          str += "\n" + lookupValue(tagMappings, tag_id);
-        });
-        return str;
-      },
-    },
+    // {
+    //   headerName: "Salary Type",
+    //   field: "salary_type",
+    //   width: 160,
+    //   cellEditor: "agSelectCellEditor",
+    //   cellEditorParams: {
+    //     values: extractKeys(salaryTypeMappings),
+    //   },
+    //   valueGetter: (params: ValueGetterParams) => {
+    //     return lookupValue(salaryTypeMappings, params.data.salary_type);
+    //   },
+    //   valueFormatter: (params: ValueFormatterParams) => {
+    //     return lookupValue(salaryTypeMappings, params.value) || params.value;
+    //   },
+    // },
+    // {
+    //   headerName: "Role",
+    //   field: "role",
+    //   width: 180,
+    //   cellEditor: "agSelectCellEditor",
+    //   cellEditorParams: {
+    //     values: extractKeys(roleMappings),
+    //   },
+    //   valueGetter: (params: ValueGetterParams) => {
+    //     return lookupValue(roleMappings, params.data.role) || params.data.role;
+    //   },
+    //   valueFormatter: (params: ValueFormatterParams) => {
+    //     return lookupValue(roleMappings, params.value) || params.value;
+    //   },
+    // },
+    // {
+    //   headerName: "Tags",
+    //   field: "tags",
+    //   width: 400,
+    //   cellRenderer: TagsRenderer,
+    //   cellEditor: TagsEditor,
+    //   valueFormatter: (params: ValueFormatterParams) => {
+    //     let str = "";
+    //     params.value.map((tag_id: string) => {
+    //       str += "\n" + lookupValue(tagMappings, tag_id);
+    //     });
+    //     return str;
+    //   },
+    // },
     {
       headerName: "Actions",
       field: "actions",
@@ -378,8 +536,8 @@ export default function EmployeePage() {
             onGridReady={onGridReady}
             onCellValueChanged={onCellValueChanged}
             pagination={true}
-            paginationPageSize={10}
-            paginationPageSizeSelector={[10, 25, 50]}
+            paginationPageSize={20}
+            paginationPageSizeSelector={[20, 50, 100]}
             onFilterChanged={() => onFilterChanged()}
           />
         </div>

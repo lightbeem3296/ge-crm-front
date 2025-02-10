@@ -1,8 +1,10 @@
 import { themeQuartz } from "ag-grid-community";
 
-export const lightTheme = themeQuartz;
+export const lightTheme = themeQuartz.withParams({
+  fontSize: '12px',
+});
 
-export const darkTheme = themeQuartz.withParams({
+export const darkTheme = lightTheme.withParams({
   borderColor: 'rgb(50, 50, 50)',
   backgroundColor: 'rgb(17, 24, 39)',
   foregroundColor: 'rgb(160, 160, 160)',
