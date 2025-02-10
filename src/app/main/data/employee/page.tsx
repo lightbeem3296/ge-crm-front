@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
+import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueGetterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { getTagMappings } from "@/services/tagService";
-import { getRoleMappings } from "@/services/roleService";
 import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
 import { axiosHelper } from "@/lib/axios";
-import { getSalaryTypeMappings } from "@/services/salaryTypeService";
 import { EmployeeRowData } from "@/types/datatable";
 import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
 import { ActionCellRenderParams } from "@/types/datatable";
@@ -21,8 +19,8 @@ import { employmentTypeCodes, lunchCodes, taxDeductionCardCodes } from "@/types/
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const roleMappings = await getRoleMappings();
-const salaryTypeMappings = await getSalaryTypeMappings();
+// const roleMappings = await getRoleMappings();
+// const salaryTypeMappings = await getSalaryTypeMappings();
 const tagMappings = await getTagMappings();
 
 export default function EmployeePage() {
@@ -382,7 +380,7 @@ export default function EmployeePage() {
       editable: false,
     },
     {
-      headerName: "Totak KR",
+      headerName: "Total KR",
       field: "total_kr",
       width: 140,
       editable: false,
