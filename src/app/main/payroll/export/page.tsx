@@ -510,6 +510,12 @@ export default function PayrollExportPage() {
               setFilterField={setFilterAvailableOnAccount}
             />
             <FilterComponent
+              field={PayrollExportFilterField.PAYROLL_CODE}
+              label="Payroll Code"
+              type={FilterType.STRING_FILTER}
+              setFilterField={setFilterPayrollCode}
+            />
+            <FilterComponent
               field={PayrollExportFilterField.AUTO_COMMENTS}
               label="Auto Comments"
               type={FilterType.STRING_FILTER}
