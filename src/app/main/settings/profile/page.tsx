@@ -350,7 +350,7 @@ export default function LogoutPage() {
                 <p className="font-medium">Scan the QR Code</p>
                 <div className="w-60 pt-3">
                   <Image
-                    text={`otpauth://totp/MyApp:${currentUser?.username}?secret=${otpSecret}&issuer=Danløn`}
+                    text={`otpauth://totp/MyApp:${currentUser?.username}?secret=${otpSecret}&issuer=GE%20CRM`}
                     options={{
                       type: 'image/jpeg',
                       quality: 0.5,
