@@ -1,133 +1,81 @@
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-} from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import { Dispatch, SetStateAction } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { loadCurrentUser } from '@/services/authService'
 import { UserRole } from '@/types/auth'
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
+import { XMarkIcon } from '@heroicons/react/24/outline'
+import Link from 'next/link'
+import { Dispatch, SetStateAction } from 'react'
 
-
-enum SidebarMenuItemType {
-  Title = 1,
-  MenuItem,
-  Separator,
-}
-
-const sideBarMenuItems = [
-  {
-    name: 'Main',
-    href: '#',
-    type: SidebarMenuItemType.Title,
-  },
-  {
-    name: 'Dashboard',
-    href: '/main/dashboard',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-  {
-    name: 'Data',
-    href: '#',
-    type: SidebarMenuItemType.Title,
-  },
-  {
-    name: 'User',
-    href: '/main/data/user',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.ADMIN
-  },
-  {
-    name: 'Employee',
-    href: '/main/data/employee',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-  {
-    name: 'Rule',
-    href: '/main/data/rule',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-  {
-    name: 'Tag',
-    href: '/main/data/tag',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-  {
-    name: 'Role',
-    href: '/main/data/role',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-  {
-    name: 'Salary Type',
-    href: '/main/data/salary-type',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-  {
-    name: 'Payroll',
-    href: '#',
-    type: SidebarMenuItemType.Title,
-  },
-  {
-    name: 'Export',
-    href: '/main/payroll/export',
-    type: SidebarMenuItemType.MenuItem,
-    role: UserRole.USER
-  },
-]
 
 interface SidebarProps {
   mobileFiltersOpen: boolean;
   setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>; // setMobileFiltersOpen function type
 }
 
+const createMenuItems = (role: UserRole) => {
+  return (
+    <ul className="menu w-full">
+      <li className='menu-title'>MAIN</li>
+      <li><Link href="/main/dashboard">Dashboard</Link></li>
+      <li className='menu-title'>DATA</li>
+      <li>
+        <details>
+          <summary>Employees</summary>
+          <ul>
+            {role === UserRole.ADMIN && <li><Link href="/main/data/user">Users</Link></li>}
+            <li><Link href="/main/data/employee">Employees</Link></li>
+            <li><Link href="/main/data/role">Roles</Link></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>Rules & Automation</summary>
+          <ul>
+            <li><Link href="/main/data/rule">Rules</Link></li>
+            <li><Link href="/main/data/tag">Tags</Link></li>
+            <li><Link href="/main/data/salary-type">Salary Types</Link></li>
+          </ul>
+        </details>
+      </li>
+      <li className='menu-title'>PAYROLL</li>
+      <li>
+        <details>
+          <summary>Payroll Processing</summary>
+          <ul>
+            <li><Link href="#">Start new payroll</Link></li>
+            <li><Link href="#">Scheduled payrolls</Link></li>
+            <li><Link href="#">Payroll history</Link></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary>Export & Reports</summary>
+          <ul>
+            <li><Link href="#">Payroll data export</Link></li>
+            <li><Link href="#">Predefined reports</Link></li>
+            <li><Link href="#">Custom export</Link></li>
+          </ul>
+        </details>
+      </li>
+      <li className="menu-title">SYSTEM SETTINGS</li>
+      <li><Link href="#">Access & Roles</Link></li>
+      <li><Link href="#">Integrations</Link></li>
+      <li><Link href="#">Notifications & Automated Approvals</Link></li>
+    </ul>
+  )
+}
 
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
-  const pathname = usePathname();
   const currentUser = loadCurrentUser();
   return (
-    <div className="w-60 h-full hidden lg:flex flex-col bg-neutral-900 p-8 z-10 fixed">
+    <div className="w-72 h-full hidden lg:flex flex-col bg-neutral-900 p-4 z-10 fixed">
       <div className='grow-0 py-4 border-b border-gray-600'>
         <p className='text-md text-gray-200 font-medium uppercase'>Dashboard</p>
         <p className='text-sm text-gray-400'>Employee & Payroll</p>
       </div>
-      <div className='grow overflow-y-auto'>
-        <ul className="text-sm mt-4">
-          {sideBarMenuItems.map((menuItem) => (
-            menuItem.type === SidebarMenuItemType.MenuItem
-              && (
-                menuItem.role === UserRole.USER
-                || (
-                  menuItem.role === UserRole.ADMIN
-                  && currentUser?.role === UserRole.ADMIN
-                )
-              ) ? (
-              <Link
-                key={menuItem.name}
-                href={menuItem.href}
-              >
-                <li className={`px-4 py-2 rounded-lg border hover:text-blue-600 hover:border-gray-800 duration-300 ${pathname.startsWith(menuItem.href)
-                  ? "font-semibold text-blue-500 bg-gray-900 border-gray-800"
-                  : "font-normal text-gray-300 border-transparent"
-                  }`}
-                >
-                  {menuItem.name}
-                </li>
-              </Link>
-            ) : menuItem.type === SidebarMenuItemType.Title ? (
-              <li key={menuItem.name} className="text-gray-500 uppercase font-medium py-2">
-                {menuItem.name}
-              </li>
-            ) : null
-          ))}
-        </ul>
+      <div className='grow overflow-y-auto mt-4'>
+        {createMenuItems(currentUser?.role || UserRole.USER)}
       </div>
 
       <Dialog open={mobileFiltersOpen} onClose={setMobileFiltersOpen} className="relative z-40 lg:hidden">
@@ -155,34 +103,7 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
               </button>
             </div>
 
-            <ul className="text-sm mt-4 px-4">
-              {sideBarMenuItems.map((menuItem) => (
-                menuItem.type === SidebarMenuItemType.MenuItem
-                  && (
-                    menuItem.role === UserRole.USER
-                    || (
-                      menuItem.role === UserRole.ADMIN
-                      && currentUser?.role === UserRole.ADMIN
-                    )
-                  ) ? (
-                  <Link
-                    key={menuItem.name}
-                    href={menuItem.href}
-                  >
-                    <li className={`px-4 py-2 rounded-md border border-transparent hover:text-blue-600 hover:border-gray-800 ${pathname.startsWith(menuItem.href)
-                      ? "font-semibold text-blue-500 bg-gray-900 border-gray-800"
-                      : "font-normal text-gray-300"
-                      }`}>
-                      {menuItem.name}
-                    </li>
-                  </Link>
-                ) : menuItem.type === SidebarMenuItemType.Title ? (
-                  <li key={menuItem.name} className="text-gray-500 uppercase font-medium py-2">
-                    {menuItem.name}
-                  </li>
-                ) : null
-              ))}
-            </ul>
+            {createMenuItems(currentUser?.role || UserRole.USER)}
           </DialogPanel>
         </div>
       </Dialog>

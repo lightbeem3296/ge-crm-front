@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div className="flex min-h-screen bg-gradient-to-tl from-base-100 via-primary/10 to-base-100">
         <Sidebar mobileFiltersOpen={mobileFiltersOpen} setMobileFiltersOpen={setMobileFiltersOpen} />
-        <main className="flex-1 w-full z-10 lg:ml-60">
+        <main className="flex-1 w-full z-10 lg:ml-72">
           <Navbar setMobileFiltersOpen={setMobileFiltersOpen} />
           <div className='rounded-md px-4 mt-4 overflow-auto'>
             {children}
