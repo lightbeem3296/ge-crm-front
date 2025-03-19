@@ -13,10 +13,10 @@ interface SidebarProps {
 
 const createMenuItems = (role: UserRole) => {
   return (
-    <ul className="menu w-full">
-      <li className='menu-title'>MAIN</li>
+    <ul className="menu w-full text-gray-300">
+      <li className='menu-title text-gray-600'>MAIN</li>
       <li><Link href="/main/dashboard">Dashboard</Link></li>
-      <li className='menu-title'>DATA</li>
+      <li className='menu-title text-gray-600'>DATA</li>
       <li>
         <details>
           <summary>Employees</summary>
@@ -37,7 +37,7 @@ const createMenuItems = (role: UserRole) => {
           </ul>
         </details>
       </li>
-      <li className='menu-title'>PAYROLL</li>
+      <li className='menu-title text-gray-600'>PAYROLL</li>
       <li>
         <details>
           <summary>Payroll Processing</summary>
@@ -58,7 +58,7 @@ const createMenuItems = (role: UserRole) => {
           </ul>
         </details>
       </li>
-      <li className="menu-title">SYSTEM SETTINGS</li>
+      <li className="menu-title text-gray-600">SYSTEM SETTINGS</li>
       <li><Link href="#">Access & Roles</Link></li>
       <li><Link href="#">Integrations</Link></li>
       <li><Link href="#">Notifications & Automated Approvals</Link></li>
