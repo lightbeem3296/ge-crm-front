@@ -37,7 +37,7 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, []); // eslint-disable-line
 
   return (
     <div className="flex flex-col gap-4 min-h-[calc(100vh-6.4rem)]">

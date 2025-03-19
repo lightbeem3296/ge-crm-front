@@ -1,29 +1,55 @@
 import { loadCurrentUser } from '@/services/authService'
 import { UserRole } from '@/types/auth'
+import { cn } from '@/utils/cn'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Dispatch, SetStateAction } from 'react'
 
-
-interface SidebarProps {
-  mobileFiltersOpen: boolean;
-  setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>; // setMobileFiltersOpen function type
+interface MenuItemProps {
+  href: string;
+  label: string;
+  icon?: React.ReactNode;
 }
+
+const MenuItem: React.FC<MenuItemProps> = ({ href, label, icon }) => {
+  const pathname = usePathname(); // Get the current route
+
+  console.log(pathname, href);
+
+  return (
+    <li>
+      <Link
+        href={href}
+        className={cn(
+          "flex items-center gap-3 p-3 rounded-md transition hover:bg-gray-700 focus:bg-blue-600 focus:text-gray-200",
+          pathname === href
+            ? "bg-blue-600"
+            : ""
+        )}
+      >
+        {icon && <span>{icon}</span>}
+        <span>{label}</span>
+      </Link>
+    </li>
+  );
+};
+
 
 const createMenuItems = (role: UserRole) => {
   return (
     <ul className="menu w-full text-gray-300">
       <li className='menu-title text-gray-600'>MAIN</li>
-      <li><Link href="/main/dashboard">Dashboard</Link></li>
+      <MenuItem href="/main/dashboard" label="Dasbhoard" />
       <li className='menu-title text-gray-600'>DATA</li>
       <li>
         <details>
           <summary>Employees</summary>
           <ul>
-            {role === UserRole.ADMIN && <li><Link href="/main/data/user">Users</Link></li>}
-            <li><Link href="/main/data/employee">Employees</Link></li>
-            <li><Link href="/main/data/role">Roles</Link></li>
+            {role === UserRole.ADMIN && <MenuItem href="/main/data/user" label="Users" />}
+            <MenuItem href="/main/data/employee" label="Employees" />
+            <MenuItem href="/main/data/role" label="Roles" />
           </ul>
         </details>
       </li>
@@ -31,9 +57,9 @@ const createMenuItems = (role: UserRole) => {
         <details>
           <summary>Rules & Automation</summary>
           <ul>
-            <li><Link href="/main/data/rule">Rules</Link></li>
-            <li><Link href="/main/data/tag">Tags</Link></li>
-            <li><Link href="/main/data/salary-type">Salary Types</Link></li>
+            <MenuItem href="/main/data/rule" label="Rules" />
+            <MenuItem href="/main/data/tag" label="Tags" />
+            <MenuItem href="/main/data/salary-type" label="Salary Types" />
           </ul>
         </details>
       </li>
@@ -42,9 +68,9 @@ const createMenuItems = (role: UserRole) => {
         <details>
           <summary>Payroll Processing</summary>
           <ul>
-            <li><Link href="#">Start new payroll</Link></li>
-            <li><Link href="#">Scheduled payrolls</Link></li>
-            <li><Link href="#">Payroll history</Link></li>
+            <MenuItem href="#" label="Start new payroll" />
+            <MenuItem href="#" label="Scheduled payrolls" />
+            <MenuItem href="#" label="Payroll history" />
           </ul>
         </details>
       </li>
@@ -52,20 +78,24 @@ const createMenuItems = (role: UserRole) => {
         <details>
           <summary>Export & Reports</summary>
           <ul>
-            <li><Link href="#">Payroll data export</Link></li>
-            <li><Link href="#">Predefined reports</Link></li>
-            <li><Link href="#">Custom export</Link></li>
+            <MenuItem href="#" label="Payroll data export" />
+            <MenuItem href="#" label="Predefined reports" />
+            <MenuItem href="#" label="Custom export" />
           </ul>
         </details>
       </li>
       <li className="menu-title text-gray-600">SYSTEM SETTINGS</li>
-      <li><Link href="#">Access & Roles</Link></li>
-      <li><Link href="#">Integrations</Link></li>
-      <li><Link href="#">Notifications & Automated Approvals</Link></li>
+      <MenuItem href="#" label="Access & Roles" />
+      <MenuItem href="#" label="Integrations" />
+      <MenuItem href="#" label="Notifications & Automated Approvals" />
     </ul>
   )
 }
 
+interface SidebarProps {
+  mobileFiltersOpen: boolean;
+  setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>; // setMobileFiltersOpen function type
+}
 export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: SidebarProps) {
   const currentUser = loadCurrentUser();
   return (

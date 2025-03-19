@@ -348,7 +348,7 @@ export default function EmployeePage() {
         gridRef.current?.api.setFilterModel({});
       }
     }
-  }, []);
+  }, []); // eslint-disable-line
 
   const onCellValueChanged = (event: CellValueChangedEvent) => {
     event.data._is_modified = true;
