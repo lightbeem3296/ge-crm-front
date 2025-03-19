@@ -78,7 +78,7 @@ const createMenuItems = (role: UserRole) => {
         <details>
           <summary>Export & Reports</summary>
           <ul>
-            <MenuItem href="#" label="Payroll data export" />
+            <MenuItem href="/main/payroll/export" label="Payroll data export" />
             <MenuItem href="#" label="Predefined reports" />
             <MenuItem href="#" label="Custom export" />
           </ul>
