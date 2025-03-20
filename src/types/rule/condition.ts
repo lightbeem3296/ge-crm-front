@@ -41,6 +41,7 @@ export const ruleConditionObjectOperatorMap: Record<string, string> = {
 export const ruleConditionObjectOperatorCodes = extractKeys(ruleConditionObjectOperatorMap);
 
 export interface AtomCondition {
+  condition_name: string;
   field: string;
   operator: string;
   value: string | number;

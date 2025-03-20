@@ -1,18 +1,18 @@
 "use client";
 
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { axiosHelper } from "@/lib/axios";
+import { getRoleMappings } from "@/services/roleService";
+import { ApiGeneralResponse } from "@/types/api";
 import { RuleRowData } from "@/types/datatable";
+import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
+import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
+import { RuleEditPageMode } from "@/types/rule/edit";
+import { extractKeys, lookupValue } from "@/utils/record";
+import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { axiosHelper } from "@/lib/axios";
-import { ApiGeneralResponse } from "@/types/api";
-import { extractKeys, lookupValue } from "@/utils/record";
-import { getRoleMappings } from "@/services/roleService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
-import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
-import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { RuleEditPageMode } from "@/types/rule/edit";
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
@@ -32,10 +32,12 @@ function RuleEditPageContent() {
     description: "This is a new Rule.",
     atom_rules: [
       {
+        rule_name: "New Atom Rule",
         condition: {
           combinator: RuleConditionCombinator.NONE,
           conditions: [
             {
+              condition_name: "Role",
               field: RuleConditionField.HOURS_WORKED,
               operator: RuleConditionNumberOperator.GTE,
               value: 40.0,
@@ -86,10 +88,12 @@ function RuleEditPageContent() {
       atom_rules: [
         ...rule.atom_rules,
         {
+          rule_name: "New Atom Rule",
           condition: {
             combinator: RuleConditionCombinator.NONE,
             conditions: [
               {
+                condition_name: "New Atom Condition",
                 field: RuleConditionField.HOURS_WORKED,
                 operator: RuleConditionNumberOperator.GTE,
                 value: 40.0,
@@ -103,6 +107,20 @@ function RuleEditPageContent() {
           },
         },
       ]
+    });
+  }
+
+  const handleChangeAtomRuleName = (rule_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            rule_name: value,
+          }
+          : atom_rule
+      ),
     });
   }
 
@@ -128,6 +146,7 @@ function RuleEditPageContent() {
               conditions: [
                 ...atom_rule.condition.conditions,
                 {
+                  condition_name: "New Atom Condition",
                   field: RuleConditionField.ROLE,
                   operator: RuleConditionNumberOperator.EQ,
                   value: roleCodes[0],
@@ -139,6 +158,30 @@ function RuleEditPageContent() {
       ),
     });
   };
+
+  const handleChangeAtomConditionName = (rule_index: number, condition_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
+                c_index === condition_index
+                  ? {
+                    ...atom_condition,
+                    condition_name: value,
+                  }
+                  : atom_condition
+              ),
+            },
+          }
+          : atom_rule
+      ),
+    });
+  }
 
   const handleChangeConditionCombinator = (rule_index: number, value: string) => {
     setRule({
@@ -348,7 +391,7 @@ function RuleEditPageContent() {
     if (pageMode !== RuleEditPageMode.CREATE) {
       fetchRule();
     }
-  }, []);
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     const currentActionValue = actionValues[currentRuleIndex];
@@ -370,15 +413,15 @@ function RuleEditPageContent() {
           : atom_rule
       ),
     });
-  }, [currentRuleIndex, actionValues]);
+  }, [currentRuleIndex, actionValues]); // eslint-disable-line
 
   useEffect(() => {
     updateDisplay();
-  }, [rule]);
+  }, [rule]); // eslint-disable-line
 
   useEffect(() => {
     setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
-  }, [rule.atom_rules.length]);
+  }, [rule.atom_rules.length]); // eslint-disable-line
 
   return (
     <div>
@@ -450,9 +493,24 @@ function RuleEditPageContent() {
               // Atom Rules
               <div key={rule_index} className="collapse collapse-arrow join-item border border-base-content/20">
                 <input type="checkbox" className="peer" defaultChecked={rule_index === 0} />
-                <div className="collapse-title font-medium">Atom Rule {rule_index + 1}</div>
+                <div className="collapse-title font-medium">Atom Rule {rule_index + 1}: {atom_rule.rule_name}</div>
                 <div className="collapse-content">
                   <div className="w-full grid grid-cols-6 gap-2">
+
+                    {/* Rule Name */}
+                    <div className="col-span-6">
+                      <label htmlFor={`atom_rule_name`} className="block text-sm font-medium text-base-content">Name</label>
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          id={`atom_rule_name`}
+                          name={`atom_rule_name`}
+                          className="input input-bordered input-sm"
+                          value={atom_rule.rule_name}
+                          onChange={(e) => handleChangeAtomRuleName(rule_index, e.target.value)}
+                        />
+                      </div>
+                    </div>
 
                     {/* Condition */}
                     <div className="col-span-6 sm:col-span-4 flex flex-col gap-2 border border-base-content/20 rounded-lg p-2">
@@ -495,9 +553,23 @@ function RuleEditPageContent() {
                         {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
                           <div key={condition_index} className={`join-item collapse collapse-arrow ${condition_index !== 0 ? "border-t" : ""} border-base-content/20`}>
                             <input type="checkbox" className="peer" />
-                            <div className="collapse-title font-medium ">Atom Contition {condition_index + 1}</div>
+                            <div className="collapse-title font-medium ">Atom Contition {condition_index + 1}: {atom_condition.condition_name}</div>
                             <div className="collapse-content">
                               <div className="grid grid-cols-6 gap-2">
+                                {/* Rule Name */}
+                                <div className="col-span-6">
+                                  <label htmlFor={`atom_rule_name`} className="block text-sm font-medium text-base-content">Name</label>
+                                  <div className="mt-2">
+                                    <input
+                                      type="text"
+                                      id={`atom_rule_name`}
+                                      name={`atom_rule_name`}
+                                      className="input input-bordered input-sm"
+                                      value={atom_condition.condition_name}
+                                      onChange={(e) => handleChangeAtomConditionName(rule_index, condition_index, e.target.value)}
+                                    />
+                                  </div>
+                                </div>
 
                                 {/* Condition Field */}
                                 <label className="form-control w-full col-span-6 sm:col-span-2">
@@ -690,7 +762,7 @@ function RuleEditPageContent() {
 export default function RuleEditPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <RuleEditPageContent/>
+      <RuleEditPageContent />
     </Suspense>
   );
 }

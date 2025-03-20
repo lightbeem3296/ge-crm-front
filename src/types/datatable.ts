@@ -55,6 +55,7 @@ export interface SalaryTypeRowData extends BaseRowData {
 }
 
 export interface AtomRule {
+  rule_name: string;
   condition: RuleCondition;
   action: RuleAction;
 }
