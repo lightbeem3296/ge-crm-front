@@ -1,22 +1,21 @@
 'use client';
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
+import { myTheme } from "@/components/ui/theme/agGrid";
+import { axiosHelper } from "@/lib/axios";
+import { loadCurrentUser } from "@/services/authService";
+import { getRoleMappings } from "@/services/roleService";
+import { getSalaryTypeMappings } from "@/services/salaryTypeService";
+import { getTagMappings } from "@/services/tagService";
+import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
+import { ActionCellRenderParams, EmployeeRowData } from "@/types/datatable";
+import { SetTableFilterRequest } from "@/types/user";
+import { extractKeys, lookupValue } from "@/utils/record";
 import type { CellValueChangedEvent, ColDef, ColGroupDef, GridReadyEvent, Theme, ValueFormatterParams, ValueGetterParams } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { getTagMappings } from "@/services/tagService";
-import { getRoleMappings } from "@/services/roleService";
-import { DeleteButton, NewButton, SaveButton } from "@/components/ui/datatable/button";
-import { axiosHelper } from "@/lib/axios";
-import { getSalaryTypeMappings } from "@/services/salaryTypeService";
-import { EmployeeRowData } from "@/types/datatable";
-import { ApiGeneralResponse, ApiListResponse } from "@/types/api";
-import { ActionCellRenderParams } from "@/types/datatable";
-import { extractKeys, lookupValue } from "@/utils/record";
-import { myTheme } from "@/components/ui/theme/agGrid";
-import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { SetTableFilterRequest } from "@/types/user";
-import { loadCurrentUser } from "@/services/authService";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -102,6 +101,9 @@ export default function EmployeePage() {
       m_nr: 0,
       role: "",
       department: "",
+      initials: "",
+      employer_vat_id: "",
+      employee_link: "",
       employment_start_date: "",
       employment_end_date: "",
       salary_type: "",
@@ -224,6 +226,31 @@ export default function EmployeePage() {
       headerName: "Department",
       field: "department",
       width: 180,
+    },
+    {
+      headerName: "Initials",
+      field: "initials",
+      width: 180,
+    },
+    {
+      headerName: "Employer vat ID",
+      field: "employer_vat_id",
+      width: 180,
+    },
+    {
+      headerName: "Employee Link",
+      field: "employee_link",
+      width: 180,
+      cellRenderer: (params: any) => ( // eslint-disable-line
+        <a
+          href={params.value}
+          target="_blank"
+          rel="noreferrer"
+          className="text-primary hover:underline"
+        >
+          {params.value}
+        </a>
+      )
     },
     {
       headerName: "Employment Date",

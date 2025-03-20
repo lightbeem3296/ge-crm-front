@@ -21,6 +21,9 @@ export interface EmployeeRowData extends BaseRowData {
   m_nr: number;
   role: string;
   department: string;
+  initials: string;
+  employer_vat_id: string;
+  employee_link: string;
   employment_start_date: string;
   employment_end_date: string;
   salary_type: string;
