@@ -18,7 +18,7 @@ const roleCodes = extractKeys(roleMappings);
 const salaryTypeMappings = await getSalaryTypeMappings();
 const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
-export default function FilterComponent({ field, label, type, setFilterField }: FilterComponentProps) {
+export default function ExportFilterComponent({ field, label, type, setFilterField }: FilterComponentProps) {
   const [filterValue, setFilterValue] = useState<string>("");
   const [filterValues, setFilterValues] = useState<[string, string]>(["", ""]);
   const [filterCondition, setFilterCondition] = useState<string>("");
@@ -107,7 +107,7 @@ export default function FilterComponent({ field, label, type, setFilterField }: 
         });
       }
     }
-  }, [filterValue, filterValues, filterCondition, filterCaseSensitive]);
+  }, [filterValue, filterValues, filterCondition, filterCaseSensitive]); // eslint-disable-line
 
   return (
     <div>
