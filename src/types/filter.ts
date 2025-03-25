@@ -1,4 +1,4 @@
-import { extractKeys } from "@/utils/record"
+import { extractKeys } from "@/utils/record";
 
 export enum FilterType {
   STRING_FILTER = "string",
@@ -15,9 +15,14 @@ export const objectFilterConditionMappings: Record<string, string> = {
   "eq": "EQ",
 }
 export const objectFilterConditionCodes = extractKeys(objectFilterConditionMappings);
-export interface ObjectFilterField {
-  value: string,
-  condition: ObjectFilterCondition
+export class ObjectFilterField {
+  value: string;
+  condition: ObjectFilterCondition;
+
+  constructor(value: string, condition: ObjectFilterCondition) {
+    this.value = value;
+    this.condition = condition;
+  }
 }
 
 export enum StringFilterCondition {
@@ -35,10 +40,16 @@ export const stringFilterConditionMappings: Record<string, string> = {
   "contains": "CONTAINS",
 }
 export const stringFilterConditionCodes = extractKeys(stringFilterConditionMappings);
-export interface StringFilterField {
-  value: string
-  condition: StringFilterCondition
-  case_sensitive: boolean
+export class StringFilterField {
+  value: string;
+  condition: StringFilterCondition;
+  case_sensitive: boolean;
+
+  constructor(value: string, condition: StringFilterCondition, case_sensitive: boolean) {
+    this.value = value;
+    this.condition = condition;
+    this.case_sensitive = case_sensitive;
+  }
 }
 
 export enum ComparableFilterCondition {
@@ -66,9 +77,14 @@ export const comparableFilterConditionMappings: Record<string, string> = {
   "gte_lte": "GTE_LTE",  // [min, max]
 }
 export const comparableFilterConditionCodes = extractKeys(comparableFilterConditionMappings);
-export interface ComparableFilterField {
-  value: string | [string, string],
-  condition: ComparableFilterCondition,
+export class ComparableFilterField {
+  value: string | [string, string];
+  condition: ComparableFilterCondition;
+
+  constructor(value: string | [string, string], condition: ComparableFilterCondition) {
+    this.value = value;
+    this.condition = condition;
+  }
 }
 
 export enum EmployeeFilterField {
