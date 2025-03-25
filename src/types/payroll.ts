@@ -1,47 +1,9 @@
 import { extractKeys } from "@/utils/record";
-import { ComparableFilterField, StringFilterField, ObjectFilterField } from "./filter";
+import { EmployeeFilter } from "./filter";
 
 export interface FieldMapItem {
   field?: string,
   title?: string,
-}
-
-export enum PayrollExportFilterField {
-  USERNAME = "username",
-  M_NR = "m_nr",
-  ROLE = "role",
-  DEPARTMENT = "department",
-  INITIALS = "initials",
-  EMPLOYER_VAT_ID = "employer_vat_id",
-  EMPLOYEE_LINK = "employee_link",
-  EMPLOYMENT_START_DATE = "employment_start_date",
-  EMPLOYMENT_END_DATE = "employment_end_date",
-  SALARY_TYPE = "salary_type",
-  HOURLY_RATE = "hourly_rate",
-  HOURS_WORKED = "hours_worked",
-  POINTS_EARNED = "points_earned",
-  SALARY = "salary",
-  BONUS = "bonus",
-  DEDUCTION = "deduction",
-}
-
-export interface PayrollExportFilter {
-  username?: StringFilterField,
-  m_nr?: ObjectFilterField,
-  role?: ObjectFilterField,
-  department?: StringFilterField,
-  initials?: StringFilterField,
-  employer_vat_id?: StringFilterField,
-  employee_link?: StringFilterField,
-  employment_start_date?: ComparableFilterField,
-  employment_end_date?: ComparableFilterField,
-  salary_type?: ObjectFilterField,
-  hourly_rate?: ComparableFilterField,
-  hours_worked?: ComparableFilterField,
-  points_earned?: ComparableFilterField,
-  salary?: ComparableFilterField,
-  bonus?: ComparableFilterField,
-  deduction?: ComparableFilterField,
 }
 
 export interface PayrollExportRequest extends PayrollExportPreviewRequest {
@@ -55,7 +17,7 @@ export interface PayrollExportResponse {
 
 export interface PayrollExportPreviewRequest {
   field_map?: FieldMapItem[],
-  filter?: PayrollExportFilter,
+  filter?: EmployeeFilter,
   rule?: string,
 }
 
@@ -69,6 +31,9 @@ export const fieldMapMapping: Record<string, string> = {
   "m_nr": "M-Nr",
   "role": "Role",
   "department": "Department",
+  "initials": "Initials",
+  "employer_vat_id": "Employer VAT ID",
+  "employee_link": "Employee Link",
   "employment_start_date": "Employment Start Date",
   "employment_end_date": "Employment End Date",
   "salary_type": "Salary Type",

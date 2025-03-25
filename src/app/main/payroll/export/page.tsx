@@ -5,8 +5,8 @@ import ExportFilterComponent from "@/components/ui/export/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
 import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
-import { ComparableFilterField, FilterType, ObjectFilterField, StringFilterField } from "@/types/filter";
-import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
+import { ComparableFilterField, FilterType, ObjectFilterField, StringFilterField, EmployeeFilterField } from "@/types/filter";
+import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -294,97 +294,97 @@ export default function PayrollExportPage() {
           </div>
           <div className="flex flex-col gap-2 max-h-80 border border-base-content/20 rounded-md p-4 overflow-auto">
             <ExportFilterComponent
-              field={PayrollExportFilterField.USERNAME}
+              field={EmployeeFilterField.USERNAME}
               label="Username"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterUsername}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.M_NR}
+              field={EmployeeFilterField.M_NR}
               label="M-Nr"
               type={FilterType.OBJECT_FILTER}
               setFilterField={setFilterMnr}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.ROLE}
+              field={EmployeeFilterField.ROLE}
               label="Role"
               type={FilterType.OBJECT_FILTER}
               setFilterField={setFilterRole}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.DEPARTMENT}
+              field={EmployeeFilterField.DEPARTMENT}
               label="Department"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterDepartment}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.INITIALS}
+              field={EmployeeFilterField.INITIALS}
               label="Initials"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterInitials}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.EMPLOYER_VAT_ID}
+              field={EmployeeFilterField.EMPLOYER_VAT_ID}
               label="Employer VAT ID"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterEmployerVatID}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.EMPLOYEE_LINK}
+              field={EmployeeFilterField.EMPLOYEE_LINK}
               label="Employee Link"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterEmployeeLink}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.EMPLOYMENT_START_DATE}
+              field={EmployeeFilterField.EMPLOYMENT_START_DATE}
               label="Employment Start Date"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterEmploymentStartDate}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.EMPLOYMENT_END_DATE}
+              field={EmployeeFilterField.EMPLOYMENT_END_DATE}
               label="Employment End Date"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterEmploymentEndDate}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.SALARY_TYPE}
+              field={EmployeeFilterField.SALARY_TYPE}
               label="Salary Type"
               type={FilterType.OBJECT_FILTER}
               setFilterField={setFilterSalaryType}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.HOURLY_RATE}
+              field={EmployeeFilterField.HOURLY_RATE}
               label="Hourly Rate"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterHourlyRate}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.HOURS_WORKED}
+              field={EmployeeFilterField.HOURS_WORKED}
               label="Hours Worked"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterHoursWorked}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.POINTS_EARNED}
+              field={EmployeeFilterField.POINTS_EARNED}
               label="Points Earned"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterPointsEeaned}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.SALARY}
+              field={EmployeeFilterField.SALARY}
               label="Salary"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterSalary}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.BONUS}
+              field={EmployeeFilterField.BONUS}
               label="Bonus"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterBonus}
             />
             <ExportFilterComponent
-              field={PayrollExportFilterField.DEDUCTION}
+              field={EmployeeFilterField.DEDUCTION}
               label="Deduction"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterDeduction}

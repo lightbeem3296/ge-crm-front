@@ -1,12 +1,12 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
 import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
-import { PayrollExportFilterField } from "@/types/payroll";
+import { EmployeeFilterField } from "@/types/filter";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface FilterComponentProps {
-  field: PayrollExportFilterField
+  field: EmployeeFilterField
   label: string,
   type: FilterType,
   setFilterField: Dispatch<SetStateAction<any>> // eslint-disable-line
@@ -24,7 +24,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
   const [filterCondition, setFilterCondition] = useState<string>("");
   const [filterCaseSensitive, setFilterCaseSensitive] = useState<boolean>(false);
 
-  const isDateField = field === PayrollExportFilterField.EMPLOYMENT_START_DATE || field === PayrollExportFilterField.EMPLOYMENT_END_DATE;
+  const isDateField = field === EmployeeFilterField.EMPLOYMENT_START_DATE || field === EmployeeFilterField.EMPLOYMENT_END_DATE;
   const is2values = () => {
     return [
       ComparableFilterCondition.GTE_LT.toString(),
@@ -173,7 +173,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
               : type === FilterType.OBJECT_FILTER
 
                 // Role Filter
-                ? field === PayrollExportFilterField.ROLE
+                ? field === EmployeeFilterField.ROLE
                   ? <select
                     className="select select-bordered select-sm"
                     value={filterValue}
@@ -186,7 +186,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                   </select>
 
                   // Salary Type Filter
-                  : field === PayrollExportFilterField.SALARY_TYPE
+                  : field === EmployeeFilterField.SALARY_TYPE
                     ? <select
                       className="select select-bordered select-sm"
                       value={filterValue}
