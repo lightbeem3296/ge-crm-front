@@ -8,9 +8,9 @@ import { ChangePasswordRequest, ChangePhoneNumberRequest, EnableOTPRequest, Gene
 import { lookupValue } from "@/utils/record";
 import { faCheck, faEye, faEyeSlash, faMultiply } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { useQRCode } from "next-qrcode";
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import { useQRCode } from "next-qrcode";
+import { useState } from "react";
 
 export default function LogoutPage() {
   const currentUser = loadCurrentUser();
@@ -70,7 +70,7 @@ export default function LogoutPage() {
     }
   }
   const handleClickPhoneNumberSave = async () => {
-    if (phoneNumber && !isValidPhoneNumber(phoneNumber)){
+    if (phoneNumber && !isValidPhoneNumber(phoneNumber)) {
       customAlert({
         type: CustomAlertType.ERROR,
         message: "Phone number is invalid.",

@@ -1,18 +1,20 @@
 "use client";
 
+import { customAlert, CustomAlertType } from "@/components/ui/alert";
+import RuleFilterComponent from "@/components/ui/rule/Filter";
+import { axiosHelper } from "@/lib/axios";
+import { getRoleMappings } from "@/services/roleService";
+import { ApiGeneralResponse } from "@/types/api";
 import { RuleRowData } from "@/types/datatable";
+import { ComparableFilterCondition, EmployeeFilterField, FilterType, ObjectFilterCondition } from "@/types/filter";
+import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
+import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap } from "@/types/rule/condition";
+import { RuleEditPageMode } from "@/types/rule/edit";
+import { extractKeys, lookupValue } from "@/utils/record";
+import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { axiosHelper } from "@/lib/axios";
-import { ApiGeneralResponse } from "@/types/api";
-import { extractKeys, lookupValue } from "@/utils/record";
-import { getRoleMappings } from "@/services/roleService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { RuleConditionCombinator, ruleConditionCombinatorCodes, ruleConditionCombinatorMap, RuleConditionField, ruleConditionFieldCodes, ruleConditionFieldMap, RuleConditionNumberOperator, ruleConditionNumberOperatorCodes, ruleConditionNumberOperatorMap, ruleConditionObjectOperatorCodes, ruleConditionObjectOperatorMap } from "@/types/rule/condition";
-import { RuleActionField, ruleActionFieldCodes, ruleActionFieldMap, RuleActionOperator, ruleActionOperatorCodes, ruleActionOperatorMap } from "@/types/rule/action";
-import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import { RuleEditPageMode } from "@/types/rule/edit";
 
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
@@ -32,13 +34,13 @@ function RuleEditPageContent() {
     description: "This is a new Rule.",
     atom_rules: [
       {
+        rule_name: "New Atom Rule",
         condition: {
           combinator: RuleConditionCombinator.NONE,
           conditions: [
             {
-              field: RuleConditionField.HOURS_WORKED,
-              operator: RuleConditionNumberOperator.GTE,
-              value: 40.0,
+              condition_name: "Role",
+              filter: {},
             }
           ],
         },
@@ -86,13 +88,18 @@ function RuleEditPageContent() {
       atom_rules: [
         ...rule.atom_rules,
         {
+          rule_name: "New Atom Rule",
           condition: {
             combinator: RuleConditionCombinator.NONE,
             conditions: [
               {
-                field: RuleConditionField.HOURS_WORKED,
-                operator: RuleConditionNumberOperator.GTE,
-                value: 40.0,
+                condition_name: "New Atom Condition",
+                filter: {
+                  hours_worked: {
+                    value: "40.0",
+                    condition: ComparableFilterCondition.GT,
+                  }
+                }
               }
             ],
           },
@@ -103,6 +110,20 @@ function RuleEditPageContent() {
           },
         },
       ]
+    });
+  }
+
+  const handleChangeAtomRuleName = (rule_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            rule_name: value,
+          }
+          : atom_rule
+      ),
     });
   }
 
@@ -128,9 +149,13 @@ function RuleEditPageContent() {
               conditions: [
                 ...atom_rule.condition.conditions,
                 {
-                  field: RuleConditionField.ROLE,
-                  operator: RuleConditionNumberOperator.EQ,
-                  value: roleCodes[0],
+                  condition_name: "New Atom Condition",
+                  filter: {
+                    role: {
+                      value: roleCodes[0],
+                      condition: ObjectFilterCondition.EQ,
+                    }
+                  }
                 },
               ],
             },
@@ -139,6 +164,30 @@ function RuleEditPageContent() {
       ),
     });
   };
+
+  const handleChangeAtomConditionName = (rule_index: number, condition_index: number, value: string) => {
+    setRule({
+      ...rule,
+      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
+        r_index === rule_index
+          ? {
+            ...atom_rule,
+            condition: {
+              ...atom_rule.condition,
+              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
+                c_index === condition_index
+                  ? {
+                    ...atom_condition,
+                    condition_name: value,
+                  }
+                  : atom_condition
+              ),
+            },
+          }
+          : atom_rule
+      ),
+    });
+  }
 
   const handleChangeConditionCombinator = (rule_index: number, value: string) => {
     setRule({
@@ -175,80 +224,6 @@ function RuleEditPageContent() {
       ),
     });
   };
-
-  const handleChangeConditionField = (rule_index: number, condition_index: number, value: string) => {
-    setRule({
-      ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
-        r_index === rule_index
-          ? {
-            ...atom_rule,
-            condition: {
-              ...atom_rule.condition,
-              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
-                c_index === condition_index
-                  ? {
-                    ...atom_condition,
-                    field: value,
-                    operator: value === RuleConditionField.ROLE ? ruleConditionObjectOperatorCodes[0] : ruleConditionNumberOperatorCodes[0],
-                    value: value === RuleConditionField.ROLE ? roleCodes[0] : 1.0,
-                  }
-                  : atom_condition
-              ),
-            },
-          }
-          : atom_rule
-      ),
-    });
-  }
-
-  const handleChangeConditionOperator = (rule_index: number, condition_index: number, value: string) => {
-    setRule({
-      ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
-        r_index === rule_index
-          ? {
-            ...atom_rule,
-            condition: {
-              ...atom_rule.condition,
-              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
-                c_index === condition_index
-                  ? {
-                    ...atom_condition,
-                    operator: value,
-                  }
-                  : atom_condition
-              ),
-            },
-          }
-          : atom_rule
-      ),
-    });
-  }
-
-  const handleChangeConditionValue = (rule_index: number, condition_index: number, value: string) => {
-    setRule({
-      ...rule,
-      atom_rules: rule.atom_rules.map((atom_rule, r_index) =>
-        r_index === rule_index
-          ? {
-            ...atom_rule,
-            condition: {
-              ...atom_rule.condition,
-              conditions: atom_rule.condition.conditions.map((atom_condition, c_index) =>
-                c_index === condition_index
-                  ? {
-                    ...atom_condition,
-                    value: value,
-                  }
-                  : atom_condition
-              ),
-            },
-          }
-          : atom_rule
-      ),
-    });
-  }
 
   const handleChangeActionField = (rule_index: number, value: string) => {
     setRule({
@@ -348,7 +323,7 @@ function RuleEditPageContent() {
     if (pageMode !== RuleEditPageMode.CREATE) {
       fetchRule();
     }
-  }, []);
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     const currentActionValue = actionValues[currentRuleIndex];
@@ -370,15 +345,15 @@ function RuleEditPageContent() {
           : atom_rule
       ),
     });
-  }, [currentRuleIndex, actionValues]);
+  }, [currentRuleIndex, actionValues]); // eslint-disable-line
 
   useEffect(() => {
     updateDisplay();
-  }, [rule]);
+  }, [rule]); // eslint-disable-line
 
   useEffect(() => {
     setActionValues(rule.atom_rules.map((atom_rule) => atom_rule.action.value.toString()));
-  }, [rule.atom_rules.length]);
+  }, [rule.atom_rules.length]); // eslint-disable-line
 
   return (
     <div>
@@ -446,13 +421,28 @@ function RuleEditPageContent() {
 
           {/* Edit Rule */}
           <div className="join join-vertical rounded-md">
-            {rule.atom_rules.map((atom_rule, rule_index) => (
+            {rule.atom_rules.map((atomRule, ruleIndex) => (
               // Atom Rules
-              <div key={rule_index} className="collapse collapse-arrow join-item border border-base-content/20">
-                <input type="checkbox" className="peer" defaultChecked={rule_index === 0} />
-                <div className="collapse-title font-medium">Atom Rule {rule_index + 1}</div>
+              <div key={ruleIndex} className="collapse collapse-arrow join-item border border-base-content/20">
+                <input type="checkbox" className="peer" defaultChecked={ruleIndex === 0} />
+                <div className="collapse-title font-medium">Atom Rule {ruleIndex + 1}: {atomRule.rule_name}</div>
                 <div className="collapse-content">
                   <div className="w-full grid grid-cols-6 gap-2">
+
+                    {/* Rule Name */}
+                    <div className="col-span-6">
+                      <label htmlFor={`atom_rule_name`} className="block text-sm font-medium text-base-content">Name</label>
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          id={`atom_rule_name`}
+                          name={`atom_rule_name`}
+                          className="input input-bordered input-sm"
+                          value={atomRule.rule_name}
+                          onChange={(e) => handleChangeAtomRuleName(ruleIndex, e.target.value)}
+                        />
+                      </div>
+                    </div>
 
                     {/* Condition */}
                     <div className="col-span-6 sm:col-span-4 flex flex-col gap-2 border border-base-content/20 rounded-lg p-2">
@@ -467,12 +457,12 @@ function RuleEditPageContent() {
                           </div>
                           <select
                             className="select select-bordered select-sm"
-                            value={atom_rule.condition.combinator}
-                            onChange={(e) => handleChangeConditionCombinator(rule_index, e.target.value)}
+                            value={atomRule.condition.combinator}
+                            onChange={(e) => handleChangeConditionCombinator(ruleIndex, e.target.value)}
                           >
                             <option disabled value="">Select an operator</option>
                             {ruleConditionCombinatorCodes.map((key) => (
-                              <option key={key} value={key} disabled={atom_rule.condition.conditions.length > 1 && (key === RuleConditionCombinator.NONE || key === RuleConditionCombinator.NOT)}>
+                              <option key={key} value={key} disabled={atomRule.condition.conditions.length > 1 && (key === RuleConditionCombinator.NONE || key === RuleConditionCombinator.NOT)}>
                                 {lookupValue(ruleConditionCombinatorMap, key)}
                               </option>
                             ))}
@@ -483,7 +473,7 @@ function RuleEditPageContent() {
                         <div className="flex place-items-end mt-4">
                           <button
                             className="btn btn-sm btn-primary btn-outline text-gray-100"
-                            onClick={() => handleClickNewAtomCondition(rule_index)}
+                            onClick={() => handleClickNewAtomCondition(ruleIndex)}
                           >
                             <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Condition
                           </button>
@@ -492,86 +482,188 @@ function RuleEditPageContent() {
 
                       {/* Atom Conditions */}
                       <div className="join join-vertical w-full border border-base-content/20">
-                        {atom_rule.condition.conditions.map((atom_condition, condition_index) => (
-                          <div key={condition_index} className={`join-item collapse collapse-arrow ${condition_index !== 0 ? "border-t" : ""} border-base-content/20`}>
+                        {atomRule.condition.conditions.map((atomCondition, conditionIndex) => (
+                          <div key={conditionIndex} className={`join-item collapse collapse-arrow ${conditionIndex !== 0 ? "border-t" : ""} border-base-content/20`}>
                             <input type="checkbox" className="peer" />
-                            <div className="collapse-title font-medium ">Atom Contition {condition_index + 1}</div>
+                            <div className="collapse-title font-medium ">Atom Contition {conditionIndex + 1}: {atomCondition.condition_name}</div>
                             <div className="collapse-content">
-                              <div className="grid grid-cols-6 gap-2">
-
-                                {/* Condition Field */}
-                                <label className="form-control w-full col-span-6 sm:col-span-2">
-                                  <div className="label">
-                                    <span className="label-text">Field</span>
-                                  </div>
-                                  <select
-                                    className="select select-bordered select-sm"
-                                    value={atom_condition.field}
-                                    onChange={(e) => handleChangeConditionField(rule_index, condition_index, e.target.value)}
-                                  >
-                                    <option disabled value="">Select a field</option>
-                                    {ruleConditionFieldCodes.map((key) => (
-                                      <option key={key} value={key}>
-                                        {lookupValue(ruleConditionFieldMap, key)}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </label>
-
-                                {/* Condition Operator */}
-                                <label className="form-control w-full col-span-6 sm:col-span-2">
-                                  <div className="label">
-                                    <span className="label-text">Operator</span>
-                                  </div>
-                                  <select
-                                    className="select select-bordered select-sm"
-                                    value={atom_condition.operator}
-                                    onChange={(e) => handleChangeConditionOperator(rule_index, condition_index, e.target.value)}
-                                  >
-                                    <option disabled value="">Select an operator</option>
-                                    {atom_condition.field === RuleConditionField.ROLE
-                                      ? ruleConditionObjectOperatorCodes.map((key) => (
-                                        <option key={key} value={key}>
-                                          {lookupValue(ruleConditionObjectOperatorMap, key)}
-                                        </option>
-                                      ))
-                                      : ruleConditionNumberOperatorCodes.map((key) => (
-                                        <option key={key} value={key}>
-                                          {lookupValue(ruleConditionNumberOperatorMap, key)}
-                                        </option>))
-                                    }
-                                  </select>
-                                </label>
-
-                                {/* Condition Value */}
-                                <label className="form-control w-full col-span-6 sm:col-span-2">
-                                  <div className="label">
-                                    <span className="label-text">Value</span>
-                                  </div>
-                                  {atom_condition.field === RuleConditionField.ROLE
-                                    ? <select
-                                      className="select select-bordered select-sm"
-                                      value={atom_condition.value}
-                                      onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
-                                    >
-                                      <option disabled value="">Select a value</option>
-                                      {roleCodes.map((key) => (
-                                        <option key={key} value={key}>
-                                          {lookupValue(roleMappings, key)}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    : <input
+                              <div className="flex flex-col gap-2">
+                                {/* Rule Name */}
+                                <div className="col-span-6">
+                                  <label htmlFor={`atom_rule_name`} className="block text-sm font-medium text-base-content">Name</label>
+                                  <div className="mt-2">
+                                    <input
                                       type="text"
-                                      className="input input-bordered w-full input-sm"
-                                      value={atom_condition.value}
-                                      onChange={(e) => handleChangeConditionValue(rule_index, condition_index, e.target.value)}
-                                    />}
-                                </label>
+                                      id={`atom_rule_name`}
+                                      name={`atom_rule_name`}
+                                      className="input input-bordered input-sm"
+                                      value={atomCondition.condition_name}
+                                      onChange={(e) => handleChangeAtomConditionName(ruleIndex, conditionIndex, e.target.value)}
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-col">
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.USERNAME}
+                                    label="Username"
+                                    type={FilterType.STRING_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.M_NR}
+                                    label="M-Nr"
+                                    type={FilterType.OBJECT_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.ROLE}
+                                    label="Role"
+                                    type={FilterType.OBJECT_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.DEPARTMENT}
+                                    label="Department"
+                                    type={FilterType.STRING_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.INITIALS}
+                                    label="Initials"
+                                    type={FilterType.STRING_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.EMPLOYER_VAT_ID}
+                                    label="Employer VAT ID"
+                                    type={FilterType.STRING_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.EMPLOYEE_LINK}
+                                    label="Employee Link"
+                                    type={FilterType.STRING_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.EMPLOYMENT_START_DATE}
+                                    label="Employment Start Date"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.EMPLOYMENT_END_DATE}
+                                    label="Employment End Date"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.SALARY_TYPE}
+                                    label="Salary Type"
+                                    type={FilterType.OBJECT_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.HOURLY_RATE}
+                                    label="Hourly Rate"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.HOURS_WORKED}
+                                    label="Hours Worked"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.POINTS_EARNED}
+                                    label="Points Earned"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.SALARY}
+                                    label="Salary"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.BONUS}
+                                    label="Bonus"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.DEDUCTION}
+                                    label="Deduction"
+                                    type={FilterType.COMPARIBLE_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.TAGS}
+                                    label="Tags"
+                                    type={FilterType.LIST_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
+                                </div>
+
+                                {/* Delete Button */}
                                 <div className="col-span-6 flex justify-end">
                                   <button
                                     className="btn btn-sm btn-error btn-outline"
-                                    onClick={() => { handleClickDeleteAtomCondition(rule_index, condition_index) }}
+                                    onClick={() => { handleClickDeleteAtomCondition(ruleIndex, conditionIndex) }}
                                   >
                                     <FontAwesomeIcon icon={faTrash} width={12} />Delete
                                   </button>
@@ -594,8 +686,8 @@ function RuleEditPageContent() {
                         </div>
                         <select
                           className="select select-bordered select-sm"
-                          value={atom_rule.action.field}
-                          onChange={(e) => handleChangeActionField(rule_index, e.target.value)}
+                          value={atomRule.action.field}
+                          onChange={(e) => handleChangeActionField(ruleIndex, e.target.value)}
                         >
                           <option disabled value="">Select a field</option>
                           {ruleActionFieldCodes.map((key) => (
@@ -613,8 +705,8 @@ function RuleEditPageContent() {
                         </div>
                         <select
                           className="select select-bordered select-sm"
-                          value={atom_rule.action.operator}
-                          onChange={(e) => handleChangeActionOperator(rule_index, e.target.value)}
+                          value={atomRule.action.operator}
+                          onChange={(e) => handleChangeActionOperator(ruleIndex, e.target.value)}
                         >
                           <option disabled value="">Select an operator</option>
                           {ruleActionOperatorCodes.map((key) => (
@@ -633,12 +725,12 @@ function RuleEditPageContent() {
                         <input
                           type="text"
                           className="input input-bordered w-full input-sm"
-                          value={actionValues.length > rule_index ? actionValues[rule_index] : "0.0"}
+                          value={actionValues.length > ruleIndex ? actionValues[ruleIndex] : "0.0"}
                           onChange={(e) => {
-                            setCurrentRuleIndex(rule_index);
+                            setCurrentRuleIndex(ruleIndex);
                             setActionValues(prev => {
                               const newActionValues = [...prev];
-                              newActionValues[rule_index] = e.target.value;
+                              newActionValues[ruleIndex] = e.target.value;
                               return newActionValues;
                             });
                           }}
@@ -650,7 +742,7 @@ function RuleEditPageContent() {
                     <div className="col-span-6 flex justify-end gap-2 p-2">
                       <button
                         className="btn btn-sm btn-error btn-outline"
-                        onClick={(e) => handleClickDeleteAtomRule(rule_index)} // eslint-disable-line
+                        onClick={(e) => handleClickDeleteAtomRule(ruleIndex)} // eslint-disable-line
                       >
                         <FontAwesomeIcon icon={faTrash} width={12} />Delete Atom Rule
                       </button>
@@ -690,7 +782,7 @@ function RuleEditPageContent() {
 export default function RuleEditPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <RuleEditPageContent/>
+      <RuleEditPageContent />
     </Suspense>
   );
 }

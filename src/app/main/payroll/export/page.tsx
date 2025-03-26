@@ -1,12 +1,12 @@
 "use client";
 
 import { customAlert, CustomAlertType } from "@/components/ui/alert";
-import FilterComponent from "@/components/ui/Filter";
+import ExportFilterComponent from "@/components/ui/export/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
 import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
-import { ComparableFilterField, StringFilterField, ObjectFilterField, FilterType } from "@/types/filter";
-import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportFilterField, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
+import { ComparableFilterField, EmployeeFilterField, FilterType, ListFilterField, ObjectFilterField, StringFilterField } from "@/types/filter";
+import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,10 +24,17 @@ export default function PayrollExportPage() {
     title: lookupValue(fieldMapMapping, key),
   })));
 
+  const [depositionsDate, setDepositionsDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [paycheckPeriodStart, setPaycheckPeriodStart] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [paycheckPeriodEnd, setPaycheckPeriodEnd] = useState<string>(new Date().toISOString().split("T")[0]);
+
   const [filterUsername, setFilterUsername] = useState<StringFilterField>();
   const [filterMnr, setFilterMnr] = useState<ObjectFilterField>();
   const [filterRole, setFilterRole] = useState<ObjectFilterField>();
   const [filterDepartment, setFilterDepartment] = useState<StringFilterField>();
+  const [filterInitials, setFilterInitials] = useState<StringFilterField>();
+  const [filterEmployerVatID, setFilterEmployerVatID] = useState<StringFilterField>();
+  const [filterEmployeeLink, setFilterEmployeeLink] = useState<StringFilterField>();
   const [filterEmploymentStartDate, setFilterEmploymentStartDate] = useState<ComparableFilterField>();
   const [filterEmploymentEndDate, setFilterEmploymentEndDate] = useState<ComparableFilterField>();
   const [filterSalaryType, setFilterSalaryType] = useState<ObjectFilterField>();
@@ -37,6 +44,7 @@ export default function PayrollExportPage() {
   const [filterSalary, setFilterSalary] = useState<ComparableFilterField>();
   const [filterBonus, setFilterBonus] = useState<ComparableFilterField>();
   const [filterDeduction, setFilterDeduction] = useState<ComparableFilterField>();
+  const [filterTags, setFilterTags] = useState<ListFilterField>();
 
   const [exportRule, setExportRule] = useState("");
   const [exportRuleDiaplay, setExportRuleDisplay] = useState("");
@@ -96,6 +104,9 @@ export default function PayrollExportPage() {
       await axiosHelper.download_post<PayrollExportRequest>("/payroll/export/download",
         {
           filename: exportFileName,
+          depositions_date: depositionsDate,
+          paycheck_period_start: paycheckPeriodStart,
+          paycheck_period_end: paycheckPeriodEnd,
           field_map: exportFieldMap,
           filter: {
             username: filterUsername,
@@ -111,6 +122,7 @@ export default function PayrollExportPage() {
             salary: filterSalary,
             bonus: filterBonus,
             deduction: filterDeduction,
+            tags: filterTags,
           },
           rule: exportRule || undefined,
         });
@@ -166,12 +178,18 @@ export default function PayrollExportPage() {
     try {
       setPreviewLoading(true);
       const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
+        depositions_date: depositionsDate,
+        paycheck_period_start: paycheckPeriodStart,
+        paycheck_period_end: paycheckPeriodEnd,
         field_map: exportFieldMap,
         filter: {
           username: filterUsername,
           m_nr: filterMnr,
           role: filterRole,
           department: filterDepartment,
+          initials: filterInitials,
+          employer_vat_id: filterEmployerVatID,
+          employee_link: filterEmployeeLink,
           employment_start_date: filterEmploymentStartDate,
           employment_end_date: filterEmploymentEndDate,
           salary_type: filterSalaryType,
@@ -181,6 +199,7 @@ export default function PayrollExportPage() {
           salary: filterSalary,
           bonus: filterBonus,
           deduction: filterDeduction,
+          tags: filterTags,
         },
         rule: exportRule || undefined,
       });
@@ -214,7 +233,7 @@ export default function PayrollExportPage() {
 
   return (
     <div>
-      <div className="flex justify-between px-2 py-4">
+      <div className="flex flex-col sm:flex-row justify-between px-2 py-4 gap-2">
         <p className="text-lg font-medium text-base-content/80">
           Payroll Export
         </p>
@@ -238,6 +257,44 @@ export default function PayrollExportPage() {
         </div>
       </div>
       <div className="overflow-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full col-span-1 sm:col-span-3">
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Depositions Date</span>
+            </div>
+            <input
+              type="date"
+              placeholder="Type here"
+              className="input input-sm input-bordered w-full max-w-xs"
+              value={depositionsDate}
+              onChange={(e) => setDepositionsDate(e.target.value)}
+            />
+          </label>
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Paycheck Period Start</span>
+            </div>
+            <input
+              type="date"
+              placeholder="Type here"
+              className="input input-sm input-bordered w-full max-w-xs"
+              value={paycheckPeriodStart}
+              onChange={(e) => setPaycheckPeriodStart(e.target.value)}
+            />
+          </label>
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Paycheck Period End</span>
+            </div>
+            <input
+              type="date"
+              placeholder="Type here"
+              className="input input-sm input-bordered w-full max-w-xs"
+              value={paycheckPeriodEnd}
+              onChange={(e) => setPaycheckPeriodEnd(e.target.value)}
+            />
+          </label>
+        </div>
 
         {/* Field Map */}
         <div className="col-span-1 border border-base-content/20 rounded-md p-4">
@@ -287,83 +344,107 @@ export default function PayrollExportPage() {
             Filter
           </div>
           <div className="flex flex-col gap-2 max-h-80 border border-base-content/20 rounded-md p-4 overflow-auto">
-            <FilterComponent
-              field={PayrollExportFilterField.USERNAME}
+            <ExportFilterComponent
+              field={EmployeeFilterField.USERNAME}
               label="Username"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterUsername}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.M_NR}
+            <ExportFilterComponent
+              field={EmployeeFilterField.M_NR}
               label="M-Nr"
               type={FilterType.OBJECT_FILTER}
               setFilterField={setFilterMnr}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.ROLE}
+            <ExportFilterComponent
+              field={EmployeeFilterField.ROLE}
               label="Role"
               type={FilterType.OBJECT_FILTER}
               setFilterField={setFilterRole}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.DEPARTMENT}
+            <ExportFilterComponent
+              field={EmployeeFilterField.DEPARTMENT}
               label="Department"
               type={FilterType.STRING_FILTER}
               setFilterField={setFilterDepartment}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.EMPLOYMENT_START_DATE}
+            <ExportFilterComponent
+              field={EmployeeFilterField.INITIALS}
+              label="Initials"
+              type={FilterType.STRING_FILTER}
+              setFilterField={setFilterInitials}
+            />
+            <ExportFilterComponent
+              field={EmployeeFilterField.EMPLOYER_VAT_ID}
+              label="Employer VAT ID"
+              type={FilterType.STRING_FILTER}
+              setFilterField={setFilterEmployerVatID}
+            />
+            <ExportFilterComponent
+              field={EmployeeFilterField.EMPLOYEE_LINK}
+              label="Employee Link"
+              type={FilterType.STRING_FILTER}
+              setFilterField={setFilterEmployeeLink}
+            />
+            <ExportFilterComponent
+              field={EmployeeFilterField.EMPLOYMENT_START_DATE}
               label="Employment Start Date"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterEmploymentStartDate}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.EMPLOYMENT_END_DATE}
+            <ExportFilterComponent
+              field={EmployeeFilterField.EMPLOYMENT_END_DATE}
               label="Employment End Date"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterEmploymentEndDate}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.SALARY_TYPE}
+            <ExportFilterComponent
+              field={EmployeeFilterField.SALARY_TYPE}
               label="Salary Type"
               type={FilterType.OBJECT_FILTER}
               setFilterField={setFilterSalaryType}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.HOURLY_RATE}
+            <ExportFilterComponent
+              field={EmployeeFilterField.HOURLY_RATE}
               label="Hourly Rate"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterHourlyRate}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.HOURS_WORKED}
+            <ExportFilterComponent
+              field={EmployeeFilterField.HOURS_WORKED}
               label="Hours Worked"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterHoursWorked}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.POINTS_EARNED}
+            <ExportFilterComponent
+              field={EmployeeFilterField.POINTS_EARNED}
               label="Points Earned"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterPointsEeaned}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.SALARY}
+            <ExportFilterComponent
+              field={EmployeeFilterField.SALARY}
               label="Salary"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterSalary}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.BONUS}
+            <ExportFilterComponent
+              field={EmployeeFilterField.BONUS}
               label="Bonus"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterBonus}
             />
-            <FilterComponent
-              field={PayrollExportFilterField.DEDUCTION}
+            <ExportFilterComponent
+              field={EmployeeFilterField.DEDUCTION}
               label="Deduction"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterDeduction}
+            />
+            <ExportFilterComponent
+              field={EmployeeFilterField.TAGS}
+              label="Tags"
+              type={FilterType.LIST_FILTER}
+              setFilterField={setFilterTags}
             />
           </div>
         </div>
