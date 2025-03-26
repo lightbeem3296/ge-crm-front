@@ -16,6 +16,9 @@ export interface PayrollExportResponse {
 }
 
 export interface PayrollExportPreviewRequest {
+  depositions_date: string,
+  paycheck_period_start: string,
+  paycheck_period_end: string,
   field_map?: FieldMapItem[],
   filter?: EmployeeFilter,
   rule?: string,

@@ -24,6 +24,10 @@ export default function PayrollExportPage() {
     title: lookupValue(fieldMapMapping, key),
   })));
 
+  const [depositionsDate, setDepositionsDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [paycheckPeriodStart, setPaycheckPeriodStart] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [paycheckPeriodEnd, setPaycheckPeriodEnd] = useState<string>(new Date().toISOString().split("T")[0]);
+
   const [filterUsername, setFilterUsername] = useState<StringFilterField>();
   const [filterMnr, setFilterMnr] = useState<ObjectFilterField>();
   const [filterRole, setFilterRole] = useState<ObjectFilterField>();
@@ -100,6 +104,9 @@ export default function PayrollExportPage() {
       await axiosHelper.download_post<PayrollExportRequest>("/payroll/export/download",
         {
           filename: exportFileName,
+          depositions_date: depositionsDate,
+          paycheck_period_start: paycheckPeriodStart,
+          paycheck_period_end: paycheckPeriodEnd,
           field_map: exportFieldMap,
           filter: {
             username: filterUsername,
@@ -171,6 +178,9 @@ export default function PayrollExportPage() {
     try {
       setPreviewLoading(true);
       const response = await axiosHelper.post<PayrollExportPreviewRequest, PayrollExportPreviewResponse>("/payroll/export/preview", {
+        depositions_date: depositionsDate,
+        paycheck_period_start: paycheckPeriodStart,
+        paycheck_period_end: paycheckPeriodEnd,
         field_map: exportFieldMap,
         filter: {
           username: filterUsername,
@@ -223,7 +233,7 @@ export default function PayrollExportPage() {
 
   return (
     <div>
-      <div className="flex justify-between px-2 py-4">
+      <div className="flex flex-col sm:flex-row justify-between px-2 py-4 gap-2">
         <p className="text-lg font-medium text-base-content/80">
           Payroll Export
         </p>
@@ -247,6 +257,44 @@ export default function PayrollExportPage() {
         </div>
       </div>
       <div className="overflow-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full col-span-1 sm:col-span-3">
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Depositions Date</span>
+            </div>
+            <input
+              type="date"
+              placeholder="Type here"
+              className="input input-sm input-bordered w-full max-w-xs"
+              value={depositionsDate}
+              onChange={(e) => setDepositionsDate(e.target.value)}
+            />
+          </label>
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Paycheck Period Start</span>
+            </div>
+            <input
+              type="date"
+              placeholder="Type here"
+              className="input input-sm input-bordered w-full max-w-xs"
+              value={paycheckPeriodStart}
+              onChange={(e) => setPaycheckPeriodStart(e.target.value)}
+            />
+          </label>
+          <label className="form-control w-full max-w-xs">
+            <div className="label">
+              <span className="label-text">Paycheck Period End</span>
+            </div>
+            <input
+              type="date"
+              placeholder="Type here"
+              className="input input-sm input-bordered w-full max-w-xs"
+              value={paycheckPeriodEnd}
+              onChange={(e) => setPaycheckPeriodEnd(e.target.value)}
+            />
+          </label>
+        </div>
 
         {/* Field Map */}
         <div className="col-span-1 border border-base-content/20 rounded-md p-4">
