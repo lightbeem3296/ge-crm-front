@@ -203,7 +203,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     checkAuthentication();
-  }, []);
+  }, []); // eslint-disable-line
 
   return (
     <div className="w-full flex">

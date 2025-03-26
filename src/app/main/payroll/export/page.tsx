@@ -5,7 +5,7 @@ import ExportFilterComponent from "@/components/ui/export/Filter";
 import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
 import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
-import { ComparableFilterField, FilterType, ObjectFilterField, StringFilterField, EmployeeFilterField } from "@/types/filter";
+import { ComparableFilterField, EmployeeFilterField, FilterType, ListFilterField, ObjectFilterField, StringFilterField } from "@/types/filter";
 import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -40,6 +40,7 @@ export default function PayrollExportPage() {
   const [filterSalary, setFilterSalary] = useState<ComparableFilterField>();
   const [filterBonus, setFilterBonus] = useState<ComparableFilterField>();
   const [filterDeduction, setFilterDeduction] = useState<ComparableFilterField>();
+  const [filterTags, setFilterTags] = useState<ListFilterField>();
 
   const [exportRule, setExportRule] = useState("");
   const [exportRuleDiaplay, setExportRuleDisplay] = useState("");
@@ -114,6 +115,7 @@ export default function PayrollExportPage() {
             salary: filterSalary,
             bonus: filterBonus,
             deduction: filterDeduction,
+            tags: filterTags,
           },
           rule: exportRule || undefined,
         });
@@ -187,6 +189,7 @@ export default function PayrollExportPage() {
           salary: filterSalary,
           bonus: filterBonus,
           deduction: filterDeduction,
+          tags: filterTags,
         },
         rule: exportRule || undefined,
       });
@@ -388,6 +391,12 @@ export default function PayrollExportPage() {
               label="Deduction"
               type={FilterType.COMPARIBLE_FILTER}
               setFilterField={setFilterDeduction}
+            />
+            <ExportFilterComponent
+              field={EmployeeFilterField.TAGS}
+              label="Tags"
+              type={FilterType.LIST_FILTER}
+              setFilterField={setFilterTags}
             />
           </div>
         </div>

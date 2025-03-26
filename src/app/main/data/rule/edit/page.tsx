@@ -653,6 +653,15 @@ function RuleEditPageContent() {
                                     rule={rule}
                                     setRule={setRule}
                                   />
+                                  <RuleFilterComponent
+                                    field={EmployeeFilterField.TAGS}
+                                    label="Tags"
+                                    type={FilterType.LIST_FILTER}
+                                    ruleIndex={ruleIndex}
+                                    conditionIndex={conditionIndex}
+                                    rule={rule}
+                                    setRule={setRule}
+                                  />
                                 </div>
 
                                 {/* Delete Button */}

@@ -4,6 +4,7 @@ export enum FilterType {
   STRING_FILTER = "string",
   OBJECT_FILTER = "object",
   COMPARIBLE_FILTER = "comparable",
+  LIST_FILTER = "list",
 }
 
 export enum ObjectFilterCondition {
@@ -78,7 +79,7 @@ export const comparableFilterConditionMappings: Record<string, string> = {
 }
 export const comparableFilterConditionCodes = extractKeys(comparableFilterConditionMappings);
 export class ComparableFilterField {
-  value: string | [string, string];
+  value: string | string[];
   condition: ComparableFilterCondition;
 
   constructor(value: string | [string, string], condition: ComparableFilterCondition) {
@@ -86,6 +87,17 @@ export class ComparableFilterField {
     this.condition = condition;
   }
 }
+
+export class ListFilterField {
+  value: string[];
+  condition: string;
+
+  constructor(value: string[]) {
+    this.value = value;
+    this.condition = "any";
+  }
+}
+
 
 export enum EmployeeFilterField {
   USERNAME = "username",
@@ -104,6 +116,7 @@ export enum EmployeeFilterField {
   SALARY = "salary",
   BONUS = "bonus",
   DEDUCTION = "deduction",
+  TAGS = "tags",
 }
 
 export interface EmployeeFilter {
@@ -123,4 +136,5 @@ export interface EmployeeFilter {
   salary?: ComparableFilterField,
   bonus?: ComparableFilterField,
   deduction?: ComparableFilterField,
+  tags?: ListFilterField,
 }

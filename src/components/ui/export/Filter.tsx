@@ -1,7 +1,7 @@
 import { getRoleMappings } from "@/services/roleService";
 import { getSalaryTypeMappings } from "@/services/salaryTypeService";
-import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
-import { EmployeeFilterField } from "@/types/filter";
+import { getTagMappings } from "@/services/tagService";
+import { ComparableFilterCondition, comparableFilterConditionCodes, comparableFilterConditionMappings, EmployeeFilterField, FilterType, objectFilterConditionCodes, objectFilterConditionMappings, stringFilterConditionCodes, stringFilterConditionMappings } from "@/types/filter";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
@@ -12,6 +12,7 @@ interface FilterComponentProps {
   setFilterField: Dispatch<SetStateAction<any>> // eslint-disable-line
 }
 
+const tagMappings = await getTagMappings();
 const roleMappings = await getRoleMappings();
 const roleCodes = extractKeys(roleMappings);
 
@@ -20,7 +21,7 @@ const salaryTypeCodes = extractKeys(salaryTypeMappings);
 
 export default function ExportFilterComponent({ field, label, type, setFilterField }: FilterComponentProps) {
   const [filterValue, setFilterValue] = useState<string>("");
-  const [filterValues, setFilterValues] = useState<[string, string]>(["", ""]);
+  const [filterValues, setFilterValues] = useState<string[]>([]);
   const [filterCondition, setFilterCondition] = useState<string>("");
   const [filterCaseSensitive, setFilterCaseSensitive] = useState<boolean>(false);
 
@@ -52,6 +53,18 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
       value[0] || filterValues[0],
       value[1] || filterValues[1],
     ]);
+  }
+
+  const handleChangeTags = (value: string, checked: boolean) => {
+    if (checked) {
+      filterValues.push(value);
+    } else {
+      const index = filterValues.indexOf(value);
+      if (index > -1) {
+        filterValues.splice(index, 1);
+      }
+    }
+    setFilterValues([...filterValues]);
   }
 
   // Hooks
@@ -106,6 +119,11 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
           condition: filterCondition,
         });
       }
+    } else if (type === FilterType.LIST_FILTER) {
+      setFilterField({
+        value: filterValues,
+        condition: filterCondition,
+      });
     }
   }, [filterValue, filterValues, filterCondition, filterCaseSensitive]); // eslint-disable-line
 
@@ -138,7 +156,12 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                   ? comparableFilterConditionCodes.map((key) => (
                     <option key={key} value={key}>{lookupValue(comparableFilterConditionMappings, key)}</option>
                   ))
-                  : null
+                  : type === FilterType.LIST_FILTER
+                    ? <>
+                      <option value="all">Contains All</option>
+                      <option value="any">Contains Any</option>
+                    </>
+                    : null
           }
         </select>
 
@@ -169,69 +192,84 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                 </div>
               )
 
-              // Object Filter
-              : type === FilterType.OBJECT_FILTER
+              // List Filter
+              : type === FilterType.LIST_FILTER
+                ? extractKeys(tagMappings).map((key, index) => (
+                  <label key={index} className="cursor-pointer label flex justify-start gap-2">
+                    <input
+                      key={index}
+                      type="checkbox"
+                      className="checkbox checkbox-sm checkbox-info"
+                      defaultChecked={filterValue.includes(key)}
+                      onChange={(e) => handleChangeTags(key, e.target.checked)}
+                    />
+                    <span>{lookupValue(tagMappings, key)}</span>
+                  </label>
+                ))
 
-                // Role Filter
-                ? field === EmployeeFilterField.ROLE
-                  ? <select
-                    className="select select-bordered select-sm"
-                    value={filterValue}
-                    onChange={(e) => handleChangeFilterValue(e.target.value)}
-                  >
-                    <option value="">Not Selected</option>
-                    {roleCodes.map((key) => (
-                      <option key={key} value={key}>{lookupValue(roleMappings, key)}</option>
-                    ))}
-                  </select>
+                // Object Filter
+                : type === FilterType.OBJECT_FILTER
 
-                  // Salary Type Filter
-                  : field === EmployeeFilterField.SALARY_TYPE
+                  // Role Filter
+                  ? field === EmployeeFilterField.ROLE
                     ? <select
                       className="select select-bordered select-sm"
                       value={filterValue}
                       onChange={(e) => handleChangeFilterValue(e.target.value)}
                     >
                       <option value="">Not Selected</option>
-                      {salaryTypeCodes.map((key) => (
-                        <option key={key} value={key}>{lookupValue(salaryTypeMappings, key)}</option>
+                      {roleCodes.map((key) => (
+                        <option key={key} value={key}>{lookupValue(roleMappings, key)}</option>
                       ))}
                     </select>
 
-                    // General String Object Filter
-                    : <input
-                      type="text"
-                      className="input input-sm input-bordered w-full"
-                      onChange={(e) => handleChangeFilterValue(e.target.value)}
-                    />
+                    // Salary Type Filter
+                    : field === EmployeeFilterField.SALARY_TYPE
+                      ? <select
+                        className="select select-bordered select-sm"
+                        value={filterValue}
+                        onChange={(e) => handleChangeFilterValue(e.target.value)}
+                      >
+                        <option value="">Not Selected</option>
+                        {salaryTypeCodes.map((key) => (
+                          <option key={key} value={key}>{lookupValue(salaryTypeMappings, key)}</option>
+                        ))}
+                      </select>
 
-                // Comparable Filter
-                : type === FilterType.COMPARIBLE_FILTER
+                      // General String Object Filter
+                      : <input
+                        type="text"
+                        className="input input-sm input-bordered w-full"
+                        onChange={(e) => handleChangeFilterValue(e.target.value)}
+                      />
 
-                  // Two Value Type Filter
-                  ? is2values()
-                    ? (
-                      <div className="flex flex-col gap-1">
-                        <input
-                          type={isDateField ? "date" : "text"}
-                          className="input input-sm input-bordered w-full"
-                          onChange={(e) => handleChangeFilterValues([e.target.value, undefined])}
-                        />
-                        <input
-                          type={isDateField ? "date" : "text"}
-                          className="input input-sm input-bordered w-full"
-                          onChange={(e) => handleChangeFilterValues([undefined, e.target.value])}
-                        />
-                      </div>
-                    )
+                  // Comparable Filter
+                  : type === FilterType.COMPARIBLE_FILTER
 
-                    // Single Value Type Filter
-                    : <input
-                      type={isDateField ? "date" : "text"}
-                      className="input input-sm input-bordered w-full"
-                      onChange={(e) => handleChangeFilterValue(e.target.value)}
-                    />
-                  : null
+                    // Two Value Type Filter
+                    ? is2values()
+                      ? (
+                        <div className="flex flex-col gap-1">
+                          <input
+                            type={isDateField ? "date" : "text"}
+                            className="input input-sm input-bordered w-full"
+                            onChange={(e) => handleChangeFilterValues([e.target.value, undefined])}
+                          />
+                          <input
+                            type={isDateField ? "date" : "text"}
+                            className="input input-sm input-bordered w-full"
+                            onChange={(e) => handleChangeFilterValues([undefined, e.target.value])}
+                          />
+                        </div>
+                      )
+
+                      // Single Value Type Filter
+                      : <input
+                        type={isDateField ? "date" : "text"}
+                        className="input input-sm input-bordered w-full"
+                        onChange={(e) => handleChangeFilterValue(e.target.value)}
+                      />
+                    : null
             : null
         }
       </div>
