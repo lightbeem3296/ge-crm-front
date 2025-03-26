@@ -40,12 +40,7 @@ function RuleEditPageContent() {
           conditions: [
             {
               condition_name: "Role",
-              filter: {
-                hours_worked: {
-                  value: "40.0",
-                  condition: ComparableFilterCondition.GT,
-                }
-              },
+              filter: {},
             }
           ],
         },

@@ -38,13 +38,13 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
   const [filterField, setFilterField] = useState<FilterField>();
 
   const isDateField = field === EmployeeFilterField.EMPLOYMENT_START_DATE || field === EmployeeFilterField.EMPLOYMENT_END_DATE;
-  const is2values = () => {
+  const is2values = (condition: string) => {
     return [
       ComparableFilterCondition.GTE_LT.toString(),
       ComparableFilterCondition.GTE_LTE.toString(),
       ComparableFilterCondition.GT_LT.toString(),
       ComparableFilterCondition.GT_LTE.toString(),
-    ].includes(filterCondition);
+    ].includes(condition);
   }
 
   // UI Handlers
@@ -62,8 +62,8 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
 
   const handleChangeFilterValues = (value: [string?, string?]) => {
     setFilterValues([
-      value[0] || filterValues[0],
-      value[1] || filterValues[1],
+      value[0] === undefined ? filterValues[0] : value[0],
+      value[1] === undefined ? filterValues[1] : value[1],
     ]);
   }
 
@@ -85,8 +85,15 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
     if (atomCondition.filter) {
       const ruleField = atomCondition.filter[field];
       if (ruleField) {
+        console.log(field, ruleField);
         if (ruleField.value instanceof Array) {
-          setFilterValues(ruleField.value);
+          if (is2values(ruleField.condition)) {
+            if (ruleField.value.length === 2) {
+              setFilterValues(ruleField.value);
+            }
+          } else {
+            setFilterValues(ruleField.value);
+          }
         } else {
           setFilterValue(ruleField.value);
         }
@@ -108,8 +115,8 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
       return;
     }
     if (type === FilterType.COMPARIBLE_FILTER) {
-      if (is2values()) {
-        if (filterValues[0] === "" || filterValues[1] === "") {
+      if (is2values(filterCondition)) {
+        if (filterValues.length !== 2 ||  !filterValues[0]  || !filterValues[1]) {
           setFilterField(undefined);
           return;
         }
@@ -133,12 +140,7 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
         case_sensitive: filterCaseSensitive,
       });
     } else if (type === FilterType.COMPARIBLE_FILTER) {
-      if ([
-        ComparableFilterCondition.GTE_LT.toString(),
-        ComparableFilterCondition.GTE_LTE.toString(),
-        ComparableFilterCondition.GT_LT.toString(),
-        ComparableFilterCondition.GT_LTE.toString(),
-      ].includes(filterCondition)) {
+      if (is2values(filterCondition)) {
         setFilterField({
           value: filterValues,
           condition: filterCondition,
@@ -305,19 +307,19 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
                   : type === FilterType.COMPARIBLE_FILTER
 
                     // Two Value Type Filter
-                    ? is2values()
+                    ? is2values(filterCondition)
                       ? (
                         <div className="flex flex-col gap-1">
                           <input
                             type={isDateField ? "date" : "text"}
                             className="input input-sm input-bordered w-full"
-                            value={filterValue[0] || ""}
+                            value={filterValues[0] || ""}
                             onChange={(e) => handleChangeFilterValues([e.target.value, undefined])}
                           />
                           <input
                             type={isDateField ? "date" : "text"}
                             className="input input-sm input-bordered w-full"
-                            value={filterValue[1] || ""}
+                            value={filterValues[1] || ""}
                             onChange={(e) => handleChangeFilterValues([undefined, e.target.value])}
                           />
                         </div>
