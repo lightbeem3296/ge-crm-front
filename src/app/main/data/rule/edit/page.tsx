@@ -488,8 +488,9 @@ function RuleEditPageContent() {
                             <div className="collapse-title font-medium ">Atom Contition {conditionIndex + 1}: {atomCondition.condition_name}</div>
                             <div className="collapse-content">
                               <div className="flex flex-col gap-2">
-                                {/* Rule Name */}
-                                <div className="col-span-6">
+
+                                {/* Condition Name */}
+                                <div className="col-span-6 border-b border-base-content/20 pb-2">
                                   <label htmlFor={`atom_rule_name`} className="block text-sm font-medium text-base-content">Name</label>
                                   <div className="mt-2">
                                     <input
@@ -503,6 +504,7 @@ function RuleEditPageContent() {
                                   </div>
                                 </div>
 
+                                {/* Filters */}
                                 <div className="flex flex-col">
                                   <RuleFilterComponent
                                     field={EmployeeFilterField.USERNAME}
