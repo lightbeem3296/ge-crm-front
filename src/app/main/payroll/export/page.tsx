@@ -343,7 +343,7 @@ export default function PayrollExportPage() {
           <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Filter
           </div>
-          <div className="flex flex-col gap-2 max-h-80 border border-base-content/20 rounded-md p-4 overflow-auto">
+          <div className="flex flex-col max-h-80 border border-base-content/20 rounded-md px-4 py-2 overflow-auto">
             <ExportFilterComponent
               field={EmployeeFilterField.USERNAME}
               label="Username"

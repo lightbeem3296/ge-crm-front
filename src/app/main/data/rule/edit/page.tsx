@@ -412,7 +412,7 @@ function RuleEditPageContent() {
           {/* New Atom Rule Button */}
           <div className="mt-4">
             <button
-              className="btn btn-primary text-gray-100 btn-sm btn-outline"
+              className="btn btn-primary btn-sm btn-outline"
               onClick={() => handleClickNewAtomRule()}
             >
               <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Rule
@@ -451,10 +451,8 @@ function RuleEditPageContent() {
                       <div className="w-full flex flex-col gap-2">
 
                         {/* Combinator */}
-                        <label className="form-control">
-                          <div className="label">
-                            <span className="label-text">Combinator</span>
-                          </div>
+                        <fieldset className="fieldset">
+                          <legend className="fieldset-legend">Combinator</legend>
                           <select
                             className="select select-bordered select-sm"
                             value={atomRule.condition.combinator}
@@ -467,7 +465,7 @@ function RuleEditPageContent() {
                               </option>
                             ))}
                           </select>
-                        </label>
+                        </fieldset>
 
                         {/* New Atom Condition Button */}
                         <div className="flex place-items-end mt-4">
@@ -490,19 +488,17 @@ function RuleEditPageContent() {
                               <div className="flex flex-col gap-2">
 
                                 {/* Condition Name */}
-                                <div className="col-span-6 border-b border-base-content/20 pb-2">
-                                  <label htmlFor={`atom_rule_name`} className="block text-sm font-medium text-base-content">Name</label>
-                                  <div className="mt-2">
-                                    <input
-                                      type="text"
-                                      id={`atom_rule_name`}
-                                      name={`atom_rule_name`}
-                                      className="input input-bordered input-sm"
-                                      value={atomCondition.condition_name}
-                                      onChange={(e) => handleChangeAtomConditionName(ruleIndex, conditionIndex, e.target.value)}
-                                    />
-                                  </div>
-                                </div>
+                                <fieldset className="fieldset col-span-6 border-b border-base-content/20 pb-2">
+                                  <legend className="fieldset-legend">Name</legend>
+                                  <input
+                                    type="text"
+                                    id={`atom_rule_name`}
+                                    name={`atom_rule_name`}
+                                    className="input input-bordered input-sm"
+                                    value={atomCondition.condition_name}
+                                    onChange={(e) => handleChangeAtomConditionName(ruleIndex, conditionIndex, e.target.value)}
+                                  />
+                                </fieldset>
 
                                 {/* Filters */}
                                 <div className="flex flex-col">

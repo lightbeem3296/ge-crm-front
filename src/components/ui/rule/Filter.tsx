@@ -116,7 +116,7 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
     }
     if (type === FilterType.COMPARIBLE_FILTER) {
       if (is2values(filterCondition)) {
-        if (filterValues.length !== 2 ||  !filterValues[0]  || !filterValues[1]) {
+        if (filterValues.length !== 2 || !filterValues[0] || !filterValues[1]) {
           setFilterField(undefined);
           return;
         }
@@ -187,13 +187,9 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
   }, [filterField]); // eslint-disable-line
 
   return (
-    <div>
-      <label className="form-control w-full">
-        <div className="label">
-          <span className="label-text">{label}</span>
-        </div>
-      </label>
-      <div className="flex flex-col gap-1">
+    <fieldset className="fieldset">
+      <legend className="fieldset-legend">{label}</legend>
+      <div className="flex flex-col gap-2">
 
         {/* Select Condition */}
         <select
@@ -231,39 +227,39 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
             // String Filter
             ? type === FilterType.STRING_FILTER
               ? (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   <input
                     type="text"
                     className="input input-sm input-bordered w-full"
                     value={filterValue}
                     onChange={(e) => handleChangeFilterValue(e.target.value)}
                   />
-                  <div className="form-control">
-                    <label className="cursor-pointer label flex justify-start gap-2">
+                  <fieldset className="fieldset">
+                    <label className="fieldset-label">
                       <input
                         type="checkbox"
-                        className="checkbox checkbox-sm checkbox-info"
+                        className="checkbox checkbox-xs checkbox-primary"
                         checked={filterCaseSensitive}
                         onChange={(e) => handleChangeCaseSensitive(e.target.checked)}
                       />
-                      <span className="label-text">Case Sensitive</span>
+                      Case Sensitive
                     </label>
-                  </div>
+                  </fieldset>
                 </div>
               )
 
               // List Filter
               : type === FilterType.LIST_FILTER
                 ? extractKeys(tagMappings).map((key, index) => (
-                  <label key={index} className="cursor-pointer label flex justify-start gap-2">
+                  <label key={index} className="fieldset-label">
                     <input
                       key={index}
                       type="checkbox"
-                      className="checkbox checkbox-sm checkbox-info"
+                      className="checkbox checkbox-xs checkbox-primary"
                       defaultChecked={filterValue.includes(key)}
                       onChange={(e) => handleChangeTags(key, e.target.checked)}
                     />
-                    <span>{lookupValue(tagMappings, key)}</span>
+                    {lookupValue(tagMappings, key)}
                   </label>
                 ))
 
@@ -309,7 +305,7 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
                     // Two Value Type Filter
                     ? is2values(filterCondition)
                       ? (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-2">
                           <input
                             type={isDateField ? "date" : "text"}
                             className="input input-sm input-bordered w-full"
@@ -336,6 +332,6 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
             : null
         }
       </div>
-    </div>
+    </fieldset>
   );
 }
