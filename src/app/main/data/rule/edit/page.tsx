@@ -472,7 +472,7 @@ function RuleEditPageContent() {
                         {/* New Atom Condition Button */}
                         <div className="flex place-items-end mt-4">
                           <button
-                            className="btn btn-sm btn-primary btn-outline text-gray-100"
+                            className="btn btn-sm btn-primary btn-outline"
                             onClick={() => handleClickNewAtomCondition(ruleIndex)}
                           >
                             <FontAwesomeIcon icon={faPlus} width={12} />Add Atom Condition

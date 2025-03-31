@@ -301,7 +301,7 @@ export default function PayrollExportPage() {
           <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Field Map
             <button
-              className="btn btn-sm btn-primary btn-outline text-gray-100"
+              className="btn btn-sm btn-primary btn-outline"
               onClick={() => handleClickAddFieldMapItem()}
             >
               <FontAwesomeIcon icon={faPlus} width={12} />Add
