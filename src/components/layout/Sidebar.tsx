@@ -23,7 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, label, icon }) => {
       <Link
         href={href}
         className={cn(
-          "flex items-center gap-3 p-3 rounded-md transition hover:bg-gray-700 focus:bg-blue-600 focus:text-gray-200",
+          "flex items-center gap-3 px-4 py-2 rounded-md transition hover:bg-gray-700 focus:bg-blue-600 focus:text-gray-200",
           pathname === href
             ? "bg-blue-600"
             : ""
