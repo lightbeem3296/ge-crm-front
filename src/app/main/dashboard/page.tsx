@@ -59,7 +59,7 @@ const HomePage = () => {
                 </div>
                 <div className="card-actions justify-end">
                   <Link href="/main/data/user">
-                    <button className="btn btn-ghost">
+                    <button className="btn btn-error text-gray-100">
                       Manage
                     </button>
                   </Link>
@@ -76,7 +76,7 @@ const HomePage = () => {
             <p>Total: {employeeCount} Employees</p>
             <div className="card-actions justify-end">
               <Link href="/main/data/employee">
-                <button className="btn btn-ghost">
+                <button className="btn btn-primary text-gray-100">
                   Manage
                 </button>
               </Link>
@@ -89,7 +89,7 @@ const HomePage = () => {
             <p>Total: {ruleCount} Rules</p>
             <div className="card-actions justify-end">
               <Link href="/main/data/rule">
-                <button className="btn btn-ghost">
+                <button className="btn btn-success text-gray-100">
                   Manage
                 </button>
               </Link>
@@ -102,7 +102,7 @@ const HomePage = () => {
             <p>Total: {tagCount} Tags</p>
             <div className="card-actions justify-end">
               <Link href="/main/data/tag">
-                <button className="btn btn-ghost">
+                <button className="btn btn-info text-gray-100">
                   Manage
                 </button>
               </Link>
@@ -115,7 +115,7 @@ const HomePage = () => {
             <p>Total: {roleCount} Roles</p>
             <div className="card-actions justify-end">
               <Link href="/main/data/role">
-                <button className="btn btn-ghost">
+                <button className="btn btn-warning text-gray-100">
                   Manage
                 </button>
               </Link>
@@ -128,7 +128,7 @@ const HomePage = () => {
             <p>Total: {salaryTypeCount} Salary Types</p>
             <div className="card-actions justify-end">
               <Link href="/main/data/salary-type">
-                <button className="btn btn-ghost">
+                <button className="btn btn-secondary text-gray-100">
                   Manage
                 </button>
               </Link>
