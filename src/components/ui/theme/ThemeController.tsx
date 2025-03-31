@@ -11,7 +11,7 @@ export default function ThemeController() {
   }, [theme]);
 
   useEffect(() => {
-    setTheme(localStorage?.getItem("theme") || "light");
+    setTheme(localStorage?.getItem("theme") || "dark");
   }, []);
 
   const handleChangeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
