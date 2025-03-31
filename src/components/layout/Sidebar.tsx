@@ -23,7 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, label, icon }) => {
       <Link
         href={href}
         className={cn(
-          "flex items-center gap-3 p-3 rounded-md transition hover:bg-gray-700 focus:bg-blue-600 focus:text-gray-200",
+          "flex items-center gap-3 px-4 py-2 rounded-md transition hover:bg-gray-700 focus:bg-blue-600 focus:text-gray-200",
           pathname === href
             ? "bg-blue-600"
             : ""
@@ -111,12 +111,12 @@ export default function Sidebar({ mobileFiltersOpen, setMobileFiltersOpen }: Sid
       <Dialog open={mobileFiltersOpen} onClose={setMobileFiltersOpen} className="relative z-40 lg:hidden">
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
+          className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
         />
         <div className="fixed inset-0 z-40 flex">
           <DialogPanel
             transition
-            className="relative ml-auto flex size-full max-w-xs transform flex-col overflow-y-auto bg-neutral-900 py-4 pb-12 shadow-xl transition duration-300 ease-in-out data-[closed]:translate-x-full"
+            className="relative ml-auto flex size-full max-w-xs transform flex-col overflow-y-auto bg-neutral-900 py-4 pb-12 shadow-xl transition duration-300 ease-in-out data-closed:translate-x-full"
           >
             <div className="flex items-center justify-between px-4 border-b border-gray-600">
               <div className='py-4'>

@@ -211,7 +211,7 @@ export default function LoginPage() {
         authType === "password"
           ? <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4 w-full sm:w-96 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
+            className="flex flex-col gap-4 w-full sm:w-96 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-base-300"
           >
             <div className="flex justify-center mb-8">
               <span className="font-sans font-medium text-xl">
@@ -221,7 +221,7 @@ export default function LoginPage() {
 
             {/* Username field */}
             <div className="flex flex-col">
-              <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
+              <label className={`input flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
@@ -246,7 +246,7 @@ export default function LoginPage() {
 
             {/* Password field */}
             <div className="flex flex-col">
-              <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
+              <label className={`input flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
@@ -305,7 +305,7 @@ export default function LoginPage() {
           : authType === "otp"
             ? <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
+              className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-base-300"
             >
               <div className="mx-auto text-xl text-base-content/80">
                 <FontAwesomeIcon icon={faMobilePhone} />
@@ -318,7 +318,7 @@ export default function LoginPage() {
               </div>
               {/* OTP Code field */}
               <div className="flex flex-col">
-                <label className={`input input-sm input-bordered flex items-center gap-2
+                <label className={`input input-sm flex items-center gap-2
                  ${loading
                     ? "input-disabled"
                     : ""
@@ -356,7 +356,7 @@ export default function LoginPage() {
             : authType === "sms"
               ? <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-gradient-to-tr from-primary/5 via-primary/10 to-primary/5"
+                className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-base-300"
               >
                 <div className="mx-auto text-xl text-base-content/80">
                   <FontAwesomeIcon icon={faMobilePhone} />
@@ -369,7 +369,7 @@ export default function LoginPage() {
                 </div>
                 {/* SMS Code field */}
                 <div className="flex flex-col">
-                  <label className={`input input-sm input-bordered flex items-center gap-2
+                  <label className={`input input-sm flex items-center gap-2
                  ${loading
                       ? "input-disabled"
                       : ""

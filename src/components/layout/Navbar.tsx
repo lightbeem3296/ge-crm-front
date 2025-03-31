@@ -16,7 +16,7 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
   const currentUser = loadCurrentUser();
 
   return (
-    <div className="flex items-center justify-between border-b border-base-300 px-4 py-2 bg-primary/10">
+    <div className="flex items-center justify-between border-b border-base-300 px-4 py-2 bg-base-300">
       <div className='flex items-center gap-x-2'>
         <button
           onClick={() => setMobileFiltersOpen(true)}
@@ -35,7 +35,7 @@ export default function Navbar({ setMobileFiltersOpen }: HeaderProps) {
           </button>
           <ul
             tabIndex={0}
-            className="menu dropdown-content bg-base-300 rounded-box z-[10] mt-4 w-52 p-2 shadow">
+            className="menu dropdown-content bg-base-300 rounded-box z-10 mt-4 w-52 p-2 shadow-sm">
             <li>
               <Link href="/main/settings">
                 <FontAwesomeIcon icon={faUser} width={12} /> Profile

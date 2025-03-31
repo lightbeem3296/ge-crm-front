@@ -258,42 +258,36 @@ export default function PayrollExportPage() {
       </div>
       <div className="overflow-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div className="flex flex-col sm:flex-row gap-2 w-full col-span-1 sm:col-span-3">
-          <label className="form-control w-full max-w-xs">
-            <div className="label">
-              <span className="label-text">Depositions Date</span>
-            </div>
+          <fieldset className="fieldset w-full max-w-xs">
+            <label className="fieldset-legend">Depositions Date</label>
             <input
               type="date"
               placeholder="Type here"
-              className="input input-sm input-bordered w-full max-w-xs"
+              className="input input-sm w-full max-w-xs"
               value={depositionsDate}
               onChange={(e) => setDepositionsDate(e.target.value)}
             />
-          </label>
-          <label className="form-control w-full max-w-xs">
-            <div className="label">
-              <span className="label-text">Paycheck Period Start</span>
-            </div>
+          </fieldset>
+          <fieldset className="fieldset w-full max-w-xs">
+            <label className="fieldset-legend">Paycheck Period Start</label>
             <input
               type="date"
               placeholder="Type here"
-              className="input input-sm input-bordered w-full max-w-xs"
+              className="input input-sm w-full max-w-xs"
               value={paycheckPeriodStart}
               onChange={(e) => setPaycheckPeriodStart(e.target.value)}
             />
-          </label>
-          <label className="form-control w-full max-w-xs">
-            <div className="label">
-              <span className="label-text">Paycheck Period End</span>
-            </div>
+          </fieldset>
+          <fieldset className="fieldset w-full max-w-xs">
+            <label className="fieldset-legend">Paycheck Period End</label>
             <input
               type="date"
               placeholder="Type here"
-              className="input input-sm input-bordered w-full max-w-xs"
+              className="input input-sm w-full max-w-xs"
               value={paycheckPeriodEnd}
               onChange={(e) => setPaycheckPeriodEnd(e.target.value)}
             />
-          </label>
+          </fieldset>
         </div>
 
         {/* Field Map */}
@@ -301,7 +295,7 @@ export default function PayrollExportPage() {
           <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Field Map
             <button
-              className="btn btn-sm btn-primary btn-outline text-gray-100"
+              className="btn btn-sm btn-primary btn-outline"
               onClick={() => handleClickAddFieldMapItem()}
             >
               <FontAwesomeIcon icon={faPlus} width={12} />Add
@@ -311,7 +305,7 @@ export default function PayrollExportPage() {
             {exportFieldMap.map((fieldMapItem, item_index) => (
               <div key={item_index} className="grid grid-cols-5 gap-2">
                 <select
-                  className="select select-bordered select-sm col-span-2"
+                  className="select select-sm col-span-2"
                   value={fieldMapItem.field}
                   onChange={(e) => handleChangeFieldMapField(item_index, e.target.value)}
                 >
@@ -323,7 +317,7 @@ export default function PayrollExportPage() {
                   ))}
                 </select>
                 <input
-                  className="input input-sm input-bordered col-span-2"
+                  className="input input-sm col-span-2"
                   value={fieldMapItem.title}
                   onChange={(e) => handleChangeFieldMapTitle(item_index, e.target.value)}
                 />
@@ -343,7 +337,7 @@ export default function PayrollExportPage() {
           <div className="text-md font-medium text-base-content h-12 flex justify-between items-center">
             Filter
           </div>
-          <div className="flex flex-col gap-2 max-h-80 border border-base-content/20 rounded-md p-4 overflow-auto">
+          <div className="flex flex-col max-h-80 border border-base-content/20 rounded-md px-4 py-2 overflow-auto">
             <ExportFilterComponent
               field={EmployeeFilterField.USERNAME}
               label="Username"
@@ -456,7 +450,7 @@ export default function PayrollExportPage() {
           </div>
           <div className="flex flex-col gap-2 h-80 rounded-md">
             <select
-              className="select select-bordered select-sm w-full"
+              className="select select-sm w-full"
               value={exportRule}
               onChange={(e) => setExportRule(e.target.value)}
             >
@@ -466,7 +460,7 @@ export default function PayrollExportPage() {
               ))}
             </select>
             <textarea
-              className="textarea textarea-bordered text-xs resize-none font-mono grow"
+              className="textarea text-xs resize-none font-mono grow w-full"
               placeholder="Rule display"
               value={exportRuleDiaplay}
               readOnly
