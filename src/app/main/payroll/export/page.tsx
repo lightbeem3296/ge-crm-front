@@ -258,10 +258,8 @@ export default function PayrollExportPage() {
       </div>
       <div className="overflow-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div className="flex flex-col sm:flex-row gap-2 w-full col-span-1 sm:col-span-3">
-          <label className="form-control w-full max-w-xs">
-            <div className="label">
-              <span className="label-text">Depositions Date</span>
-            </div>
+          <fieldset className="fieldset w-full max-w-xs">
+            <label className="fieldset-legend">Depositions Date</label>
             <input
               type="date"
               placeholder="Type here"
@@ -269,11 +267,9 @@ export default function PayrollExportPage() {
               value={depositionsDate}
               onChange={(e) => setDepositionsDate(e.target.value)}
             />
-          </label>
-          <label className="form-control w-full max-w-xs">
-            <div className="label">
-              <span className="label-text">Paycheck Period Start</span>
-            </div>
+          </fieldset>
+          <fieldset className="fieldset w-full max-w-xs">
+            <label className="fieldset-legend">Paycheck Period Start</label>
             <input
               type="date"
               placeholder="Type here"
@@ -281,11 +277,9 @@ export default function PayrollExportPage() {
               value={paycheckPeriodStart}
               onChange={(e) => setPaycheckPeriodStart(e.target.value)}
             />
-          </label>
-          <label className="form-control w-full max-w-xs">
-            <div className="label">
-              <span className="label-text">Paycheck Period End</span>
-            </div>
+          </fieldset>
+          <fieldset className="fieldset w-full max-w-xs">
+            <label className="fieldset-legend">Paycheck Period End</label>
             <input
               type="date"
               placeholder="Type here"
@@ -293,7 +287,7 @@ export default function PayrollExportPage() {
               value={paycheckPeriodEnd}
               onChange={(e) => setPaycheckPeriodEnd(e.target.value)}
             />
-          </label>
+          </fieldset>
         </div>
 
         {/* Field Map */}
@@ -466,7 +460,7 @@ export default function PayrollExportPage() {
               ))}
             </select>
             <textarea
-              className="textarea textarea-bordered text-xs resize-none font-mono grow"
+              className="textarea text-xs resize-none font-mono grow w-full"
               placeholder="Rule display"
               value={exportRuleDiaplay}
               readOnly
