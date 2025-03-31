@@ -269,7 +269,7 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
                   // Role Filter
                   ? field === EmployeeFilterField.ROLE
                     ? <select
-                      className="select select-sm"
+                      className="select select-sm w-full"
                       value={filterValue}
                       onChange={(e) => handleChangeFilterValue(e.target.value)}
                     >
@@ -282,7 +282,7 @@ export default function RuleFilterComponent({ field, label, type, ruleIndex, con
                     // Salary Type Filter
                     : field === EmployeeFilterField.SALARY_TYPE
                       ? <select
-                        className="select select-sm"
+                        className="select select-sm w-full"
                         value={filterValue}
                         onChange={(e) => handleChangeFilterValue(e.target.value)}
                       >
