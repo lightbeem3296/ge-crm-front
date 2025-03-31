@@ -63,7 +63,7 @@ export default function EmployeePage() {
     };
 
     return (
-      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-base-100 border border-base-content/30 rounded-sm px-2 py-[0.18rem] my-auto">
+      <div className="flex flex-wrap overflow-auto gap-1 items-center fixed h-fit bg-base-100 border border-base-content/30 rounded-xs px-2 py-[0.18rem] my-auto">
         {tags.map((tag, index) => (
           <span
             key={index}
