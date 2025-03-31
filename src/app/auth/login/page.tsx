@@ -211,7 +211,7 @@ export default function LoginPage() {
         authType === "password"
           ? <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4 w-full sm:w-96 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-linear-to-tr from-primary/5 via-primary/10 to-primary/5"
+            className="flex flex-col gap-4 w-full sm:w-96 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-base-300"
           >
             <div className="flex justify-center mb-8">
               <span className="font-sans font-medium text-xl">
@@ -305,7 +305,7 @@ export default function LoginPage() {
           : authType === "otp"
             ? <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-linear-to-tr from-primary/5 via-primary/10 to-primary/5"
+              className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-base-300"
             >
               <div className="mx-auto text-xl text-base-content/80">
                 <FontAwesomeIcon icon={faMobilePhone} />
@@ -356,7 +356,7 @@ export default function LoginPage() {
             : authType === "sms"
               ? <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-linear-to-tr from-primary/5 via-primary/10 to-primary/5"
+                className="flex flex-col gap-4 w-full sm:w-80 sm:h-fit mx-auto px-8 py-16 rounded-md sm:mt-20 bg-base-300"
               >
                 <div className="mx-auto text-xl text-base-content/80">
                   <FontAwesomeIcon icon={faMobilePhone} />
