@@ -21,7 +21,7 @@ export function NewButton({ onClick, children }: ButtonProps) {
 export function SaveButton({ disabled = false, onClick }: ButtonProps) {
   return (
     <button
-      className="btn btn-primary btn-sm btn-outline text-gray-100"
+      className="btn btn-primary btn-sm btn-outline"
       disabled={disabled}
       onClick={onClick}
     >
@@ -33,7 +33,7 @@ export function SaveButton({ disabled = false, onClick }: ButtonProps) {
 export function EditButton({ onClick }: ButtonProps) {
   return (
     <button
-      className="btn btn-primary btn-sm btn-outline text-gray-100"
+      className="btn btn-primary btn-sm btn-outline"
       onClick={onClick}
     >
       <FontAwesomeIcon icon={faEdit} />
