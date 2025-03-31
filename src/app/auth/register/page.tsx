@@ -94,7 +94,7 @@ export default function LoginPage() {
 
         {/* Username field */}
         <div className="flex flex-col">
-          <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
+          <label className={`input flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -120,7 +120,7 @@ export default function LoginPage() {
 
         {/* Password field */}
         <div className="flex flex-col">
-          <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`} >
+          <label className={`input flex items-center gap-2 ${loading ? "input-disabled" : ""}`} >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -158,7 +158,7 @@ export default function LoginPage() {
 
         {/* Confirm password field */}
         <div className="flex flex-col">
-          <label className={`input input-bordered flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
+          <label className={`input flex items-center gap-2 ${loading ? "input-disabled" : ""}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"

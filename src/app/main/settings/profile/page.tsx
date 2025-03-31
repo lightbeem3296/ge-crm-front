@@ -256,7 +256,7 @@ export default function LogoutPage() {
           <div className="col-span-1 font-medium">Password</div>
           <div className="col-span-2 ml-2">
             <div className="flex gap-2">
-              <label className="input input-sm input-bordered flex items-center gap-2 w-60">
+              <label className="input input-sm flex items-center gap-2 w-60">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 16 16"
@@ -296,7 +296,7 @@ export default function LogoutPage() {
           <div className="col-span-1 font-medium">Phone number</div>
           <div className="col-span-2 ml-2">
             <div className="flex gap-2">
-              <label className={`input input-sm input-bordered flex items-center gap-2 w-60 
+              <label className={`input input-sm flex items-center gap-2 w-60 
                 ${isPhoneNumberValid === true
                   ? "input-success"
                   : isPhoneNumberValid === false
@@ -323,7 +323,7 @@ export default function LogoutPage() {
           {/* 2FA */}
           <div className="col-span-1 font-medium">2FA</div>
           <div className="col-span-2 ml-2 flex gap-2">
-            <select className="select select-bordered select-sm w-60"
+            <select className="select select-sm w-60"
               value={tfaType || ""}
               onChange={(e) => handle2faTypeChanged(e.target.value)}
             >
@@ -370,7 +370,7 @@ export default function LogoutPage() {
                 <div className="col-span-1 font-medium">Verify OTP Code</div>
                 <div className="col-span-2">
                   <div className="flex gap-2">
-                    <label className="input input-sm input-bordered flex items-center gap-2">
+                    <label className="input input-sm flex items-center gap-2">
                       <input
                         type="text"
                         className="grow"
@@ -401,7 +401,7 @@ export default function LogoutPage() {
                 <div className="col-span-1 font-medium">Verify SMS Code</div>
                 <div className="col-span-2 flex flex-col gap-2">
                   <div className="flex gap-2">
-                    <label className="input input-sm input-bordered flex items-center gap-2 w-60">
+                    <label className="input input-sm flex items-center gap-2 w-60">
                       <input
                         type="text"
                         className="grow"

@@ -265,7 +265,7 @@ export default function PayrollExportPage() {
             <input
               type="date"
               placeholder="Type here"
-              className="input input-sm input-bordered w-full max-w-xs"
+              className="input input-sm w-full max-w-xs"
               value={depositionsDate}
               onChange={(e) => setDepositionsDate(e.target.value)}
             />
@@ -277,7 +277,7 @@ export default function PayrollExportPage() {
             <input
               type="date"
               placeholder="Type here"
-              className="input input-sm input-bordered w-full max-w-xs"
+              className="input input-sm w-full max-w-xs"
               value={paycheckPeriodStart}
               onChange={(e) => setPaycheckPeriodStart(e.target.value)}
             />
@@ -289,7 +289,7 @@ export default function PayrollExportPage() {
             <input
               type="date"
               placeholder="Type here"
-              className="input input-sm input-bordered w-full max-w-xs"
+              className="input input-sm w-full max-w-xs"
               value={paycheckPeriodEnd}
               onChange={(e) => setPaycheckPeriodEnd(e.target.value)}
             />
@@ -311,7 +311,7 @@ export default function PayrollExportPage() {
             {exportFieldMap.map((fieldMapItem, item_index) => (
               <div key={item_index} className="grid grid-cols-5 gap-2">
                 <select
-                  className="select select-bordered select-sm col-span-2"
+                  className="select select-sm col-span-2"
                   value={fieldMapItem.field}
                   onChange={(e) => handleChangeFieldMapField(item_index, e.target.value)}
                 >
@@ -323,7 +323,7 @@ export default function PayrollExportPage() {
                   ))}
                 </select>
                 <input
-                  className="input input-sm input-bordered col-span-2"
+                  className="input input-sm col-span-2"
                   value={fieldMapItem.title}
                   onChange={(e) => handleChangeFieldMapTitle(item_index, e.target.value)}
                 />
@@ -456,7 +456,7 @@ export default function PayrollExportPage() {
           </div>
           <div className="flex flex-col gap-2 h-80 rounded-md">
             <select
-              className="select select-bordered select-sm w-full"
+              className="select select-sm w-full"
               value={exportRule}
               onChange={(e) => setExportRule(e.target.value)}
             >

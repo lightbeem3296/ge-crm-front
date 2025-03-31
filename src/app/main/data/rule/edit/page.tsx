@@ -387,7 +387,7 @@ function RuleEditPageContent() {
                 type="text"
                 id="rule-name"
                 name="rule-name"
-                className="input input-bordered input-sm w-full"
+                className="input input-sm w-full"
                 value={rule.rule_name}
                 onChange={(e) => handleChangeRuleName(e.target.value)}
               />
@@ -402,7 +402,7 @@ function RuleEditPageContent() {
                 type="text"
                 id="description"
                 name="description"
-                className="input input-bordered input-sm w-full"
+                className="input input-sm w-full"
                 value={rule.description}
                 onChange={(e) => handleChangeDescription(e.target.value)}
               />
@@ -437,7 +437,7 @@ function RuleEditPageContent() {
                           type="text"
                           id={`atom_rule_name`}
                           name={`atom_rule_name`}
-                          className="input input-bordered input-sm"
+                          className="input input-sm"
                           value={atomRule.rule_name}
                           onChange={(e) => handleChangeAtomRuleName(ruleIndex, e.target.value)}
                         />
@@ -454,7 +454,7 @@ function RuleEditPageContent() {
                         <fieldset className="fieldset">
                           <legend className="fieldset-legend">Combinator</legend>
                           <select
-                            className="select select-bordered select-sm"
+                            className="select select-sm"
                             value={atomRule.condition.combinator}
                             onChange={(e) => handleChangeConditionCombinator(ruleIndex, e.target.value)}
                           >
@@ -494,7 +494,7 @@ function RuleEditPageContent() {
                                     type="text"
                                     id={`atom_rule_name`}
                                     name={`atom_rule_name`}
-                                    className="input input-bordered input-sm"
+                                    className="input input-sm"
                                     value={atomCondition.condition_name}
                                     onChange={(e) => handleChangeAtomConditionName(ruleIndex, conditionIndex, e.target.value)}
                                   />
@@ -678,12 +678,10 @@ function RuleEditPageContent() {
                       <div className="text-sm font-medium p-2 border-b border-base-content/20">Action</div>
 
                       {/* Action Field */}
-                      <label className="form-control w-full">
-                        <div className="label">
-                          <span className="label-text">Field</span>
-                        </div>
+                      <fieldset className="fieldset">
+                        <label className="fieldset-legend">Field</label>
                         <select
-                          className="select select-bordered select-sm"
+                          className="select select-sm"
                           value={atomRule.action.field}
                           onChange={(e) => handleChangeActionField(ruleIndex, e.target.value)}
                         >
@@ -694,15 +692,13 @@ function RuleEditPageContent() {
                             </option>
                           ))}
                         </select>
-                      </label>
+                      </fieldset>
 
                       {/* Action Operator */}
-                      <label className="form-control w-full">
-                        <div className="label">
-                          <span className="label-text">Operator</span>
-                        </div>
+                      <fieldset className="fieldset">
+                        <label className="fieldset-legend">Operator</label>
                         <select
-                          className="select select-bordered select-sm"
+                          className="select select-sm"
                           value={atomRule.action.operator}
                           onChange={(e) => handleChangeActionOperator(ruleIndex, e.target.value)}
                         >
@@ -713,16 +709,14 @@ function RuleEditPageContent() {
                             </option>
                           ))}
                         </select>
-                      </label>
+                      </fieldset>
 
                       {/* Action Value */}
-                      <label className="form-control w-full">
-                        <div className="label">
-                          <span className="label-text">Value</span>
-                        </div>
+                      <fieldset className="fieldset">
+                        <label className="fieldset-legend">Value</label>
                         <input
                           type="text"
-                          className="input input-bordered w-full input-sm"
+                          className="input input-sm"
                           value={actionValues.length > ruleIndex ? actionValues[ruleIndex] : "0.0"}
                           onChange={(e) => {
                             setCurrentRuleIndex(ruleIndex);
@@ -733,7 +727,7 @@ function RuleEditPageContent() {
                             });
                           }}
                         />
-                      </label>
+                      </fieldset>
                     </div>
 
                     {/* Delete Button */}

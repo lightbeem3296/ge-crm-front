@@ -81,7 +81,7 @@ export default function EmployeePage() {
           </span>
         ))}
         <select
-          className="select select-sm select-bordered bg-base-200 text-xs text-base-content"
+          className="select select-sm bg-base-200 text-xs text-base-content"
           onChange={handleSelectChange}
           value=""
         >

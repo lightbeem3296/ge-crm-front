@@ -134,7 +134,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
 
         {/* Select Condition */}
         <select
-          className="select select-bordered select-sm w-full"
+          className="select select-sm w-full"
           value={filterCondition}
           onChange={(e) => handleChangeFilterCondition(e.target.value)}
         >
@@ -171,7 +171,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                 <div className="flex flex-col gap-2">
                   <input
                     type="text"
-                    className="input input-sm input-bordered w-full"
+                    className="input input-sm w-full"
                     onChange={(e) => handleChangeFilterValue(e.target.value)}
                   />
                   <fieldset className="fieldset">
@@ -209,7 +209,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                   // Role Filter
                   ? field === EmployeeFilterField.ROLE
                     ? <select
-                      className="select select-bordered select-sm"
+                      className="select select-sm"
                       value={filterValue}
                       onChange={(e) => handleChangeFilterValue(e.target.value)}
                     >
@@ -222,7 +222,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                     // Salary Type Filter
                     : field === EmployeeFilterField.SALARY_TYPE
                       ? <select
-                        className="select select-bordered select-sm"
+                        className="select select-sm"
                         value={filterValue}
                         onChange={(e) => handleChangeFilterValue(e.target.value)}
                       >
@@ -235,7 +235,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                       // General String Object Filter
                       : <input
                         type="text"
-                        className="input input-sm input-bordered w-full"
+                        className="input input-sm w-full"
                         onChange={(e) => handleChangeFilterValue(e.target.value)}
                       />
 
@@ -248,12 +248,12 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                         <div className="flex flex-col gap-2">
                           <input
                             type={isDateField ? "date" : "text"}
-                            className="input input-sm input-bordered w-full"
+                            className="input input-sm w-full"
                             onChange={(e) => handleChangeFilterValues([e.target.value, undefined])}
                           />
                           <input
                             type={isDateField ? "date" : "text"}
-                            className="input input-sm input-bordered w-full"
+                            className="input input-sm w-full"
                             onChange={(e) => handleChangeFilterValues([undefined, e.target.value])}
                           />
                         </div>
@@ -262,7 +262,7 @@ export default function ExportFilterComponent({ field, label, type, setFilterFie
                       // Single Value Type Filter
                       : <input
                         type={isDateField ? "date" : "text"}
-                        className="input input-sm input-bordered w-full"
+                        className="input input-sm w-full"
                         onChange={(e) => handleChangeFilterValue(e.target.value)}
                       />
                     : null
