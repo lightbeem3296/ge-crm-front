@@ -30,6 +30,7 @@ export interface PayrollExportPreviewResponse {
 }
 
 export const fieldMapMapping: Record<string, string> = {
+  // Employee Fields
   "username": "Username",
   "m_nr": "M-Nr",
   "role": "Role",
@@ -47,5 +48,14 @@ export const fieldMapMapping: Record<string, string> = {
   "bonus": "Bonus",
   "deduction": "Deduction",
   "tags": "Tags",
+
+  // Calculated Fields
+  "calculated_salary": "Calculated Salary",
+  "calculated_bonus": "Calculated Bonus",
+  "calculated_deduction": "Calculated Deduction",
+  "calculated_hourly_rate": "Calculated Hourly Rate",
+  "calculated_hours_worked": "Calculated Hours Worked",
+  "calculated_points_earned": "Calculated Points Earned",
+  "total": "Total Salary",
 }
 export const fieldMapCodes = extractKeys(fieldMapMapping);
