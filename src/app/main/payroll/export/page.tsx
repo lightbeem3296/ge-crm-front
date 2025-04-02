@@ -6,7 +6,7 @@ import { myTheme } from "@/components/ui/theme/agGrid";
 import { axiosHelper } from "@/lib/axios";
 import { getRuleDisplay, getRuleMappings } from "@/services/ruleService";
 import { ComparableFilterField, EmployeeFilterField, FilterType, ListFilterField, ObjectFilterField, StringFilterField } from "@/types/filter";
-import { fieldMapCodes, FieldMapItem, fieldMapMapping, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
+import { fieldMapCodes, FieldMapItem, fieldMapMapping, initialFieldMapCodes, PayrollExportPreviewRequest, PayrollExportPreviewResponse, PayrollExportRequest } from "@/types/payroll";
 import { extractKeys, lookupValue } from "@/utils/record";
 import { faDownload, faPlus, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +19,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function PayrollExportPage() {
   // State variables
   const [exportFileName, setExportFileName] = useState("payroll.csv");
-  const [exportFieldMap, setExportFieldMap] = useState<FieldMapItem[]>(fieldMapCodes.map((key) => ({
+  const [exportFieldMap, setExportFieldMap] = useState<FieldMapItem[]>(initialFieldMapCodes.map((key) => ({
     field: key,
     title: lookupValue(fieldMapMapping, key),
   })));
@@ -135,8 +135,8 @@ export default function PayrollExportPage() {
     setExportFieldMap([
       ...exportFieldMap,
       {
-        field: "username",
-        title: "Username",
+        field: "custom_field",
+        title: "Custom Field",
       }
     ]);
   }

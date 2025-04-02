@@ -57,5 +57,29 @@ export const fieldMapMapping: Record<string, string> = {
   "calculated_hours_worked": "Calculated Hours Worked",
   "calculated_points_earned": "Calculated Points Earned",
   "total": "Total Salary",
+
+  // Custom Field
+  "custom_field": "Custom Field",
 }
 export const fieldMapCodes = extractKeys(fieldMapMapping);
+export const initialFieldMapCodes = [
+  "username",
+  "m_nr",
+  "role",
+  "department",
+  "initials",
+  "employer_vat_id",
+  "employee_link",
+  "employment_start_date",
+  "employment_end_date",
+  "salary_type",
+  "hourly_rate",
+  "hours_worked",
+  "points_earned",
+  "salary",
+  "bonus",
+  "deduction",
+  "tags",
+  "total",
+  "custom_field",
+];
