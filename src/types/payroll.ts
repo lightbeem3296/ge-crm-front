@@ -49,6 +49,11 @@ export const fieldMapMapping: Record<string, string> = {
   "deduction": "Deduction",
   "tags": "Tags",
 
+  // Payroll Dates
+  "depositions_date": "Depositions Date",
+  "paycheck_period_start": "Paycheck Period Start",
+  "paycheck_period_end": "Paycheck Period End",
+
   // Calculated Fields
   "calculated_salary": "Calculated Salary",
   "calculated_bonus": "Calculated Bonus",
@@ -80,6 +85,9 @@ export const initialFieldMapCodes = [
   "bonus",
   "deduction",
   "tags",
+  "depositions_date",
+  "paycheck_period_start",
+  "paycheck_period_end",
   "total",
   "custom_field",
 ];
